@@ -15,7 +15,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "b4e0ab91c5cdec7e1249a78d5dab29dc3ab0d0d4",
+   "rev": "afd365492580ec1c6253579b3e5595368eeb87d9",
    "name": "LMLExplore",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
@@ -171,6 +171,6 @@
    "inputRev": "main",
    "inherited": true,
    "configFile": "lakefile.lean"}],
- "name": "PaperLib",
+ "name": "Degenne2023Existence",
  "lakeDir": ".lake",
  "fixedToolchain": false}
