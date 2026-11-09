@@ -89,6 +89,15 @@ alternatives `task.alt i` to `i`. -/
 def alternatives (θ : Θ) : Set Θ :=
   {θ' | θ' ∈ task.M ∧ Disjoint (task.correct θ) (task.correct θ')}
 
+omit [MeasurableSpace ℐ] in
+/-- The alternatives to `θ` in the task restricted to `S` are the alternatives in `S`. -/
+@[simp]
+lemma alternatives_restrict (S : Set Θ) (θ : Θ) :
+    (task.restrict S).alternatives θ = task.alternatives θ ∩ S := by
+  ext θ'
+  simp only [alternatives, M_restrict, correct_restrict, Set.mem_inter_iff, Set.mem_ofPred_eq]
+  tauto
+
 /-- The probability of error `p_{θ,T}(𝒜)` of the family `𝒜` with budget `T` on the model `θ`: the
 probability that the output of `𝒜 T` in the bandit of `θ` is not a correct answer of `θ`. -/
 noncomputable def errorProb (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) (θ : Θ) (T : ℕ) : ℝ≥0∞ :=

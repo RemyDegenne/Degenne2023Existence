@@ -29,7 +29,8 @@ the set of vectors of means with a unique best arm.
 
 \begin{lemma}[{\cite[Lemma 19]{D23}}]
   \label{lem:exp_fam_bai}
-  \lean{Degenne2023Existence.inv_staticDifficulty_baiTask_expFamily_two}
+  \lean{Degenne2023Existence.inv_staticDifficulty_baiTask_expFamily_two,
+    LMLExplore.Identification.inv_staticDifficulty_baiTask_two}
   \leanok
   \uses{def:static_difficulty, lem:exp_fam_bai_min, lem:exp_fam_bai_max}
   For two arms in the same exponential family with log-partition function $\phi$, means $\mu_1 \ne
@@ -38,93 +39,118 @@ the set of vectors of means with a unique best arm.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{lem:exp_fam_bai_min, lem:exp_fam_bai_max}
-  The value at the maximizer of Lemma~\ref{lem:exp_fam_bai_max} of the cost of
-  Lemma~\ref{lem:exp_fam_bai_min}, $d(\xi_1, y) = \KL(\phi'(y), \mu_1)$ with
-  $\phi'(y) = (\phi(\xi_1) - \phi(\xi_2)) / (\xi_1 - \xi_2)$.
+  The supremum over $\Simplex$ of the cost of the alternatives is at most
+  $\KL(x^{\star}, \mu_1)$, with $x^{\star} = (\phi(\xi_1) - \phi(\xi_2)) / (\xi_1 - \xi_2)$, and is
+  attained at $\omega^{\star}$ (Lemma~\ref{lem:exp_fam_bai_max}). The Lean proof is
+  \texttt{inv\_staticDifficulty\_baiTask\_two}, for any exponential family and statistic.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 19]{D23}}]
   \label{lem:exp_fam_bai_min}
-  \lean{Degenne2023Existence.iInf_cost_baiTask_expFamily_two}
+  \lean{Degenne2023Existence.iInf_cost_baiTask_expFamily_two,
+    LMLExplore.Identification.iInf_cost_baiTask_two}
   \leanok
-  \uses{def:static_difficulty}
+  \uses{def:static_difficulty, lem:alternatives_bai_two, lem:expFamilyDiv_left_mono,
+    lem:compensation_left}
   In the setting of Lemma~\ref{lem:exp_fam_bai}, for every $\omega \in \Simplex$, the infimum
   over $\lambda \in \Alt(\mu)$ of $\omega_1 \KL(\lambda_1, \mu_1) + \omega_2 \KL(\lambda_2, \mu_2)$
   is its value at $\lambda_1 = \lambda_2 = x(\omega) = \phi'(\omega_1 \xi_1 + \omega_2 \xi_2)$.
 \end{lemma}
 
 \begin{proof}
-  The alternatives reduce to $\lambda_1 = \lambda_2 = x$ between the means. In natural parameters
-  $y$, $\omega_1 d(\xi_1, y) + \omega_2 d(\xi_2, y)$, with $d$ the Bregman divergence of $\phi$, has
-  derivative $-(\omega_1 (\xi_1 - y) + \omega_2 (\xi_2 - y)) \phi''(y)$, which vanishes at
-  $y = \omega_1 \xi_1 + \omega_2 \xi_2$.
+  \leanok
+  \uses{lem:alternatives_bai_two, lem:expFamilyDiv_left_mono, lem:compensation_left}
+  The paper: the alternatives reduce to $\lambda_1 = \lambda_2 = x$ between the means. In natural
+  parameters $y$, $\omega_1 d(\xi_1, y) + \omega_2 d(\xi_2, y)$, with $d$ the Bregman divergence of
+  $\phi$, has derivative $-(\omega_1 (\xi_1 - y) + \omega_2 (\xi_2 - y)) \phi''(y)$, which vanishes
+  at $y = \omega_1 \xi_1 + \omega_2 \xi_2$. The Lean proof uses no derivative: every alternative
+  costs at least the value at some point $z$ of the diagonal (Lemmas~\ref{lem:alternatives_bai_two}
+  and~\ref{lem:expFamilyDiv_left_mono}), which is at least the value at $x(\omega)$
+  (Lemma~\ref{lem:compensation_left}). Conversely, the alternatives $(x(\omega) + t (\mu_2 - \mu_1),
+  x(\omega) + t (\mu_1 - \mu_2))$ have costs tending to the value at $x(\omega)$ as $t \downarrow 0$.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 19]{D23}}]
   \label{lem:exp_fam_bai_max}
-  \lean{Degenne2023Existence.isMaxOn_iInf_cost_baiTask_expFamily_two}
+  \lean{Degenne2023Existence.isMaxOn_iInf_cost_baiTask_expFamily_two,
+    LMLExplore.Identification.isMaxOn_iInf_cost_baiTask_two,
+    LMLExplore.Identification.iInf_cost_baiTask_two_le,
+    LMLExplore.Identification.iInf_cost_baiTask_two_of_eq}
   \leanok
-  \uses{lem:exp_fam_bai_min}
+  \uses{lem:exp_fam_bai_min, lem:compensation_left, lem:chernoff_point}
   In the setting of Lemma~\ref{lem:exp_fam_bai}, with $x^{\star} = (\phi(\xi_1) - \phi(\xi_2)) /
   (\xi_1 - \xi_2)$, the cost of the alternatives is maximal on the simplex at $\omega^{\star}$ with
   $\omega^{\star}_1 = (\phi'^{-1}(x^{\star}) - \xi_2) / (\xi_1 - \xi_2)$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:exp_fam_bai_min}
-  At a maximum, the derivative in $\omega_1$ vanishes, which by the stationarity in $y$ reduces
-  to $d(\xi_1, y) = d(\xi_2, y)$, that is $\phi'(y) = x^{\star}$, and $\omega_1 = (y - \xi_2) /
-  (\xi_1 - \xi_2)$; the cost is concave in $\omega$.
+  \leanok
+  \uses{lem:exp_fam_bai_min, lem:compensation_left, lem:chernoff_point}
+  The paper: at a maximum, the derivative in $\omega_1$ vanishes, which by the stationarity in $y$
+  reduces to $d(\xi_1, y) = d(\xi_2, y)$, that is $\phi'(y) = x^{\star}$, and $\omega_1 = (y -
+  \xi_2) / (\xi_1 - \xi_2)$; the cost is concave in $\omega$. The Lean proof: for every $\omega$,
+  the value at $x(\omega)$ is at most the value at $x^{\star}$ (Lemma~\ref{lem:compensation_left}),
+  which is $\KL(x^{\star}, \mu_1) = \KL(x^{\star}, \mu_2)$ (Lemma~\ref{lem:chernoff_point}). At
+  $\omega^{\star}$, which is in the simplex, $\omega^{\star}_1 \xi_1 + \omega^{\star}_2 \xi_2 =
+  \xi(x^{\star})$, so $x(\omega^{\star}) = x^{\star}$ and the bound is attained.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 20]{D23}}]
   \label{lem:subgaussian_bai}
-  \lean{Degenne2023Existence.ofReal_div_le_inv_staticDifficulty_baiTask_two}
+  \lean{Degenne2023Existence.ofReal_div_le_inv_staticDifficulty_baiTask_two,
+    LMLExplore.Identification.ofReal_div_le_inv_staticDifficulty_baiTask_two}
   \leanok
-  \uses{lem:exp_fam_bai, lem:rate_ge_sq_of_subgaussian}
+  \uses{lem:exp_fam_bai, lem:chernoff_point, lem:expFamilyDiv_ge_sq_of_subgaussian}
   If the members of means $\mu_1$ and $\mu_2$ are $\sigma^2$-sub-Gaussian, then
   $\Hsp(\mu)^{-1} \ge \frac{1}{2 \sigma^2 (\xi_1 - \xi_2)^2} \max\{\KL(\mu_1, \mu_2)^2, \KL(\mu_2,
   \mu_1)^2\}$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:exp_fam_bai, lem:rate_ge_sq_of_subgaussian}
+  \leanok
+  \uses{lem:exp_fam_bai, lem:chernoff_point, lem:expFamilyDiv_ge_sq_of_subgaussian}
   $x^{\star} = \mu_1 - \KL(\mu_1, \mu_2) / (\xi_1 - \xi_2) = \mu_2 + \KL(\mu_2, \mu_1) / (\xi_1 -
-  \xi_2)$, $\Hsp(\mu)^{-1} = \KL(x^{\star}, \mu_1) = \KL(x^{\star}, \mu_2)$ (Lemma~\ref{lem:exp_fam_bai}),
-  and $\KL(x, \mu_k) \ge (x - \mu_k)^2 / (2 \sigma^2)$ (Lemma~\ref{lem:rate_ge_sq_of_subgaussian}).
+  \xi_2)$ (Lemma~\ref{lem:chernoff_point}), $\Hsp(\mu)^{-1} = \KL(x^{\star}, \mu_1) = \KL(x^{\star},
+  \mu_2)$ (Lemma~\ref{lem:exp_fam_bai}), and $\KL(x, \mu_k) \ge (x - \mu_k)^2 / (2 \sigma^2)$
+  (Lemma~\ref{lem:expFamilyDiv_ge_sq_of_subgaussian}).
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 20]{D23}}]
   \label{lem:gaussian_bai_two}
   \lean{Degenne2023Existence.inv_staticDifficulty_baiTask_gaussian_two}
   \leanok
-  \uses{lem:exp_fam_bai}
+  \uses{lem:exp_fam_bai, lem:chernoff_point}
   For two Gaussian arms with a common variance $\sigma^2$, the bound of
   Lemma~\ref{lem:subgaussian_bai} is an equality and its two terms are equal; both are
   $(\mu_1 - \mu_2)^2 / (8 \sigma^2)$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:exp_fam_bai}
-  $\phi(a) = \frac12 \sigma^2 a^2$, $\KL(x, y) = (x - y)^2 / (2 \sigma^2)$ and
-  Lemma~\ref{lem:exp_fam_bai}.
+  \leanok
+  \uses{lem:exp_fam_bai, lem:chernoff_point}
+  $\KL(x, y) = (x - y)^2 / (2 \sigma^2)$ for all $x, y$ (LMLExplore), Lemma~\ref{lem:exp_fam_bai}
+  and $x^{\star} - \mu_1 = -\KL(\mu_1, \mu_2) / (\xi_1 - \xi_2)$ (Lemma~\ref{lem:chernoff_point}).
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 9]{D23}}]
   \label{cor:bernoulli_bai_H}
   \lean{Degenne2023Existence.inv_staticDifficulty_baiTask_bernoulli_two}
   \leanok
-  \uses{lem:exp_fam_bai}
+  \uses{lem:exp_fam_bai, lem:chernoff_point}
   For two Bernoulli arms with means $\mu_1 \ne \mu_2$ in $(0, 1)$, with
   $z = \log\frac{1 - \mu_2}{1 - \mu_1} \big/ \log\frac{\mu_1 (1 - \mu_2)}{(1 - \mu_1) \mu_2}$,
   $\Hsp(\mu)^{-1} = \kl(z, \mu_1) = \kl(z, \mu_2)$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:exp_fam_bai}
-  Lemma~\ref{lem:exp_fam_bai} with $\phi(a) = \log(1 + e^a)$, $\phi'^{-1}(x) = \log \frac{x}{1 -
-  x}$ and the Bernoulli family of LMLExplore.
+  \leanok
+  \uses{lem:exp_fam_bai, lem:chernoff_point}
+  Lemma~\ref{lem:exp_fam_bai} for the family generated by the Bernoulli law of mean $\frac12$,
+  whose members are the Bernoulli laws of means in $(0, 1)$ (LMLExplore): $\xi(m) = \log \frac{m}{1
+  - m}$ and $\phi(\xi(m)) = \log \frac{1}{2 (1 - m)}$, so that $x^{\star} = z$, a mean of the family
+  (Lemma~\ref{lem:chernoff_point}), and $\KL = \kl$ on $(0, 1)$.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 10]{D23}}]

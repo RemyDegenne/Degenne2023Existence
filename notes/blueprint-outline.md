@@ -197,7 +197,14 @@ Definitions `def:fixed_budget_family`, `def:alternatives`, `def:error_prob`, `de
 - Lemma 19: in natural parameters `y`, `w₀ d(ξ₀, y) + w₁ d(ξ₁, y)` (Bregman divergences of `φ`) is
   minimal at `y = w₀ ξ₀ + w₁ ξ₁`; the alternatives of two-armed best arm identification reduce to
   `λ₀ = λ₁` (LMLExplore `Task/BestArm.lean`, `Mean.lean`); the maximum over `w₀` solves
-  `d(ξ₀, y) = d(ξ₁, y)`, i.e. `φ'(y) = (φ(ξ₀) - φ(ξ₁)) / (ξ₀ - ξ₁)`.
+  `d(ξ₀, y) = d(ξ₁, y)`, i.e. `φ'(y) = (φ(ξ₀) - φ(ξ₁)) / (ξ₀ - ξ₁)`. Route taken (round of
+  2026-11-09), with no derivative: the minimum on the diagonal is the compensation identity with
+  the free mean first (`sum_mul_expFamilyDiv_left_eq`), an alternative is reduced to a point of the
+  diagonal by the monotonicity of `d(·, μ)` on each side of `μ`, and the diagonal is approached by
+  alternatives `(x + t (μ₁ - μ₀), x + t (μ₀ - μ₁))`, `t ↓ 0`; for every `w`, the value at `x(w)` is
+  at most the value at the slope `x*`, which is `d(x*, μ₀) = d(x*, μ₁)` whatever `w`, and `w*` has
+  `x(w*) = x*`. No concavity in `w` is needed. Everything is stated for any exponential family
+  `ρ.expFamily T`, in `ForLMLExplore/Identification/Task/BestArmTwo.lean`.
 - Lemma 20: Lemma 19 and the sub-Gaussian lower bound `KL(x, μ) ≥ (x - μ)² / (2 σ²)` on the rate
   function (`lem:rate_ge_sq_of_subgaussian`); Gaussian case by `expFamilyDiv_gaussianReal`.
 - Lemma 9: Lemma 19 for the Bernoulli family `Ber(1/2)` (`ExponentialFamily/Bernoulli.lean`:

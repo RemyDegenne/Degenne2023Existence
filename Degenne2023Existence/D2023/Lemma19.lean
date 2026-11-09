@@ -6,6 +6,7 @@ Authors: Remy Degenne
 module
 
 public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.ForLMLExplore.Identification.Task.BestArmTwo
 
 /-!
 # Lemma 19 of [D23]: the static-proportions difficulty of two-armed best arm identification
@@ -58,7 +59,8 @@ theorem inv_staticDifficulty_baiTask_expFamily_two (hρ : ∀ c, ¬ id =ᵐ[ρ] 
     (((baiTask ν id).restrict {μ | ∀ a, μ a ∈ ρ.expFamilyMeans id}).staticDifficulty μ)⁻¹ =
       ENNReal.ofReal
         (ρ.expFamilyDiv id ((cgf id ρ ξ₀ - cgf id ρ ξ₁) / (ξ₀ - ξ₁)) (μ 0)) := by
-  sorry
+  subst hξ₀ hξ₁
+  exact inv_staticDifficulty_baiTask_two ν hρ hν hμ hμ01
 
 /-- **The minimizers of the cost of the alternatives** [D23, Lemma 19]. In the setting of
 `inv_staticDifficulty_baiTask_expFamily_two`, for every allocation `w` of the simplex, the
@@ -73,7 +75,8 @@ theorem iInf_cost_baiTask_expFamily_two (hρ : ∀ c, ¬ id =ᵐ[ρ] fun _ ↦ c
       ENNReal.ofReal
         (w 0 * ρ.expFamilyDiv id (deriv (cgf id ρ) (w 0 * ξ₀ + w 1 * ξ₁)) (μ 0) +
           w 1 * ρ.expFamilyDiv id (deriv (cgf id ρ) (w 0 * ξ₀ + w 1 * ξ₁)) (μ 1)) := by
-  sorry
+  subst hξ₀ hξ₁
+  exact iInf_cost_baiTask_two ν hρ hν hμ hμ01 hw
 
 /-- **The optimal static proportions** [D23, Lemma 19]. In the setting of
 `inv_staticDifficulty_baiTask_expFamily_two`, with `x* = (φ(ξ₀) - φ(ξ₁)) / (ξ₀ - ξ₁)`, the cost of
@@ -88,6 +91,7 @@ theorem isMaxOn_iInf_cost_baiTask_expFamily_two (hρ : ∀ c, ¬ id =ᵐ[ρ] fun
         ⨅ μ' ∈ ((baiTask ν id).restrict {μ | ∀ a, μ a ∈ ρ.expFamilyMeans id}).alternatives μ,
           ((baiTask ν id).restrict {μ | ∀ a, μ a ∈ ρ.expFamilyMeans id}).cost w μ' μ)
       (simplex (Fin 2)) ![w₀, 1 - w₀] := by
-  sorry
+  subst hξ₀ hξ₁
+  exact isMaxOn_iInf_cost_baiTask_two ν hρ hν hμ hμ01 hw₀
 
 end Degenne2023Existence

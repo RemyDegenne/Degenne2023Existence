@@ -22,8 +22,11 @@ public import Degenne2023Existence.D2023.Theorem8
 public import Degenne2023Existence.ForLMLExplore.Analysis.Convex.Simplex
 public import Degenne2023Existence.ForLMLExplore.Identification.ErrorLowerBound
 public import Degenne2023Existence.ForLMLExplore.Identification.FixedBudgetComplexity
+public import Degenne2023Existence.ForLMLExplore.Identification.Task.BestArmTwo
 public import Degenne2023Existence.ForLMLExplore.Identification.Task.ExpFamily
 public import Degenne2023Existence.ForLMLExplore.Identification.Task.HalfSpace
 public import Degenne2023Existence.ForLMLExplore.InformationTheory.KullbackLeibler.Bernoulli
+public import Degenne2023Existence.ForLMLExplore.Probability.Distributions.ExponentialFamily.Mean
+public import Degenne2023Existence.ForLMLExplore.Probability.Distributions.ExponentialFamily.RateFunction
 public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Basic
 public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Cramer

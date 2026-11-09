@@ -86,7 +86,15 @@ status:
     Decision of 2026-11-09 (/lml:formalize-paper decide): Lemma 11 takes the hypothesis NeZero rho,
     which the paper leaves implicit; its challenge is regenerated, and it is proved as
     isLDP_cramer_expFamily.
-  sorry_count: 14
+    Phase 2, fourth round of 2026-11-09: two-armed best arm identification (Lemmas 9, 19, 20;
+    blueprint chapter bai) is proved, over the static-proportions difficulty of two arms in any
+    exponential family, the inverse of the Chernoff information
+    (ForLMLExplore/Identification/Task/BestArmTwo.lean), and the divergence of an exponential
+    family in its first argument: the compensation identity with the free mean first, the Chernoff
+    point, and the sub-Gaussian comparison
+    (ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean and RateFunction.lean).
+    The proof of Lemma 19 uses no derivative, unlike the paper's.
+  sorry_count: 8
   sorry_in_definitions: 0
 
 automation:
@@ -194,7 +202,7 @@ alignment:
     - source: "cor:bernoulli_bai_H — Lemma 9"
       lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_bernoulli_two"
       module: "Degenne2023Existence.D2023.Lemma9"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "thm:bernoulli_bai_no_complexity — Theorem 10"
       lean: "Degenne2023Existence.one_lt_iInf_maxRatio_baiTask_bernoulli_two"
@@ -237,25 +245,25 @@ alignment:
     - source: "lem:exp_fam_bai — Lemma 19"
       lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_expFamily_two"
       module: "Degenne2023Existence.D2023.Lemma19"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "lem:exp_fam_bai_min — Lemma 19 (the minimizers)"
       lean: "Degenne2023Existence.iInf_cost_baiTask_expFamily_two"
       module: "Degenne2023Existence.D2023.Lemma19"
-      status: "stated"
+      status: "proved"
       relation: "hasPart"
     - source: "lem:exp_fam_bai_max — Lemma 19 (the maximizer)"
       lean: "Degenne2023Existence.isMaxOn_iInf_cost_baiTask_expFamily_two"
       module: "Degenne2023Existence.D2023.Lemma19"
-      status: "stated"
+      status: "proved"
       relation: "hasPart"
     - source: "lem:subgaussian_bai — Lemma 20"
       lean: "Degenne2023Existence.ofReal_div_le_inv_staticDifficulty_baiTask_two"
       module: "Degenne2023Existence.D2023.Lemma20"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "lem:gaussian_bai_two — Lemma 20 (Gaussian case)"
       lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_gaussian_two"
       module: "Degenne2023Existence.D2023.Lemma20"
-      status: "stated"
+      status: "proved"
       relation: "hasPart"
