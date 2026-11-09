@@ -65,3 +65,210 @@ user's decision (`/lml:formalize-paper decide`). The errors of the paper itself 
   proved as `isLDP_cramer_expFamily hμ`, and its challenge
   (`comparator/Challenge_isLDP_empiricalMean_expFamily.lean`) is regenerated, in the commit
   "Decide: Lemma 11 takes the hypothesis NeZero ρ".
+
+## Theorems 1 and 5: the answers need measurable singletons
+
+- **Statements:** `Degenne2023Existence.tendsto_errorRate_of_isStaticProportions` and
+  `Degenne2023Existence.oracleDifficulty_staticClass` (Theorem 1, `D2023/Theorem1.lean`),
+  `Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions` and
+  `Degenne2023Existence.maxRatio_staticDifficulty_le_card` (Theorem 5, `D2023/Theorem5.lean`), as
+  frozen at the end of phase 1.
+- **Problem:** the statements take any σ-algebra `[MeasurableSpace ℐ]` on the finite answer type.
+  The probability of error `errorProb 𝒜 θ T` is the output measure of `(task.correct θ)ᶜ`; when
+  that set is not measurable, it is an outer measure, the infimum over the measurable sets that
+  contain it. For the trivial σ-algebra `⊥` on two answers, the only measurable set containing a
+  nonempty set is `univ`, so the probability of error is `1` for every fixed-budget algorithm, and
+  the rate `h_{θ,T} = T / log (1 / 1)` is `∞` for `T > 0`. The four statements then fail at a
+  model with no alternatives: Theorem 1 gives the limit `(inf ∅)⁻¹ = 0` and the oracle difficulty
+  `H^{sp}(μ) = (sup_w inf ∅)⁻¹ = 0`, and Theorem 5 a finite maximal ratio, while the rates are `∞`.
+  The paper is not affected: its answers are a finite set of indices, on which every subset is an
+  event. The proofs need only that the set of correct answers of each admissible model is
+  measurable, which `[MeasurableSingletonClass ℐ]` gives (the correct answers are a singleton).
+- **Evidence:** the following check compiles against the project (`lake env lean`, round of
+  2026-11-09), with one Gaussian arm of variance `1`, every model admissible, the single answer
+  `true` of `Bool` with the trivial σ-algebra, and the family that pulls the arm `T` times and
+  answers `true`:
+
+  ```lean
+  import Degenne2023Existence.D2023.Theorem1
+  import Degenne2023Existence.D2023.Theorem5
+
+  open MeasureTheory ProbabilityTheory Filter Topology Learning LMLExplore
+    LMLExplore.Identification
+  open scoped ENNReal
+
+  namespace Counter
+
+  /-- `Bool` with the trivial σ-algebra. -/
+  def TrivBool : Type := Bool
+
+  instance : MeasurableSpace TrivBool := ⊥
+  instance : Finite TrivBool := inferInstanceAs (Finite Bool)
+  instance : Nonempty TrivBool := ⟨(true : Bool)⟩
+  instance : DecidableEq TrivBool := inferInstanceAs (DecidableEq Bool)
+
+  def tt : TrivBool := (true : Bool)
+  def ff : TrivBool := (false : Bool)
+
+  lemma ff_ne_tt : ff ≠ tt := by decide
+
+  /-- One Gaussian arm of variance `1`, every model admissible, the answer is always `tt`. -/
+  noncomputable def task : IdentTask Unit (Unit → ℝ) TrivBool ℝ where
+    M := Set.univ
+    ν μ := Kernel.const Unit (gaussianReal (μ ()) 1)
+    isMarkovKernel_ν _ := inferInstance
+    correct _ := {tt}
+
+  /-- Under the trivial σ-algebra, a probability measure gives mass `1` to every nonempty set. -/
+  lemma measure_eq_one {P : Measure TrivBool} [IsProbabilityMeasure P] {s : Set TrivBool}
+      (hs : s.Nonempty) : P s = 1 := by
+    rw [← measure_toMeasurable s]
+    rcases MeasurableSpace.measurableSet_bot_iff.1 (measurableSet_toMeasurable P s) with h | h
+    · exact absurd (h ▸ subset_toMeasurable P s) (Set.nonempty_iff_ne_empty.1 hs ∘
+        Set.subset_empty_iff.1)
+    · rw [h, measure_univ]
+
+  /-- Every fixed-budget family has probability of error `1` and rate `∞` on `task`. -/
+  lemma errorRate_eq_top {𝒜 : ℕ → IdentAlg Unit Unit ℝ TrivBool} (h𝒜 : IsFixedBudgetFamily 𝒜)
+      (μ : Unit → ℝ) {T : ℕ} (hT : T ≠ 0) : task.errorRate 𝒜 μ T = ∞ := by
+    have hp : task.errorProb 𝒜 μ T = 1 := by
+      rw [IdentTask.errorProb, (h𝒜 T).outputMeasure_eq]
+      exact measure_eq_one ⟨ff, by simpa [task] using ff_ne_tt⟩
+    rw [IdentTask.errorRate, hp, ENNReal.log_one, neg_zero, EReal.toENNReal_zero,
+      ENNReal.div_zero (by exact_mod_cast hT)]
+
+  lemma tendsto_errorRate {𝒜 : ℕ → IdentAlg Unit Unit ℝ TrivBool}
+      (h𝒜 : IsFixedBudgetFamily 𝒜) (μ : Unit → ℝ) :
+      Tendsto (task.errorRate 𝒜 μ) atTop (𝓝 ∞) :=
+    tendsto_const_nhds.congr' (by
+      filter_upwards [eventually_ne_atTop 0] with T hT using (errorRate_eq_top h𝒜 μ hT).symm)
+
+  lemma alternatives_eq (μ : Unit → ℝ) : task.alternatives μ = ∅ := by
+    ext μ'
+    simp [IdentTask.alternatives, task]
+
+  lemma staticDifficulty_eq (μ : Unit → ℝ) : task.staticDifficulty μ = 0 := by
+    rw [IdentTask.staticDifficulty, alternatives_eq]
+    simp only [Set.mem_empty_iff_false, not_false_eq_true, iInf_neg, iInf_top]
+    rw [ENNReal.inv_eq_zero]
+    refine le_antisymm le_top (le_iSup₂_of_le (fun _ ↦ (1 : ℝ)) ?_ le_rfl)
+    simp [simplex]
+
+  noncomputable abbrev ρ : Unit → Measure ℝ := fun _ ↦ gaussianReal 0 1
+
+  lemma hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c :=
+    fun _ c ↦ not_ae_eq_const_gaussianReal 0 one_ne_zero c
+
+  lemma hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id) := fun _ ↦ by
+    simp
+
+  lemma hν : ∀ μ a, μ a ∈ (ρ a).expFamilyMeans id →
+      task.ν μ a = (ρ a).expFamily id ((ρ a).natParam id (μ a)) := fun μ a _ ↦ by
+    rw [expFamily_natParam_gaussianReal 0 one_ne_zero]
+    rfl
+
+  lemma answerSet_eq (i : TrivBool) :
+      task.answerSet i = if i = tt then Set.univ else ∅ := by
+    ext μ
+    by_cases hi : i = tt
+    · simp [task, hi, IdentTask.answerSet]
+    · simp [task, hi, IdentTask.answerSet]
+
+  lemma hreg : Degenne2023Existence.IsRegular task {μ | ∀ a, μ a ∈ (ρ a).expFamilyMeans id} := by
+    rw [setOf_forall_mem_expFamilyMeans_gaussianReal 0 one_ne_zero]
+    refine ⟨subset_rfl, fun μ _ ↦ Set.mem_iUnion.2 ⟨tt, by simp [task, IdentTask.answerSet]⟩,
+      fun i ↦ ?_, fun i ↦ ?_, fun μ _ ↦ Set.mem_iUnion.2 ⟨tt, ?_⟩⟩
+    · rw [answerSet_eq]; split_ifs <;> simp
+    · rw [answerSet_eq]; split_ifs <;> simp
+    · rw [answerSet_eq]; simp
+
+  lemma hsingle : task.IsSingleAnswer := fun _ _ ↦ ⟨tt, rfl⟩
+
+  /-- The recommendation rule: always `tt`. -/
+  def rec : (Unit → ℝ) → TrivBool := fun _ ↦ tt
+
+  lemma hrec : ∀ i, ∀ x ∈ closure {μ | ∀ a, μ a ∈ (ρ a).expFamilyMeans id},
+      x ∉ closure (task.alt i) → rec x = i := by
+    intro i x _ hx
+    by_cases hi : i = tt
+    · exact hi.symm
+    · refine absurd ?_ hx
+      have : task.alt i = Set.univ := by
+        ext μ
+        simp [task, IdentTask.alt, hi]
+      simp [this]
+
+  /-- The static proportions family: pull the only arm `T` times and recommend `tt`. -/
+  noncomputable def 𝒜 (T : ℕ) : IdentAlg Unit Unit ℝ TrivBool :=
+    fixedBudget (Algorithm.ofSeq fun _ ↦ ()) T (Kernel.const _ (Measure.dirac tt))
+
+  lemma h𝒜 : task.IsStaticProportions rec 𝒜 fun _ ↦ 1 := by
+    refine ⟨fun _ ↦ one_pos, by simp, fun T ↦ ⟨isFixedBudget_fixedBudget _ _ _, fun μ _ ↦
+      Eventually.of_forall fun h a ↦ ?_, fun h ↦ ?_⟩⟩
+    · have : pullCount IT.action a T h = T := by
+        simpa using sum_pullCount (A := IT.action) (t := T) (ω := h)
+      simp [this]
+    · simp [𝒜, rec]
+
+  lemma h𝒜' : task.IsStaticProportions rec 𝒜 fun _ ↦ 1 / (Fintype.card Unit : ℝ) := by
+    simpa using h𝒜
+
+  lemma maxRatio_eq_top : task.maxRatio task.staticDifficulty 𝒜 = ∞ := by
+    refine le_antisymm le_top (le_iSup₂_of_le (fun _ ↦ 1) (Set.mem_univ _) ?_)
+    rw [IdentTask.asymptoticRatio]
+    refine le_of_eq (Eq.symm ?_)
+    refine (tendsto_const_nhds.congr' ?_).limsup_eq
+    filter_upwards [eventually_ne_atTop 0] with T hT
+    rw [IdentTask.difficultyRatio, staticDifficulty_eq,
+      errorRate_eq_top (𝒜 := 𝒜) (fun T ↦ isFixedBudget_fixedBudget _ _ _) _ hT,
+      ENNReal.top_div_of_ne_top ENNReal.zero_ne_top]
+
+  /-- Theorem 1 as frozen is false. -/
+  example : False := by
+    have h := Degenne2023Existence.tendsto_errorRate_of_isStaticProportions hρ hρ_closure hν hreg
+      hsingle hrec h𝒜 (μ := fun _ ↦ 1) (Set.mem_univ _)
+    rw [alternatives_eq] at h
+    simp only [Set.mem_empty_iff_false, not_false_eq_true, iInf_neg, iInf_top,
+      ENNReal.inv_top] at h
+    exact ENNReal.top_ne_zero (tendsto_nhds_unique (tendsto_errorRate (𝒜 := 𝒜)
+      (fun T ↦ isFixedBudget_fixedBudget _ _ _) _) h)
+
+  /-- The displayed consequence of Theorem 1 as frozen is false. -/
+  example : False := by
+    have h := Degenne2023Existence.oracleDifficulty_staticClass hρ hρ_closure hν hreg hsingle
+      (μ := fun _ ↦ 1) (Set.mem_univ _)
+    rw [staticDifficulty_eq] at h
+    have h1 : task.oracleDifficulty task.staticClass (fun _ ↦ 1) = ∞ := by
+      refine le_antisymm le_top (le_iInf₂ fun 𝒜' h𝒜' ↦ ?_)
+      obtain ⟨_, _, _, h⟩ := h𝒜'
+      rw [(tendsto_errorRate (fun T ↦ (h.2.2 T).1) _).limsup_eq]
+    exact ENNReal.top_ne_zero (h1.symm.trans h)
+
+  /-- Theorem 5 as frozen is false. -/
+  example : False := by
+    have h := (Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions hρ
+      hρ_closure hν hreg hsingle hrec h𝒜).1
+    exact h.ne maxRatio_eq_top
+
+  /-- The uniform case of Theorem 5 as frozen is false. -/
+  example : False := by
+    have h := Degenne2023Existence.maxRatio_staticDifficulty_le_card hρ hρ_closure hν hreg
+      hsingle hrec h𝒜'
+    rw [maxRatio_eq_top] at h
+    simp at h
+
+  end Counter
+  ```
+
+  With measurable sets of correct answers, the statements are proved:
+  `Degenne2023Existence.tendsto_errorRate_of_isStaticProportions_of_measurableSet` (Theorem 1,
+  with the hypothesis `MeasurableSet (task.correct μ)` at the model `μ`),
+  `Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions_of_measurableSet` and
+  `Degenne2023Existence.maxRatio_staticDifficulty_le_card_of_measurableSet` (Theorem 5, with the
+  hypothesis `∀ μ ∈ task.M, MeasurableSet (task.correct μ)`). Each frozen statement with the
+  instance `[MeasurableSingletonClass ℐ]` added follows from them in one line, since the correct
+  answers of an admissible model are a singleton (`hsingle`). `oracleDifficulty_staticClass` also
+  needs the existence of static proportions families (`lem:exists_static`, `lem:exists_rec`),
+  not proved yet. Recommended decision: add `[MeasurableSingletonClass ℐ]` to the four statements;
+  the relations and errata entries stay as they are.
+- **Found:** round of 2026-11-09, on top of commit 5afa577.

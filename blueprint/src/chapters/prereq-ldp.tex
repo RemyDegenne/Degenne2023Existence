@@ -261,6 +261,21 @@ principle exists in Mathlib, Tau Ceti, LML or LMLExplore.
 \end{proof}
 
 \begin{lemma}
+  \label{lem:empMean_mem}
+  \lean{LMLExplore.Bandits.ae_empMean_mem}
+  \leanok
+  If the law $\nu_k$ of each arm is concentrated on a convex set $C_k$, then almost surely the
+  empirical mean after $T$ rounds of every arm pulled at least once lies in $C_k$, for every
+  algorithm.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  In the stack-of-rewards model, the samples of the stacks lie in the sets $C_k$ almost surely,
+  and the empirical mean of arm $k$ is the mean of the first $N_{T,k}$ samples of its stack.
+\end{proof}
+
+\begin{lemma}
   \label{lem:rate_ge_sq_of_subgaussian}
   \lean{ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction}
   \leanok

@@ -25,7 +25,28 @@
   `δ / 2` and the next `2 k + 1` entries to be within a fixed `L a` of the target, an event of
   probability bounded below by a constant times the probability of the first.
 
-## Theorem 1 (next)
+## Theorem 1 (done for measurable correct answers, round of 2026-11-09)
+
+- **Blocked headline.** The frozen statements of Theorems 1 and 5 take any σ-algebra on the answers
+  `ℐ`; for the trivial one, the probability of error is an outer measure equal to `1`, and the four
+  statements are false (`notes/statement-corrections.md`, Theorems 1 and 5, with a Lean
+  counterexample). They wait for `/lml:formalize-paper decide`; the recommended fix is
+  `[MeasurableSingletonClass ℐ]`.
+- **What is proved.** `tendsto_errorRate_of_isStaticProportions_of_measurableSet` (hypothesis
+  `MeasurableSet (task.correct μ)` at the model) and the two forms of Theorem 5 with
+  `∀ μ ∈ task.M, MeasurableSet (task.correct μ)`. The upper half of the proof is its own lemma,
+  `eventually_errorProb_le_of_isStaticProportions`, which Theorem 5 uses at the models without
+  alternatives (the error probability then vanishes for `T` large, so the ratio to
+  `H^{sp} = 0` is `0`, not `∞`).
+- **Measurability.** The recommendation rule `rec` is not assumed measurable; the output kernel
+  makes `rec ∘ μ̂_T` measurable on the histories, which is all `IsStaticProportions.errorProb_eq`
+  needs. The LDP bounds hold for every set, so no measurability of the error set in `ℝ^K` is
+  needed either: the lower bound goes through the open set of alternatives, the upper bound
+  through the closed set `cl(S) ∩ cl(Alt_i)`.
+- **Unused hypotheses.** The proof uses from Assumption 1 only the inclusion `𝒟 ⊆ S` and the
+  openness of the answer sets, and not the finiteness of `ℐ`.
+
+The plan that the proof followed:
 
 `tendsto_errorRate_of_isStaticProportions`, at a model `μ ∈ task.M` with answer `i`, rate
 `J x = ∑ a, w a dbar(x a, μ a)`, `L = ⨅ μ' ∈ task.alternatives μ, task.cost w μ' μ`:
@@ -47,5 +68,6 @@
 
 `oracleDifficulty_staticClass` then needs `lem:exists_static` (a static proportions family for
 every `w ∈ Δ_K^0`, from LMLExplore's cumulative tracking), `lem:exists_rec` and
-`lem:iSup_open_simplex`; its lower bound uses only step 1, for every rule correct on `𝒟`.
-Theorem 5 follows from Theorem 1 alone.
+`lem:iSup_open_simplex`; its lower bound uses only step 1, for every rule correct on `𝒟`. These
+remain, and Theorems 6, 8 and 10 need the upper half (`lem:oracleDifficulty_staticClass_le`).
+Theorem 5 followed from Theorem 1 alone.

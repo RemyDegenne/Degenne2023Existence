@@ -57,6 +57,10 @@ In the namespace `LMLExplore.Identification`:
 * `IdentTask.inv_difficultyRatio`: `R_{H,T}(𝒜, θ)⁻¹ = H(θ) log (1 / p_{θ,T}(𝒜)) / T`.
 * `IdentTask.asymptoticRatio_eq_top`: a family whose probability of error at `θ` does not tend
   to `0` has an infinite asymptotic difficulty ratio at `θ`, for `H(θ) < ∞`.
+* `IdentTask.tendsto_errorRate_of_tendsto_log_div`: `(1 / T) log p_{θ,T}(𝒜) → -c` gives
+  `h_{θ,T}(𝒜) → c⁻¹`.
+* `IdentTask.IsStaticProportions.errorProb_eq`: the probability of error of a static proportions
+  family is the probability that the recommendation of the empirical means is not correct.
 
 ## References
 
@@ -97,6 +101,14 @@ lemma alternatives_restrict (S : Set Θ) (θ : Θ) :
   ext θ'
   simp only [alternatives, M_restrict, correct_restrict, Set.mem_inter_iff, Set.mem_ofPred_eq]
   tauto
+
+omit [MeasurableSpace ℐ] in
+/-- For a model `θ` with the single correct answer `i`, the alternatives to `θ` are the
+alternatives to `i`. -/
+lemma alternatives_eq_alt {θ : Θ} {i : ℐ} (hi : task.correct θ = {i}) :
+    task.alternatives θ = task.alt i := by
+  ext θ'
+  simp [alternatives, mem_alt_iff, hi]
 
 /-- The probability of error `p_{θ,T}(𝒜)` of the family `𝒜` with budget `T` on the model `θ`: the
 probability that the output of `𝒜 T` in the bandit of `θ` is not a correct answer of `θ`. -/
@@ -180,6 +192,41 @@ lemma asymptoticRatio_eq_top {H : Θ → ℝ≥0∞} {𝒜 : ℕ → IdentAlg Un
       (Or.inl hH), ENNReal.le_div_iff_mul_le (Or.inr hT0) (Or.inl hL)]
   exact hrT.le
 
+omit [MeasurableSpace ℐ] in
+/-- Dividing by a positive integer commutes with the positive part `EReal → ℝ≥0∞`. -/
+private lemma toENNReal_div_natCast (x : EReal) {n : ℕ} (hn : n ≠ 0) :
+    (x / n).toENNReal = x.toENNReal / n := by
+  have hn' : (0 : EReal) < n := by exact_mod_cast Nat.pos_of_ne_zero hn
+  induction x using EReal.rec with
+  | bot => simp [EReal.bot_div_of_pos_ne_top hn' (EReal.natCast_ne_top n)]
+  | top =>
+    rw [EReal.top_div_of_pos_ne_top hn' (EReal.natCast_ne_top n), EReal.toENNReal_top,
+      ENNReal.top_div_of_ne_top (ENNReal.natCast_ne_top n)]
+  | coe x =>
+    have hn'' : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn
+    rw [← EReal.coe_natCast, ← EReal.coe_div, EReal.toENNReal_of_ne_top (EReal.coe_ne_top _),
+      EReal.toENNReal_of_ne_top (EReal.coe_ne_top _), EReal.toReal_coe, EReal.toReal_coe,
+      ENNReal.ofReal_div_of_pos hn'', ENNReal.ofReal_natCast]
+
+/-- **The rate from the exponent of the probability of error.** If
+`(1 / T) log p_{θ,T}(𝒜) → -c` for some `c ∈ [0, ∞]`, then `h_{θ,T}(𝒜) → c⁻¹`: for `T > 0`,
+`h_{θ,T}(𝒜)` is the inverse of the positive part of `-(1 / T) log p_{θ,T}(𝒜)`, and inversion is
+continuous on `[0, ∞]`. -/
+lemma tendsto_errorRate_of_tendsto_log_div {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ} {c : ℝ≥0∞}
+    (h : Tendsto (fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop
+      (𝓝 (-(c : EReal)))) :
+    Tendsto (task.errorRate 𝒜 θ) atTop (𝓝 c⁻¹) := by
+  have h1 : Tendsto (fun T : ℕ ↦ (-(ENNReal.log (task.errorProb 𝒜 θ T) / T)).toENNReal) atTop
+      (𝓝 c) := by
+    have := ((EReal.continuous_toENNReal.comp continuous_neg).tendsto _).comp h
+    simpa [Function.comp_def, EReal.toENNReal_coe] using this
+  refine (tendsto_inv_iff.2 h1).congr' ?_
+  filter_upwards [eventually_ne_atTop 0] with T hT
+  have hneg (x : EReal) : -(x / T) = -x / T := by
+    rw [div_eq_mul_inv, div_eq_mul_inv, EReal.neg_mul]
+  rw [errorRate, hneg, toENNReal_div_natCast _ hT, ENNReal.inv_div (Or.inl
+    (ENNReal.natCast_ne_top T)) (Or.inl (by exact_mod_cast hT))]
+
 section StaticProportions
 
 variable [Fintype α]
@@ -209,6 +256,48 @@ positive proportions and some recommendation rule that is correct on the admissi
 def staticClass : Set (ℕ → IdentAlg Unit α ℝ ℐ) :=
   {𝒜 | ∃ rec : (α → ℝ) → ℐ, (∀ μ ∈ task.M, rec μ ∈ task.correct μ) ∧
     ∃ w, task.IsStaticProportions rec 𝒜 w}
+
+variable {task}
+
+/-- The probability of error of a static proportions family at `θ`, when the set of correct
+answers of `θ` is measurable: the probability that the recommendation `rec μ̂_T` of the vector of
+the empirical means after `T` rounds is not a correct answer of `θ`. The recommendation rule need
+not be measurable: the output kernel makes its composition with the empirical means measurable.
+
+If the set of correct answers is not measurable, the probability of error is an outer measure,
+which can be `1` for every algorithm: for the trivial σ-algebra on two answers. -/
+lemma IsStaticProportions.errorProb_eq {rec : (α → ℝ) → ℐ} {𝒜 : ℕ → IdentAlg Unit α ℝ ℐ}
+    {w : α → ℝ} (h𝒜 : task.IsStaticProportions rec 𝒜 w) {θ : α → ℝ}
+    (hθ : MeasurableSet (task.correct θ)) (T : ℕ) :
+    task.errorProb 𝒜 θ T = trajMeasure (𝒜 T).alg (Environment.bandit (task.ν θ))
+      {h | rec (fun a ↦ empMean IT.action IT.feedback a T h) ∉ task.correct θ} := by
+  set E := {h : ℕ → Round Unit α ℝ |
+    rec (fun a ↦ empMean IT.action IT.feedback a T h) ∉ task.correct θ}
+  have hf : Measurable fun h ↦ outputAt (𝒜 T) T (IT.hist T h) (task.correct θ)ᶜ :=
+    (ProbabilityTheory.Kernel.measurable_coe _ hθ.compl).comp (IT.measurable_hist T)
+  -- The output rule gives the error probability `1` on `E` and `0` outside.
+  have heq : (fun h ↦ outputAt (𝒜 T) T (IT.hist T h) (task.correct θ)ᶜ) = E.indicator 1 := by
+    ext h
+    have hmean : empMean' T (IT.hist T h) = fun a ↦ empMean IT.action IT.feedback a T h := by
+      ext a
+      rw [empMean_eq_empMean' (O := IT.obs), IT.history_obs_action_feedback]
+    rw [(h𝒜.2.2 T).2.2, Measure.dirac_apply' _ hθ.compl, hmean]
+    by_cases hE : h ∈ E
+    · rw [Set.indicator_of_mem hE, Set.indicator_of_mem (show _ ∈ (task.correct θ)ᶜ from hE),
+        Pi.one_apply, Pi.one_apply]
+    · rw [Set.indicator_of_notMem hE,
+        Set.indicator_of_notMem (show _ ∉ (task.correct θ)ᶜ from hE)]
+  have hE : MeasurableSet E := by
+    have : E = (fun h ↦ outputAt (𝒜 T) T (IT.hist T h) (task.correct θ)ᶜ) ⁻¹' {1} := by
+      rw [heq]
+      ext h
+      by_cases hh : h ∈ E <;> simp [hh]
+    rw [this]
+    exact hf (measurableSet_singleton 1)
+  rw [errorProb, (h𝒜.2.2 T).1.outputMeasure_eq, Measure.bind_apply hθ.compl
+    (ProbabilityTheory.Kernel.aemeasurable _), lintegral_map
+    (ProbabilityTheory.Kernel.measurable_coe _ hθ.compl) (IT.measurable_hist T), heq,
+    lintegral_indicator_one hE]
 
 end StaticProportions
 

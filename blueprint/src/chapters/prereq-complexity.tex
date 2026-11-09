@@ -20,14 +20,53 @@ Library-shaped material on fixed-budget algorithm families and static proportion
 
 \begin{lemma}
   \label{lem:tendsto_errorRate_iff}
+  \lean{LMLExplore.Identification.IdentTask.tendsto_errorRate_of_tendsto_log_div}
+  \leanok
   \uses{def:error_rate}
-  For $c \in [0, \infty]$, $h_{\theta, T}(\cA) \to c^{-1}$ if and only if
-  $-\frac1T \log p_{\theta, T}(\cA) \to c$.
+  For $c \in [0, \infty]$, if $\frac1T \log p_{\theta, T}(\cA) \to -c$, then
+  $h_{\theta, T}(\cA) \to c^{-1}$.
+\end{lemma}
+
+The converse holds too, inversion being a homeomorphism of $[0, \infty]$; the proofs use only this
+direction.
+
+\begin{proof}
+  \leanok
+  $h_{\theta, T} = ((-\frac1T \log p_{\theta, T})^{+})^{-1}$ for $T > 0$, and the positive part
+  $[-\infty, \infty] \to [0, \infty]$ and inversion are continuous.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:alternatives_eq_alt}
+  \lean{LMLExplore.Identification.IdentTask.alternatives_eq_alt}
+  \leanok
+  \uses{def:alternatives}
+  If the single correct answer of $\theta$ is $i$, then $\Alt(\theta) = \Alt_i$.
 \end{lemma}
 
 \begin{proof}
-  $h_{\theta, T} = (-\frac1T \log p_{\theta, T})^{-1}$ for $T > 0$, and inversion is a
-  homeomorphism of $[0, \infty]$.
+  \leanok
+  The definitions.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:errorProb_static}
+  \lean{LMLExplore.Identification.IdentTask.IsStaticProportions.errorProb_eq}
+  \leanok
+  \uses{def:error_prob, def:static_proportions}
+  For a static proportions family with recommendation rule $\mathrm{rec}$ and a model $\theta$ whose
+  set of correct answers is measurable, $p_{\theta, T}(\cA) = \Prob_{\theta, \cA}(\mathrm{rec}(\hat
+  \mu_T) \notin i^{\star}(\theta))$.
+\end{lemma}
+
+The recommendation rule need not be measurable: the output kernel makes its composition with the
+empirical means measurable. Without measurability of the correct answers, the probability of error
+is an outer measure, which is $1$ for every algorithm under the trivial $\sigma$-algebra on two answers.
+
+\begin{proof}
+  \leanok
+  The law of the output of a fixed-budget algorithm is its output kernel composed with the law of
+  the history of $T$ rounds, and the output kernel is the Dirac mass at $\mathrm{rec}(\hat\mu_T)$.
 \end{proof}
 
 \begin{lemma}

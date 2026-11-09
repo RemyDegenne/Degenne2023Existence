@@ -40,7 +40,11 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   observation, action and output spaces, and `errorRate` renamed `errorComplexity`, as
   `T / log (1 / p)`. The port of R9 then adds the rest: `oracleDifficulty`,
   `AdmitsComplexity`, `lem:tendsto_errorRate_iff`, `lem:oracleDifficulty_mono` and
-  `lem:asymptoticRatio_eq_top`.
+  `lem:asymptoticRatio_eq_top`. Proved so far: `asymptoticRatio_eq_top`,
+  `tendsto_errorRate_of_tendsto_log_div` (`lem:tendsto_errorRate_iff`, the direction the proofs
+  use), `alternatives_eq_alt` and, for R11, `IsStaticProportions.errorProb_eq` (the probability of
+  error of a static proportions family as a probability of the trajectory, for a measurable set of
+  correct answers; the recommendation rule need not be measurable).
 - R10: Identification 8.3 asks for Cramér's theorem for every law on `ℝ` whose cumulant generating
   function is finite on a neighbourhood of `0` [DZ98, Theorem 2.2.3], the upper bound from
   LMLExplore's Cramér–Chernoff bounds and the lower bound by exponential tilting at the means of the
@@ -86,7 +90,13 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   all the numbers of samples of the window at once
   (`exists_eventually_le_streamMeasure_forall_mean_mem`). [D23, Theorem 12] (`D2023/Theorem12.lean`)
   is its exponential-family case. The error exponent of static proportions ([D23, Theorem 1],
-  `D2023/Theorem1.lean`) remains.
+  `D2023/Theorem1.lean`) is proved for a measurable set of correct answers
+  (`tendsto_errorRate_of_isStaticProportions_of_measurableSet`), over the empirical means in the
+  convex supports of the arms (`LMLExplore.Bandits.ae_empMean_mem`, `StaticAllocation.lean`). Its
+  frozen headline statements are blocked: they miss `[MeasurableSingletonClass ℐ]`
+  (`notes/statement-corrections.md`, Theorems 1 and 5). The proof uses only the openness of the
+  answer sets from Assumption 1, which the port's statement for any mean functional can take as its
+  hypothesis.
 - R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5, the definitions
   of R9 and the bound `kl(a, b) ≥ a log (1/b) - log 2`, absent from LMLExplore (`lem:klBer_ge`, in
   `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`), with the change of measure
@@ -122,6 +132,9 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `D2023/Lemma19.lean` and `Lemma20.lean`. It moves the module
   `LMLExplore.Identification.Task.BestArm` to `LMLExplore.Identification.Task.BestArm.Basic`, and
   removes or renames no public declaration.
+- R15: Theorem 5 is proved for measurable sets of correct answers (the `_of_measurableSet` lemmas
+  of `D2023/Theorem5.lean`); its frozen statements are blocked with those of Theorem 1. Theorem 6
+  remains.
 - R15–R17: Identification 8.4, the results of [D23] on the existence of a complexity
   (Theorems 5–8 and 10, Lemmas 15–18). The proofs of Theorems 6 and 7 follow the corrections E3–E5
   of `notes/paper-errata.md`, and the one of Theorem 8 the correction E6.

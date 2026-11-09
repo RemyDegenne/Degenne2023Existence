@@ -39,6 +39,35 @@ Theorem~\ref{thm:oracle_difficulty_class}.
   Theorem~\ref{thm:uniform_upper_bound} with $\omega_j = 1/K$.
 \end{proof}
 
+The Lean statements of Theorem~\ref{thm:uniform_upper_bound} and
+Corollary~\ref{thm:uniform_upper_bound_uniform}, as frozen at the end of phase 1, are false for a
+$\sigma$-algebra on the answers that does not make the sets of correct answers measurable, as those of
+Theorem~\ref{thm:oracle_difficulty_sp} (\texttt{notes/statement-corrections.md}, Theorems 1 and 5).
+They are blocked; Lemma~\ref{lem:uniform_upper_bound_measurable} proves them for measurable sets
+of correct answers.
+
+\begin{lemma}[{\cite[Theorem 5]{D23}}]
+  \label{lem:uniform_upper_bound_measurable}
+  \lean{Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions_of_measurableSet,
+    Degenne2023Existence.maxRatio_staticDifficulty_le_card_of_measurableSet}
+  \leanok
+  \uses{lem:oracle_difficulty_sp_measurable, lem:error_event, def:static_difficulty}
+  Theorem~\ref{thm:uniform_upper_bound} and Corollary~\ref{thm:uniform_upper_bound_uniform} hold
+  when the sets of correct answers of the models of $\cD$ are measurable.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:oracle_difficulty_sp_measurable, lem:error_event}
+  At a model $\mu$ with alternatives, a fixed alternative bounds the costs of all allocations, so
+  $V = \max_{\omega' \in \Simplex} \inf_{\Alt(\mu)} \sum_k \omega'_k \KL$ is finite and
+  $R_{\Hsp, T}(\cA^{sp}_{\omega}, \mu) = h_{\mu, T}(\cA^{sp}_{\omega}) V$ tends to $V / L_{\omega}$
+  (Lemma~\ref{lem:oracle_difficulty_sp_measurable}), with $L_{\omega} \ge (\min_j \omega_j) V$ as in
+  the proof of Theorem~\ref{thm:uniform_upper_bound}. At a model without alternatives, the
+  probability of error vanishes for $T$ large (Lemma~\ref{lem:error_event}, the closure of the empty
+  set of alternatives being empty), and so does the ratio.
+\end{proof}
+
 \begin{theorem}[{\cite[Theorem 6]{D23}}]
   \label{thm:positivity_LB}
   \lean{Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card}

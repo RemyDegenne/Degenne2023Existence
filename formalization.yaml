@@ -103,6 +103,16 @@ status:
     converse exponential bounds of a principle, exponential tightness and the goodness of weighted
     sums of rate functions (ForLMLExplore/Probability/LargeDeviations/Basic.lean). Theorem 12 is its
     exponential-family case.
+    Phase 2, sixth round of 2026-11-09: the four headline statements of Theorems 1 and 5 were
+    blocked: as frozen they take any sigma-algebra on the answers, and for the trivial one the
+    probability of error, an outer measure, is 1 for every algorithm (notes/statement-corrections.md,
+    Theorems 1 and 5, with a Lean counterexample). With measurable sets of correct answers, the rate
+    of static proportions (Theorem 1, tendsto_errorRate_of_isStaticProportions_of_measurableSet) and
+    the bound (min_j w_j)^-1 on their maximal difficulty ratio (Theorem 5, both forms, the
+    _of_measurableSet lemmas of D2023/Theorem5.lean) are proved, over the probability of error of a
+    static proportions family as a probability of the trajectory, the rate from the exponent of the
+    probability of error (ForLMLExplore/Identification/FixedBudgetComplexity.lean), and the empirical
+    means in the convex supports of the arms (ForLMLExplore/Bandits/StaticAllocation.lean).
   sorry_count: 7
   sorry_in_definitions: 0
 
@@ -143,14 +153,16 @@ alignment:
     - source: "thm:oracle_difficulty_sp — Theorem 1"
       lean: "Degenne2023Existence.tendsto_errorRate_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem1"
-      status: "stated"
+      status: "blocked"
+      blocked: "statement-corrections: Theorems 1 and 5"
       relation: "narrowMatch"
       erratum: "E1"
       note: "Assumes a recommendation rule that answers i off the closure of the alternatives to i (E1) and samples in the closure of the means (E2)."
     - source: "thm:oracle_difficulty_class — Theorem 1 (displayed consequence)"
       lean: "Degenne2023Existence.oracleDifficulty_staticClass"
       module: "Degenne2023Existence.D2023.Theorem1"
-      status: "stated"
+      status: "blocked"
+      blocked: "statement-corrections: Theorems 1 and 5"
       relation: "narrowMatch"
       erratum: "E1"
       note: "Assumes samples in the closure of the means (E2). The class of static proportions algorithms takes every recommendation rule correct on the models (E1); the maximum is over the closed simplex."
@@ -180,14 +192,16 @@ alignment:
     - source: "thm:uniform_upper_bound — Theorem 5"
       lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem5"
-      status: "stated"
+      status: "blocked"
+      blocked: "statement-corrections: Theorems 1 and 5"
       relation: "narrowMatch"
       erratum: "E1"
       note: "H_{C^sp} is the static-proportions difficulty, equal to it by Theorem 1."
     - source: "thm:uniform_upper_bound_uniform — Theorem 5 (uniform allocation)"
       lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_card"
       module: "Degenne2023Existence.D2023.Theorem5"
-      status: "stated"
+      status: "blocked"
+      blocked: "statement-corrections: Theorems 1 and 5"
       relation: "narrowMatch"
       erratum: "E1"
     - source: "thm:positivity_LB — Theorem 6"

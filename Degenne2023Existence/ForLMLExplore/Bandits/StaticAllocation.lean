@@ -47,6 +47,8 @@ first `N_{T,a}` entries of its row.
   empirical means satisfy a large deviation principle with a good rate function.
 * `LMLExplore.Bandits.isLDP_empMean_rateFunction_of_abs_pullCount_sub_le`: [D23, Theorem 12]
   for laws whose cumulant generating function is finite near `0`, with the Cramér rate functions.
+* `LMLExplore.Bandits.ae_empMean_mem`: the empirical means of the arms that were pulled lie in
+  convex sets on which the laws of the arms are concentrated.
 
 ## References
 
@@ -642,6 +644,46 @@ lemma ae_arrayMeasure_pullCount [Finite α] [Nonempty α] (alg : Algorithm Unit 
     (ArrayModel.isAlgEnvSeq_arrayMeasure alg ν)
   exact (h_id.comp (u := fun (f : ℕ → α → ℕ × ℝ) a ↦ (f T a).1) (by fun_prop)).ae_snd
     MeasurableSet.of_discrete h
+
+omit [Fintype α] in
+/-- **The empirical means stay in the convex supports of the arms.** If the law of each arm `ν a`
+is concentrated on a convex set `C a`, then almost surely in a run of `alg` against the bandit
+`ν`, the empirical mean after `T` rounds of every arm pulled at least once lies in `C a`: in the
+array model, it is a mean of entries of the row of `a`, which lie in `C a`. -/
+lemma ae_empMean_mem [Finite α] [Nonempty α] {C : α → Set ℝ} (hC : ∀ a, Convex ℝ (C a))
+    (hCm : ∀ a, MeasurableSet (C a)) (hν : ∀ a, ∀ᵐ x ∂(ν a), x ∈ C a)
+    (alg : Algorithm Unit α ℝ) (T : ℕ) :
+    ∀ᵐ h ∂(trajMeasure alg (Environment.bandit ν)),
+      ∀ a, pullCount IT.action a T h ≠ 0 → empMean IT.action IT.feedback a T h ∈ C a := by
+  have h_id := (IT.isAlgEnvSeq_trajMeasure alg
+    (Environment.bandit ν)).identDistrib_pullCount_sumRewards
+    (ArrayModel.isAlgEnvSeq_arrayMeasure alg ν)
+  have h_entries : ∀ᵐ y ∂(streamMeasure ν), ∀ i a, y i a ∈ C a := by
+    refine ae_all_iff.2 fun i ↦ ae_all_iff.2 fun a ↦ ?_
+    have hmap : (streamMeasure ν).map (fun y ↦ y i a) = ν a := by
+      rw [show (fun y : ℕ → α → ℝ ↦ y i a) = (fun z : ℕ → ℝ ↦ z i) ∘ (fun y i ↦ y i a) from rfl,
+        ← Measure.map_map (by fun_prop) (by fun_prop), streamMeasure_map_row,
+        Measure.infinitePi_map_eval]
+    exact ae_of_ae_map ((measurable_pi_apply a).comp (measurable_pi_apply i)).aemeasurable
+      (hmap ▸ hν a)
+  have h_arr : ∀ᵐ ω ∂(ArrayModel.arrayMeasure ν), ∀ a,
+      pullCount (ArrayModel.action alg) a T ω ≠ 0 →
+        sumRewards (ArrayModel.action alg) (ArrayModel.reward alg) a T ω /
+          pullCount (ArrayModel.action alg) a T ω ∈ C a := by
+    filter_upwards [Measure.quasiMeasurePreserving_snd.ae h_entries] with ω hω a ha
+    rw [ArrayModel.sumRewards_eq]
+    set N := pullCount (ArrayModel.action alg) a T ω
+    have hN : (N : ℝ) ≠ 0 := by exact_mod_cast ha
+    have h := (hC a).sum_mem (t := range N) (w := fun _ ↦ (N : ℝ)⁻¹) (z := fun i ↦ ω.2 i a)
+      (fun _ _ ↦ by positivity) (by simp [hN]) fun i _ ↦ hω i a
+    simpa [← Finset.mul_sum, div_eq_inv_mul] using h
+  have hmeas : MeasurableSet {f : α → ℕ × ℝ | ∀ a, (f a).1 ≠ 0 → (f a).2 / (f a).1 ∈ C a} := by
+    simp_rw [Set.ofPred_forall, imp_iff_not_or, Set.ofPred_or]
+    refine MeasurableSet.iInter fun a ↦ MeasurableSet.union ?_ ?_
+    · exact (measurableSet_singleton 0).compl.preimage (by fun_prop) |>.compl
+    · exact (hCm a).preimage (by fun_prop)
+  exact (h_id.comp (u := fun (f : ℕ → α → ℕ × ℝ) a ↦ f T a) (by fun_prop)).symm.ae_snd hmeas
+    h_arr
 
 /-- **Large deviations of the empirical means under static allocations** [D23, Theorem 12], for
 any laws of the arms. Let the laws of the empirical means of `m` independent samples of `ν a`
