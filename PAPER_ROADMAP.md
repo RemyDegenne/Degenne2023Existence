@@ -21,7 +21,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | PR #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | todo | `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
-| R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | proved | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
+| R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | PR #259 | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
 | R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean` |
 
 ## Notes
@@ -35,9 +35,10 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `lem:oracleDifficulty_mono`, `lem:asymptoticRatio_eq_top`). PR #258 (item R13) already ports
   `IsFixedBudgetFamily`, `alternatives`, `errorProb`, `errorRate`, `difficultyRatio`,
   `asymptoticRatio`, `maxRatio`, `IsConsistent` and `inv_difficultyRatio` to
-  `LMLExplore/Identification/DifficultyRatio.lean` and `FixedBudget.lean`, with bodies not
-  exposed, `IsFixedBudgetFamily` for any observation, action and output spaces, and
-  `errorRate` as `T / log (1 / p)`. The port of R9 then adds the rest: `oracleDifficulty`,
+  `LMLExplore/Identification/DifficultyRatio.lean`, `FixedBudget.lean` and `Task/Basic.lean`
+  (`alternatives`, next to `alt`), with bodies not exposed, `IsFixedBudgetFamily` for any
+  observation, action and output spaces, and `errorRate` renamed `errorComplexity`, as
+  `T / log (1 / p)`. The port of R9 then adds the rest: `oracleDifficulty`,
   `AdmitsComplexity`, `lem:tendsto_errorRate_iff`, `lem:oracleDifficulty_mono` and
   `lem:asymptoticRatio_eq_top`.
 - R10: Identification 8.3 asks for Cramér's theorem for every law on `ℝ` whose cumulant generating
@@ -82,6 +83,12 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   LMLExplore's common-variance `Identification/Task/HalfSpace.lean`, with the reversed cost; the
   per-arm Gaussian transportation cost (`ForLMLExplore/Identification/Task/ExpFamily.lean`)
   generalizes `IdentTask.cost_gaussianBandit` and belongs next to it. The Lean proof of Theorem 7
-  does not use Lemmas 17 and 18.
+  does not use Lemmas 17 and 18. PR #259 ports the part that does not need R9, R11 or Theorem 3
+  (R13), from commit 76f5b36: the per-arm cost `IdentTask.cost_gaussianReal` and its symmetry,
+  and LMLExplore's half-space file generalized in place to per-arm variances, with the
+  `_gaussianBandit` statements renamed `altCost_halfSpaceTask_gaussianReal`,
+  `answerValue_halfSpaceTask_gaussianReal`, `optAlloc_halfSpaceTask_gaussianReal` and
+  `charTime_halfSpaceTask_gaussianReal`. What remains of R16 after it: Lemma 15 stated for the
+  static-proportions difficulty, Lemma 16 and Theorem 7.
 
 ## Proposed targets
