@@ -5,7 +5,8 @@ Authors: Remy Degenne
 -/
 module
 
-public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.D2023.Theorem3
+public import Degenne2023Existence.ForLMLExplore.Analysis.Convex.Simplex
 
 /-!
 # Corollary 4 of [D23]: the lower bound from alternatives along the coordinates
@@ -13,6 +14,10 @@ public import Degenne2023Existence.D2023.Setting
 If the alternatives `λ⁽ʲ⁾` to `μ` each differ from `μ` only along the arm `j`, then every algorithm
 family whose probability of error at `μ` tends to `0` satisfies
 `sup_j R_{H,∞}(𝒜, λ⁽ʲ⁾) ≥ ∑_j 1 / (H(λ⁽ʲ⁾) KL(ν_j(μ), ν_j(λ⁽ʲ⁾)))`.
+
+The proof is Theorem 3 for the set of the `λ⁽ʲ⁾`, at which the transportation cost of `w` is
+`w j KL(ν_j(μ), ν_j(λ⁽ʲ⁾))`, and the bound
+`max_{w ∈ Δ_K} min_j c_j w_j ≤ (∑_j c_j⁻¹)⁻¹`.
 
 ## Main statements
 
@@ -26,7 +31,7 @@ family whose probability of error at `μ` tends to `0` satisfies
 
 @[expose] public section
 
-open MeasureTheory Filter Topology InformationTheory Learning LMLExplore.Identification
+open MeasureTheory Filter Topology InformationTheory Learning LMLExplore LMLExplore.Identification
 
 open scoped ENNReal
 
@@ -53,6 +58,26 @@ theorem sum_inv_le_iSup_asymptoticRatio (task : IdentTask α Θ ℐ 𝓨) (H : �
     (hH : ∀ j ∈ s, H (μ' j) ≠ ∞) :
     ∑ j ∈ s, (H (μ' j) * klDiv (task.ν μ j) (task.ν (μ' j) j))⁻¹ ≤
       ⨆ j ∈ s, task.asymptoticRatio H 𝒜 (μ' j) := by
-  sorry
+  have := Fintype.ofFinite α
+  classical
+  have h := inv_iSup_asymptoticRatio_le task H h𝒜 hμ (D := μ' '' s)
+    (by rintro _ ⟨j, hj, rfl⟩; exact hdisj j hj) (by rintro _ ⟨j, hj, rfl⟩; exact hH₀ j hj)
+    (by rintro _ ⟨j, hj, rfl⟩; exact hH j hj)
+  rw [iSup_image] at h
+  simp only [Finset.mem_coe] at h
+  -- The cost of `w` at `λ j` is `w j KL(ν_j(μ), ν_j(λ j))`.
+  have hcost (w : α → ℝ) (j : α) (hj : j ∈ s) : task.cost w μ (μ' j) =
+      ENNReal.ofReal (w j) * klDiv (task.ν μ j) (task.ν (μ' j) j) := by
+    rw [IdentTask.cost_def, Finset.sum_eq_single j
+      (fun a _ ha ↦ by rw [hν j hj a ha, klDiv_self, mul_zero]) (by simp)]
+  have h2 : ⨆ w ∈ simplex α, ⨅ μ'' ∈ μ' '' s, H μ'' * task.cost w μ μ'' ≤
+      ⨆ w ∈ simplex α, ⨅ j ∈ s,
+        (H (μ' j) * klDiv (task.ν μ j) (task.ν (μ' j) j)) * ENNReal.ofReal (w j) := by
+    refine iSup₂_mono fun w _ ↦ ?_
+    rw [iInf_image]
+    refine iInf₂_mono fun j hj ↦ le_of_eq ?_
+    rw [hcost w j hj]
+    ring
+  exact ENNReal.inv_le_inv.1 (h.trans (h2.trans (iSup_iInf_mul_ofReal_le s _)))
 
 end Degenne2023Existence

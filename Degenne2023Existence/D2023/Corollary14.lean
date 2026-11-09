@@ -5,7 +5,7 @@ Authors: Remy Degenne
 -/
 module
 
-public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.D2023.Theorem13
 
 /-!
 # Corollary 14 of [D23]: the liminf of the maximal difficulty ratio over all models
@@ -13,6 +13,9 @@ public import Degenne2023Existence.D2023.Setting
 With `Alt_x(μ) = Alt(μ) ∩ {λ | H(λ) ≤ x}`, every consistent algorithm family satisfies
 `(liminf_T sup_{λ ∈ 𝒟} R_{H,T}(𝒜, λ))⁻¹` is at most
 `liminf_{x → ∞} inf_{μ ∈ 𝒟} max_{w ∈ Δ_K} inf_{λ ∈ Alt_x(μ)} H(λ) ∑ a, w a KL(ν_a(μ), ν_a(λ))`.
+
+The proof is Theorem 13 with `D(μ) = Alt_x(μ)`, on which `H` is bounded by `x`, for every
+`μ ∈ 𝒟` and every `x`.
 
 ## Main statements
 
@@ -50,6 +53,13 @@ theorem inv_liminf_iSup_difficultyRatio_le_liminf (task : IdentTask α Θ ℐ �
       liminf (fun x : ℝ ↦ ⨅ μ ∈ task.M, ⨆ w ∈ simplex α,
         ⨅ μ' ∈ {μ' | μ' ∈ task.alternatives μ ∧ H μ' ≤ ENNReal.ofReal x},
           H μ' * task.cost w μ μ') atTop := by
-  sorry
+  refine le_liminf_of_le (by isBoundedDefault) (Eventually.of_forall fun x ↦ ?_)
+  refine le_iInf₂ fun μ hμ ↦ le_trans ?_ (inv_liminf_iSup_difficultyRatio_le task H h𝒜
+    (hcons μ hμ) (D := {μ' | μ' ∈ task.alternatives μ ∧ H μ' ≤ ENNReal.ofReal x})
+    (fun μ' h ↦ h.1.2) (fun μ' h ↦ hH₀ μ' h.1.1)
+    (ne_top_of_le_ne_top ENNReal.ofReal_ne_top (iSup₂_le fun μ' h ↦ h.2)))
+  -- `sup_{λ ∈ Alt_x(μ)} R_{H,T} ≤ sup_{λ ∈ 𝒟} R_{H,T}`.
+  rw [ENNReal.inv_le_inv]
+  exact liminf_le_liminf (Eventually.of_forall fun T ↦ iSup₂_mono' fun μ' h ↦ ⟨μ', h.1.1, le_rfl⟩)
 
 end Degenne2023Existence

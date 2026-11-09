@@ -18,7 +18,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | todo | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `D2023/Lemma11.lean` |
 | R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
 | R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
-| R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | todo | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean` |
+| R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | proved | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | todo | `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
 | R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | todo | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean` |
@@ -50,9 +50,12 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   Assumption 1 (`D2023.IsRegular`, which the port should state for tasks on any mean functional).
   The recommendation rule needs the condition of erratum E1, and the families the closure
   hypothesis of E2.
-- R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5 and the bound
-  `kl(a, b) ≥ a log (1/b) - log 2`, absent from LMLExplore (`lem:klBer_ge`, for
-  `InformationTheory/KullbackLeibler/Bernoulli.lean`).
+- R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5, the definitions
+  of R9 and the bound `kl(a, b) ≥ a log (1/b) - log 2`, absent from LMLExplore (`lem:klBer_ge`, in
+  `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`), with the change of measure
+  for fixed-budget algorithms (`ForLMLExplore/Identification/ErrorLowerBound.lean`) and the
+  maximin bound `lem:iSup_iInf_mul` (`ForLMLExplore/Analysis/Convex/Simplex.lean`). The proof of
+  Theorem 3 also covers alternatives at infinite divergence from `μ`.
 - R14: Identification 8.3, third bullet: for two arms, the best static exponent is the Chernoff
   information `d(z, μ₁) = d(z, μ₂)` [D23, Lemmas 9, 19, 20]; the matching lower bound for
   consistent algorithms [KCG16, Theorems 12–13] is not part of this paper.

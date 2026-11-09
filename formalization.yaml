@@ -65,7 +65,12 @@ status:
     (Identification/FixedBudgetComplexity.lean, Probability/LargeDeviations/Basic.lean) and
     Assumption 1 (D2023/Setting.lean). Lemmas 17 and 18 are blueprint lemmas of the proof of
     Theorem 7 (misprinted, E4). The outline is notes/blueprint-outline.md.
-  sorry_count: 24
+    Phase 2, round of 2026-11-09: the lower bounds of Section 3 and Appendix B (Theorems 2, 3, 13,
+    Corollaries 4, 14; blueprint chapter lower) are proved, over the change of measure for
+    fixed-budget algorithms (ForLMLExplore/Identification/ErrorLowerBound.lean), the bound
+    kl(p, q) >= p log(1/q) - log 2 (ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean)
+    and the maximin bound on the simplex (ForLMLExplore/Analysis/Convex/Simplex.lean).
+  sorry_count: 18
   sorry_in_definitions: 0
 
 automation:
@@ -119,24 +124,24 @@ alignment:
     - source: "thm:R_LB — Theorem 2"
       lean: "Degenne2023Existence.inv_difficultyRatio_mul_le"
       module: "Degenne2023Existence.D2023.Theorem2"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
       note: "Any task; disjoint correct answers instead of mu, lambda in D with different answers; log 2 / sqrt T moved to the right, in [0, ∞]."
     - source: "thm:asm_R_LB_limsup — Theorem 3 (first inequality)"
       lean: "Degenne2023Existence.inv_iSup_asymptoticRatio_le"
       module: "Degenne2023Existence.D2023.Theorem3"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
       note: "Assumes only that the probability of error at mu tends to 0, not consistency."
     - source: "thm:asm_R_LB_limsup_all — Theorem 3 (second inequality)"
       lean: "Degenne2023Existence.inv_maxRatio_le"
       module: "Degenne2023Existence.D2023.Theorem3"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "cor:corner_lb — Corollary 4"
       lean: "Degenne2023Existence.sum_inv_le_iSup_asymptoticRatio"
       module: "Degenne2023Existence.D2023.Corollary4"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
       note: "Any set of arms instead of all the arms, as used in the proof of Theorem 8."
     - source: "thm:uniform_upper_bound — Theorem 5"
@@ -194,13 +199,13 @@ alignment:
     - source: "thm:asm_R_LB — Theorem 13"
       lean: "Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le"
       module: "Degenne2023Existence.D2023.Theorem13"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
       note: "Disjoint correct answers instead of D(mu) ⊆ Alt(mu)."
     - source: "cor:asm_R_LB_all — Corollary 14"
       lean: "Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le_liminf"
       module: "Degenne2023Existence.D2023.Corollary14"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "lem:half_space_difficulty — Lemma 15"
       lean: "Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian"

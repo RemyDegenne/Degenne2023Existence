@@ -5,7 +5,7 @@ Authors: Remy Degenne
 -/
 module
 
-public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.D2023.Theorem2
 
 /-!
 # Theorem 13 of [D23]: a lower bound on the liminf of the maximal difficulty ratio
@@ -14,6 +14,9 @@ For an algorithm family whose probability of error at `μ` tends to `0` and a se
 alternatives to `μ` on which the difficulty function is bounded,
 `(liminf_T sup_{λ ∈ D(μ)} R_{H,T}(𝒜, λ))⁻¹` is at most
 `max_{w ∈ Δ_K} inf_{λ ∈ D(μ)} H(λ) ∑ a, w a KL(ν_a(μ), ν_a(λ))`.
+
+Since `H` is bounded on `D(μ)`, Theorem 2 applies to every `λ ∈ D(μ)` at once for large budgets,
+with the expected proportions of pulls at `μ`, which lie in the simplex: no subsequence is needed.
 
 ## Main statements
 
@@ -53,6 +56,29 @@ theorem inv_liminf_iSup_difficultyRatio_le (task : IdentTask α Θ ℐ 𝓨) (H 
     (hH : ⨆ μ' ∈ D, H μ' ≠ ∞) :
     (liminf (fun T ↦ ⨆ μ' ∈ D, task.difficultyRatio H 𝒜 μ' T) atTop)⁻¹ ≤
       ⨆ w ∈ simplex α, ⨅ μ' ∈ D, H μ' * task.cost w μ μ' := by
-  sorry
+  classical
+  set V := ⨆ w ∈ simplex α, ⨅ μ' ∈ D, H μ' * task.cost w μ μ'
+  -- `(liminf_T sup_{λ ∈ D} R_{H,T})⁻¹ = limsup_T inf_{λ ∈ D} R_{H,T}⁻¹`.
+  rw [ENNReal.inv_liminf]
+  simp_rw [ENNReal.inv_iSup]
+  refine ENNReal.le_of_forall_lt_one_mul_le fun c hc ↦ ?_
+  rw [← ENNReal.limsup_const_mul_of_ne_top (ne_top_of_lt hc)]
+  have hlim : Tendsto (fun T : ℕ ↦ V + ENNReal.ofReal (Real.log 2 / √T)) atTop (𝓝 V) := by
+    simpa using tendsto_const_nhds.add tendsto_ofReal_log_two_div_sqrt
+  refine (limsup_le_limsup ?_).trans_eq hlim.limsup_eq
+  filter_upwards [eventually_mul_inv_difficultyRatio_le task H h𝒜 hμ hc hH] with T ⟨hw, hT⟩
+  calc c * ⨅ μ' ∈ D, (task.difficultyRatio H 𝒜 μ' T)⁻¹
+      ≤ ⨅ μ' ∈ D, c * (task.difficultyRatio H 𝒜 μ' T)⁻¹ :=
+        le_iInf₂ fun μ' hμ' ↦ by gcongr; exact iInf₂_le μ' hμ'
+    _ ≤ ⨅ μ' ∈ D, (H μ' * task.cost (expectedPullProportion (𝒜 T)
+          (Environment.bandit (task.ν μ))) μ μ' + ENNReal.ofReal (Real.log 2 / √T)) :=
+        iInf₂_mono fun μ' hμ' ↦ hT μ' (hD μ' hμ') (hH₀ μ' hμ')
+          (le_iSup₂ (f := fun μ' _ ↦ H μ') μ' hμ')
+    _ = (⨅ μ' ∈ D, H μ' * task.cost (expectedPullProportion (𝒜 T)
+          (Environment.bandit (task.ν μ))) μ μ') + ENNReal.ofReal (Real.log 2 / √T) := by
+        simp only [ENNReal.iInf_add]
+    _ ≤ V + ENNReal.ofReal (Real.log 2 / √T) := by
+        gcongr
+        exact le_iSup₂ (f := fun w _ ↦ ⨅ μ' ∈ D, H μ' * task.cost w μ μ') _ hw
 
 end Degenne2023Existence

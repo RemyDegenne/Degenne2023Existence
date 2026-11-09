@@ -52,6 +52,10 @@ In the namespace `LMLExplore.Identification`:
   families.
 * `IdentTask.staticDifficulty task θ`: the static-proportions difficulty.
 
+## Main statements
+
+* `IdentTask.inv_difficultyRatio`: `R_{H,T}(𝒜, θ)⁻¹ = H(θ) log (1 / p_{θ,T}(𝒜)) / T`.
+
 ## References
 
 * [D23] R. Degenne, *On the existence of a complexity in fixed budget bandit identification*,
@@ -126,6 +130,16 @@ noncomputable def maxRatio (H : Θ → ℝ≥0∞) (𝒜 : ℕ → IdentAlg Unit
 model. -/
 def IsConsistent (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) : Prop :=
   ∀ θ ∈ task.M, Tendsto (task.errorProb 𝒜 θ) atTop (𝓝 0)
+
+/-- For a difficulty `H θ` positive and finite and a budget `T ≠ 0`, the inverse of the difficulty
+ratio is `R_{H,T}(𝒜, θ)⁻¹ = H(θ) log (1 / p_{θ,T}(𝒜)) / T`. -/
+lemma inv_difficultyRatio {H : Θ → ℝ≥0∞} {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ} {T : ℕ}
+    (hH₀ : H θ ≠ 0) (hH : H θ ≠ ∞) (hT : T ≠ 0) :
+    (task.difficultyRatio H 𝒜 θ T)⁻¹ =
+      H θ * ((-ENNReal.log (task.errorProb 𝒜 θ T)).toENNReal / T) := by
+  rw [difficultyRatio, errorRate, ENNReal.inv_div (Or.inl hH) (Or.inl hH₀),
+    ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr (ENNReal.natCast_ne_top T))
+      (Or.inr (by exact_mod_cast hT)), mul_comm]
 
 section StaticProportions
 

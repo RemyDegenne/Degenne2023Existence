@@ -16,9 +16,11 @@ any models and observations; $H$ is a difficulty function, positive and finite w
 \end{theorem}
 
 \begin{proof}
+  \leanok
   \uses{lem:fb_change_of_measure, lem:klBer_ge, lem:inv_difficultyRatio}
   By the change of measure at the budget (Lemma~\ref{lem:fb_change_of_measure}) applied to the
-  event $E$ that the output is a correct answer of $\mu$,
+  event $E$ that the output is a correct answer of $\mu$ (up to a $\Prob_{\mu}$-null set, which
+  makes it measurable),
   $\kl(\Prob_{\mu}(E), \Prob_{\lambda}(E)) \le \sum_k \E_{\mu}[N_{T,k}] \KL(\nu_k(\mu), \nu_k(\lambda))$.
   With $\Prob_{\mu}(E) = 1 - p_{\mu,T}$, $\Prob_{\lambda}(E) \le p_{\lambda,T}$ and
   $\kl(a, b) \ge a \log(1/b) - \log 2$ (Lemma~\ref{lem:klBer_ge}),
@@ -27,11 +29,33 @@ any models and observations; $H$ is a difficulty function, positive and finite w
   (Lemma~\ref{lem:inv_difficultyRatio}) and $H(\lambda) / T \le 1 / \sqrt T$.
 \end{proof}
 
+\begin{lemma}
+  \label{lem:R_LB_eventually}
+  \lean{Degenne2023Existence.inv_difficultyRatio_mul_le_cost,
+    Degenne2023Existence.eventually_mul_inv_difficultyRatio_le,
+    Degenne2023Existence.tendsto_ofReal_log_two_div_sqrt}
+  \leanok
+  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
+  Let $\cA$ be an algorithm family with $p_{\mu,T}(\cA) \to 0$, and $c < 1$, $B < \infty$. For
+  every large enough $T$, the expected proportions $\omega_T = \E_{\mu}[N_T / T]$ lie in
+  $\Simplex$, and every model $\lambda$ without a common correct answer with $\mu$ with
+  $0 < H(\lambda) \le B$ satisfies
+  \[ c \, R_{H,T}(\cA, \lambda)^{-1} \le H(\lambda) \sum_k \omega_{T,k} \KL(\nu_k(\mu),
+    \nu_k(\lambda)) + \frac{\log 2}{\sqrt T}. \]
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
+  For $T \ge \max(1, B^2)$ with $p_{\mu,T} < 1 - c$, Theorem~\ref{thm:R_LB} applies to every such
+  $\lambda$, and $c \le 1 - p_{\mu,T}$.
+\end{proof}
+
 \begin{theorem}[{\cite[Theorem 3]{D23}}]
   \label{thm:asm_R_LB_limsup}
   \lean{Degenne2023Existence.inv_iSup_asymptoticRatio_le}
   \leanok
-  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
+  \uses{lem:R_LB_eventually, lem:tendsto_subseq_proportions}
   Let $\cA$ be an algorithm family with $p_{\mu,T}(\cA) \to 0$ at the model $\mu$, and $D(\mu)$ a
   set of models without a common correct answer with $\mu$. Then
   \[ \Bigl(\sup_{\lambda \in D(\mu)} R_{H,\infty}(\cA, \lambda)\Bigr)^{-1}
@@ -42,13 +66,23 @@ any models and observations; $H$ is a difficulty function, positive and finite w
 The paper assumes $\cA$ consistent and $D(\mu) \subseteq \Alt(\mu)$ for $\mu \in \cD$.
 
 \begin{proof}
-  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
-  Along a subsequence $T_n$, $\E_{\mu}[N_{T_n}/T_n]$ converges to some $\omega_{\mu} \in \Simplex$
-  (Lemma~\ref{lem:tendsto_subseq_proportions}). For $\lambda \in D(\mu)$, Theorem~\ref{thm:R_LB}
-  for large $n$ and $1 - p_{\mu,T_n} \to 1$ give
-  $\liminf_n R_{H,T_n}(\cA, \lambda)^{-1} \le H(\lambda) \sum_k \omega_{\mu,k} \KL$, hence
-  $R_{H,\infty}(\cA, \lambda)^{-1} = \liminf_T R_{H,T}(\cA, \lambda)^{-1}$ is at most the same.
-  Take the infimum over $\lambda$ and replace $\omega_{\mu}$ by the maximum over the simplex.
+  \leanok
+  \uses{lem:R_LB_eventually, lem:tendsto_subseq_proportions}
+  Along a subsequence $T_n$, $\omega_{T_n} = \E_{\mu}[N_{T_n}/T_n]$ converges to some
+  $\omega_{\mu} \in \Simplex$ (Lemma~\ref{lem:tendsto_subseq_proportions}).
+  $R_{H,\infty}(\cA, \lambda)^{-1} = \liminf_T R_{H,T}(\cA, \lambda)^{-1}$ is at most
+  $\liminf_n R_{H,T_n}(\cA, \lambda)^{-1}$. For $\lambda \in D(\mu)$ with
+  $\KL(\nu_k(\mu), \nu_k(\lambda)) < \infty$ for every arm, the transportation cost is continuous
+  in the allocation, and Lemma~\ref{lem:R_LB_eventually} with $B = H(\lambda)$ gives
+  $c \liminf_n R_{H,T_n}(\cA, \lambda)^{-1} \le H(\lambda) \sum_k \omega_{\mu,k} \KL$ for every
+  $c < 1$. Let $v = c \, \omega_{\mu} + (1 - c) (1/K, \dots, 1/K) \in \Simplex$. Then
+  $c \, R_{H,\infty}(\cA, \lambda)^{-1} \le H(\lambda) \sum_k v_k \KL(\nu_k(\mu), \nu_k(\lambda))$
+  for every $\lambda \in D(\mu)$: at finite divergences since $c \, \omega_{\mu} \le v$, and
+  otherwise because $v$ is positive, so that the right-hand side is infinite. Take the infimum
+  over $\lambda$, bound by the maximum over the simplex, and let $c \to 1$.
+
+  The paper's arms are in exponential families, where the divergences are finite and the
+  allocation $v$ is not needed.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 3]{D23}}]
@@ -63,6 +97,7 @@ The paper assumes $\cA$ consistent and $D(\mu) \subseteq \Alt(\mu)$ for $\mu \in
 \end{theorem}
 
 \begin{proof}
+  \leanok
   \uses{thm:asm_R_LB_limsup}
   Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \Alt(\mu)$ for every $\mu \in \cD$, and
   $\sup_{\Alt(\mu)} R \le \sup_{\cD} R$.
@@ -84,10 +119,11 @@ The paper takes $s$ to be all the arms, and applies the corollary to the arms $2
 proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
 
 \begin{proof}
+  \leanok
   \uses{thm:asm_R_LB_limsup, lem:iSup_iInf_mul}
   Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \{\lambda^{(j)} \mid j \in s\}$: the sum of
   the divergences reduces to $\omega_j \KL(\nu_j(\mu), \nu_j(\lambda^{(j)}))$, and
-  $\max_{\omega} \min_{j \in s} c_j \omega_j = (\sum_{j \in s} c_j^{-1})^{-1}$
+  $\sup_{\omega} \min_{j \in s} c_j \omega_j \le (\sum_{j \in s} c_j^{-1})^{-1}$
   (Lemma~\ref{lem:iSup_iInf_mul}).
 \end{proof}
 
@@ -95,7 +131,7 @@ proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
   \label{thm:asm_R_LB}
   \lean{Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le}
   \leanok
-  \uses{thm:R_LB}
+  \uses{lem:R_LB_eventually}
   Let $\cA$ be an algorithm family with $p_{\mu,T}(\cA) \to 0$ at $\mu$, and $D(\mu)$ a set of
   models without a common correct answer with $\mu$ with $\sup_{\lambda \in D(\mu)} H(\lambda) <
   \infty$. Then
@@ -105,9 +141,11 @@ proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
 \end{theorem}
 
 \begin{proof}
-  \uses{thm:R_LB}
-  For $T$ large, Theorem~\ref{thm:R_LB} applies to every $\lambda \in D(\mu)$; take the infimum
-  over $\lambda$, bound $\E_{\mu}[N_T / T]$ by the maximum over the simplex, and let $T \to \infty$.
+  \leanok
+  \uses{lem:R_LB_eventually}
+  For $c < 1$ and $T$ large, Lemma~\ref{lem:R_LB_eventually} with $B = \sup_{D(\mu)} H$ applies to
+  every $\lambda \in D(\mu)$; take the infimum over $\lambda$, bound $\E_{\mu}[N_T / T]$ by the
+  maximum over the simplex, let $T \to \infty$ and then $c \to 1$. No subsequence is needed.
 \end{proof}
 
 \begin{corollary}[{\cite[Corollary 14]{D23}}]
@@ -123,6 +161,7 @@ proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
 \end{corollary}
 
 \begin{proof}
+  \leanok
   \uses{thm:asm_R_LB}
   Theorem~\ref{thm:asm_R_LB} with $D(\mu) = \Alt_x(\mu)$, whose left-hand side is at least the one
   for $\cD$; take the infimum over $\mu$ and the liminf over $x$.

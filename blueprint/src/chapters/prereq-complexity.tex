@@ -6,12 +6,15 @@ Library-shaped material on fixed-budget algorithm families and static proportion
 
 \begin{lemma}
   \label{lem:inv_difficultyRatio}
+  \lean{LMLExplore.Identification.IdentTask.inv_difficultyRatio}
+  \leanok
   \uses{def:difficulty_ratio}
   If $H(\theta) \ne 0, \infty$ and $T > 0$, then $R_{H,T}(\cA, \theta)^{-1} = H(\theta)
   \log(1/p_{\theta,T}(\cA)) / T$.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   The definitions, in $[0, \infty]$.
 \end{proof}
 
@@ -52,13 +55,20 @@ Library-shaped material on fixed-budget algorithm families and static proportion
 
 \begin{lemma}
   \label{lem:iSup_iInf_mul}
-  For a finite set $s$ of arms and $c_j \in (0, \infty]$,
-  $\max_{\omega \in \Simplex} \min_{j \in s} c_j \omega_j = (\sum_{j \in s} c_j^{-1})^{-1}$.
+  \lean{LMLExplore.iSup_iInf_mul_ofReal_le}
+  \leanok
+  For a finite set $s$ of arms and $c_j \in [0, \infty]$,
+  $\sup_{\omega \in \Simplex} \min_{j \in s} c_j \omega_j \le (\sum_{j \in s} c_j^{-1})^{-1}$.
 \end{lemma}
 
+The bound is an equality when the $c_j$ are positive and finite: equalize $c_j \omega_j$ on $s$
+and put no weight outside $s$. Corollary~\ref{cor:corner_lb} uses only the inequality.
+
 \begin{proof}
-  Equalize $c_j \omega_j$ on $s$ and put no weight outside $s$; LMLExplore's
-  \texttt{answerValue\_eq\_of\_altCost\_eq\_iInf} is the case $s = $ all the arms.
+  \leanok
+  For $\omega \in \Simplex$ and $m = \min_{j \in s} c_j \omega_j$,
+  $m \sum_{j \in s} c_j^{-1} \le \sum_{j \in s} \omega_j c_j c_j^{-1} \le \sum_{j \in s} \omega_j
+  \le 1$, with $c c^{-1} \le 1$ in $[0, \infty]$.
 \end{proof}
 
 \begin{lemma}
@@ -90,34 +100,49 @@ Library-shaped material on fixed-budget algorithm families and static proportion
 
 \begin{lemma}
   \label{lem:fb_change_of_measure}
+  \lean{LMLExplore.Identification.IsFixedBudget.klDiv_outputMeasure_le}
+  \leanok
   \uses{def:fixed_budget_family}
-  For an algorithm $\cA_T$ with budget $T$, two models $\mu, \lambda$ and an event $E$ of the
-  output, $\kl(\Prob_{\mu}(E), \Prob_{\lambda}(E)) \le \sum_k \E_{\mu}[N_{T,k}] \KL(\nu_k(\mu),
-  \nu_k(\lambda))$.
+  For an algorithm $\cA_T$ with budget $T$ and two models $\mu, \lambda$, the relative entropy
+  between the laws of the output of $\cA_T$ on $\mu$ and on $\lambda$ is at most
+  $\sum_k \E_{\mu}[N_{T,k}] \KL(\nu_k(\mu), \nu_k(\lambda))$. Hence for every measurable event $E$
+  of the output, $\kl(\Prob_{\mu}(E), \Prob_{\lambda}(E)) \le \sum_k \E_{\mu}[N_{T,k}]
+  \KL(\nu_k(\mu), \nu_k(\lambda))$.
 \end{lemma}
 
 \begin{proof}
-  The data processing inequality for the law of (history, output), and the divergence
-  decomposition of LML at the stopping time $T$ (LMLExplore's
-  \texttt{Identification/ChangeOfMeasure.lean}).
+  \leanok
+  The divergence decomposition at the stopping time, which is $T$ (LMLExplore's
+  \texttt{Identification/ChangeOfMeasure.lean}), and the data processing inequality
+  (LMLExplore's \texttt{klBer\_measureReal\_le\_klDiv}).
 \end{proof}
 
 \begin{lemma}
   \label{lem:klBer_ge}
-  For $a, b \in [0, 1]$, $\kl(a, b) \ge a \log(1/b) - \log 2$.
+  \lean{LMLExplore.mul_neg_log_le_klBerReal_add_log_two,
+    LMLExplore.ofReal_mul_neg_log_le_klBer_add_log_two}
+  \leanok
+  For $a, b \in [0, 1]$, $\kl(a, b) \ge a \log(1/b) - \log 2$, with $\log(1/0) = \infty$.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   $\kl(a, b) = a \log\frac1b + (1 - a) \log\frac1{1 - b} - H(a) \ge a \log\frac1b - \log 2$, with
-  $H(a) \le \log 2$ the binary entropy.
+  $H(a) \le \log 2$ the binary entropy. For $b = 0 < a$ both sides are infinite.
 \end{proof}
 
 \begin{lemma}
   \label{lem:tendsto_subseq_proportions}
-  For a fixed-budget family, every sequence of budgets has a subsequence along which the expected
-  proportions $\E_{\mu}[N_T / T]$ converge in $\Simplex$.
+  \lean{LMLExplore.Identification.IsFixedBudget.expectedPullProportion_mem_simplex,
+    LMLExplore.Identification.IsFixedBudget.lintegral_pullCount_div}
+  \leanok
+  For an algorithm with budget $T \ge 1$, the expected proportions $\E_{\mu}[N_{T,k}] / T$ are
+  LMLExplore's expected proportions of pulls, and lie in $\Simplex$. Hence for a fixed-budget
+  family, every sequence of budgets has a subsequence along which they converge in $\Simplex$.
 \end{lemma}
 
 \begin{proof}
-  They lie in the compact simplex (LMLExplore's \texttt{expectedPullProportion\_mem\_simplex}).
+  \leanok
+  The expected stopping time is $T$; the simplex is compact (LMLExplore's
+  \texttt{isCompact\_simplex}).
 \end{proof}
