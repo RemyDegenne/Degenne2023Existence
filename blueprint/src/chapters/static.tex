@@ -47,14 +47,14 @@ is the zero measure (\texttt{notes/statement-corrections.md}, Lemma 11).
 \end{theorem}
 
 \begin{proof}
+  \leanok
   \uses{lem:ldp_single_arm, lem:ldp_pi, lem:ldp_window}
   In the stack-of-rewards model, the empirical mean of arm $k$ is the mean of the first $N_{T,k}$
-  samples of its stack, and $\abs{N_{T,k} - T \omega_k} \le K$. The means of the first $\lfloor T
-  \omega_k \rfloor$ samples of the stacks are independent and satisfy the large deviation
-  principles of Lemma~\ref{lem:ldp_single_arm} with speeds $\lfloor T \omega_k \rfloor$, so their
-  vector satisfies the principle with the sum of the rates (Lemma~\ref{lem:ldp_pi}). Changing the
-  numbers of samples within a window of size $2K + 1$ does not change the principle
-  (Lemma~\ref{lem:ldp_window}).
+  samples of its stack, and $\abs{N_{T,k} - T \omega_k} \le K$. The member of mean $\mu_k$ of the
+  family has a cumulant generating function finite near $0$, and its Cramér rate function is
+  $\KL(\cdot, \mu_k)$ (Lemma~\ref{lem:ldp_single_arm}). Lemma~\ref{lem:ldp_window}, through the
+  bounds of Lemma~\ref{lem:ldp_pi} on the stacks with numbers of samples in a window of size
+  $2K + 1$, gives the principle with the sum of the rates. The recommendation rule plays no role.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 1]{D23}}]

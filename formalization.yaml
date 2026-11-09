@@ -94,7 +94,16 @@ status:
     point, and the sub-Gaussian comparison
     (ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean and RateFunction.lean).
     The proof of Lemma 19 uses no derivative, unlike the paper's.
-  sorry_count: 8
+    Phase 2, fifth round of 2026-11-09: the large deviation principle of the empirical means under
+    static proportions (Theorem 12; blueprint lemmas lem:ldp_pi and lem:ldp_window) is proved, for
+    any algorithms whose numbers of pulls stay within a fixed distance k of T w and any laws of the
+    arms whose empirical means satisfy a principle with a good rate function, in particular with
+    the Cramér rate functions when the cumulant generating functions are finite near 0
+    (ForLMLExplore/Bandits/StaticAllocation.lean). The proof works in LML's array model, with the
+    converse exponential bounds of a principle, exponential tightness and the goodness of weighted
+    sums of rate functions (ForLMLExplore/Probability/LargeDeviations/Basic.lean). Theorem 12 is its
+    exponential-family case.
+  sorry_count: 7
   sorry_in_definitions: 0
 
 automation:
@@ -218,7 +227,7 @@ alignment:
     - source: "thm:ldp — Theorem 12"
       lean: "Degenne2023Existence.isLDP_empMean_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem12"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "thm:asm_R_LB — Theorem 13"
       lean: "Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le"

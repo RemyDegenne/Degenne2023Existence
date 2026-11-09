@@ -6,6 +6,7 @@ Authors: Remy Degenne
 module
 
 public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.ForLMLExplore.Bandits.StaticAllocation
 
 /-!
 # Theorem 12 of [D23]: the large deviation principle under static proportions
@@ -15,6 +16,12 @@ one-parameter exponential families, the vector `μ̂_T` of the empirical means s
 deviation principle with speed `T` and good rate function `λ ↦ ∑ a, w a KL(λ_a, μ_a)`. The large
 deviation principle (`LMLExplore.IsLDP`) is stated with the bounds for every set `S`, the
 consequence that the paper draws from it.
+
+The proof specializes `LMLExplore.Bandits.isLDP_empMean_rateFunction_of_abs_pullCount_sub_le`,
+the principle for any laws of the arms whose cumulant generating function is finite near `0` and
+any algorithms whose numbers of pulls stay within a fixed distance of `T w`: the members of an
+exponential family at the means of the family have that property, and their Cramér rate functions
+are the extended divergences `Measure.expFamilyRate`. The recommendation rule plays no role.
 
 ## Main statements
 
@@ -56,6 +63,17 @@ theorem isLDP_empMean_of_isStaticProportions
         (fun x ↦ ∑ a, ENNReal.ofReal (w a) * (ρ a).expFamilyRate id (x a) (μ a)) ∧
       IsGoodRateFunction (fun x : α → ℝ ↦ ∑ a, ENNReal.ofReal (w a) *
         (ρ a).expFamilyRate id (x a) (μ a)) := by
-  sorry
+  have hrate : (fun x : α → ℝ ↦ ∑ a, ENNReal.ofReal (w a) * (ρ a).expFamilyRate id (x a) (μ a)) =
+      fun x ↦ ∑ a, ENNReal.ofReal (w a) * rateFunction id (task.ν μ a) (x a) := by
+    ext x
+    refine Finset.sum_congr rfl fun a _ ↦ ?_
+    rw [Measure.expFamilyRate_def, hν μ a (hμρ a)]
+  rw [hrate]
+  have := task.isMarkovKernel_ν μ
+  refine Bandits.isLDP_empMean_rateFunction_of_abs_pullCount_sub_le (fun a ↦ ?_) h𝒜.1
+    (Fintype.card α) fun T ↦ (h𝒜.2.2 T).2.1 μ hμ
+  rw [hν μ a (hμρ a)]
+  exact Measure.zero_mem_interior_integrableExpSet_expFamily
+    (Measure.natParam_mem_interior_integrableExpSet (hμρ a))
 
 end Degenne2023Existence

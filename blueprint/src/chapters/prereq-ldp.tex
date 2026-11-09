@@ -127,32 +127,137 @@ principle exists in Mathlib, Tau Ceti, LML or LMLExplore.
 \end{proof}
 
 \begin{lemma}
-  \label{lem:ldp_pi}
+  \label{lem:ldp_exp_bounds}
+  \lean{LMLExplore.IsLDP.eventually_measure_le_exp, LMLExplore.IsLDP.eventually_exp_le_measure,
+    LMLExplore.eventually_le_exp_of_limsup_log_div_le,
+    LMLExplore.eventually_exp_le_of_neg_le_liminf_log_div}
+  \leanok
   \uses{def:ldp}
-  If for each $k$ the measures $P^k_n$ satisfy the large deviation principle with speed $n$ and
-  good rate function $I_k$, and $n_k(T) / T \to \omega_k > 0$, then the products $\bigotimes_k
-  P^k_{n_k(T)}$ satisfy the large deviation principle with speed $T$ and good rate function
-  $\sum_k \omega_k I_k$.
+  If $(P_n)$ satisfies the large deviation principle with rate function $I$, then
+  $P_n(F) \le e^{-n r}$ eventually for every closed set $F$ and every $r < \inf_F I$, and
+  $P_n(U) \ge e^{-n r}$ eventually for every neighbourhood $U$ of $x$ and every $r > I(x)$.
 \end{lemma}
 
 \begin{proof}
-  Lower bound on the products of open sets around a point; upper bound on compact sets by a
-  finite cover with products of open sets, and exponential tightness from the goodness of the
-  rates.
+  \leanok
+  $\frac1n \log P_n(F) < -r$ eventually, since its limit superior is below $-r$; the same for the
+  limit inferior.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:exp_tight}
+  \lean{LMLExplore.IsLDP.exists_eventually_measure_norm_ge_le_exp}
+  \leanok
+  \uses{def:ldp, def:good_rate, lem:ldp_exp_bounds}
+  If $(P_n)$ satisfies the large deviation principle on a normed group with a good rate function,
+  then for every $r$ there is $M$ with $P_n(\{\norm{x} \ge M\}) \le e^{-n r}$ eventually.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:ldp_exp_bounds}
+  The sublevel set $\{I \le \max(r, 0) + 1\}$ is compact, so bounded, and $I > \max(r, 0) + 1$ on
+  the closed set $\{\norm{x} \ge M\}$ for $M$ large; apply Lemma~\ref{lem:ldp_exp_bounds}.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:good_rate_sum}
+  \lean{LMLExplore.isGoodRateFunction_sum_mul}
+  \leanok
+  \uses{def:good_rate}
+  For good rate functions $I_k$ and weights $\omega_k > 0$, $x \mapsto \sum_k \omega_k I_k(x_k)$
+  is a good rate function on the product.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  It is lower semicontinuous as a sum of lower semicontinuous functions, and its sublevel set at
+  $c$ is a closed subset of the compact product of the sublevel sets of the $I_k$ at
+  $c / \omega_k$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:stream_rows}
+  \lean{LMLExplore.Bandits.streamMeasure_map_swap, LMLExplore.Bandits.infinitePi_map_mean,
+    LMLExplore.Bandits.streamMeasure_forall_mean_mem,
+    LMLExplore.Bandits.infinitePi_mean_mem_and_forall_mem}
+  \leanok
+  In the stack-of-rewards model, the stacks of the arms are independent i.i.d.\ sequences of laws
+  $\nu_k$. The means of the first $n_k$ samples of the stacks are independent, with the laws
+  $P^k_{n_k}$ of the means of $n_k$ independent samples of $\nu_k$, and the mean of the first $n$
+  samples of a stack lies in $B$ and its next $m$ samples in $C$ with probability
+  $P^k_n(B) \nu_k(C)^m$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The stacks are the coordinates of a product measure, up to the currying of the array, and the
+  first $n$ and the next $m$ samples are independent blocks of an i.i.d.\ sequence.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:ldp_pi}
+  \lean{LMLExplore.Bandits.exists_eventually_streamMeasure_mean_mem_le,
+    LMLExplore.Bandits.exists_eventually_le_streamMeasure_forall_mean_mem}
+  \leanok
+  \uses{def:ldp, lem:ldp_exp_bounds, lem:exp_tight, lem:stream_rows}
+  In the stack-of-rewards model, let the laws $P^k_n$ of the means of $n$ independent samples of
+  $\nu_k$ satisfy the large deviation principle with speed $n$ and good rate function $I_k$, and
+  let $\omega_k > 0$ and $J(x) = \sum_k \omega_k I_k(x_k)$.
+  \begin{itemize}
+    \item For a closed set $F$ and $r < \inf_F J$, there is $C$ such that for $T$ large, for every
+      $n$ with $n_k \ge T \omega_k - K$ for all $k$, the vector of the means of the first $n_k$
+      samples of the stacks lies in $F$ with probability at most $C e^{-T r}$.
+    \item For a neighbourhood $U$ of $x$ and $r > J(x)$, there is $C > 0$ such that for $T$ large,
+      with probability at least $C e^{-T r}$, the vectors of the means of the first $n_k$ samples
+      of the stacks lie in $U$ for all the $n$ with $\abs{n_k - T \omega_k} \le K$.
+  \end{itemize}
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:ldp_exp_bounds, lem:exp_tight, lem:stream_rows}
+  Upper bound: by Lemma~\ref{lem:exp_tight}, the probability that some coordinate $k$ exceeds
+  $M_k$ in absolute value is at most $e^{-n_k r / \omega_k} \le e^{K r / \omega_k} e^{-T r}$. The
+  part of $F$ in the box $\prod_k [-M_k, M_k]$ is compact. At each of its points $x$, the lower
+  semicontinuity of the $I_k$ gives radii $\varepsilon_k$ and rates $s_k \ge 0$ with $\sum_k
+  \omega_k s_k > r$, each zero or below $\inf I_k$ on the closed ball of radius $\varepsilon_k$
+  around $x_k$; on the product of these balls the probability is a product
+  (Lemma~\ref{lem:stream_rows}), at most $\prod_k e^{-n_k s_k} \le e^{K \sum_k s_k} e^{-T r}$ by
+  Lemma~\ref{lem:ldp_exp_bounds}. Finitely many of these products of balls cover the compact part.
+  Lower bound: let $U$ contain the ball of radius $\delta$ around $x$, $s_k > I_k(x_k)$ with
+  $\sum_k \omega_k s_k \le r$, $L_k$ with $\nu_k(\bar B(x_k, L_k)) > 0$, and $n^0_k = \lceil T
+  \omega_k - K \rceil$. The event that the mean of the first $n^0_k$ samples of each stack is within
+  $\delta / 2$ of $x_k$ and its next $2K + 1$ samples within $L_k$ of $x_k$ has probability
+  $\prod_k P^k_{n^0_k}(B(x_k, \delta / 2)) \nu_k(\bar B(x_k, L_k))^{2K + 1}$, at least $C e^{-T r}$
+  by Lemma~\ref{lem:ldp_exp_bounds}; on it, the mean of the first $n_k = n^0_k + j$ samples, $j \le
+  2K$, is within $\delta / 2 + 2 K L_k / n^0_k < \delta$ of $x_k$ for $T$ large.
 \end{proof}
 
 \begin{lemma}
   \label{lem:ldp_window}
-  \uses{def:ldp}
-  In the stack-of-rewards model, the empirical means after $N_{T,k}$ samples, with
-  $\abs{N_{T,k} - T\omega_k} \le K$ and $N_{T,k}$ arbitrary otherwise, satisfy the same large
-  deviation bounds as the empirical means after $\lfloor T \omega_k \rfloor$ samples.
+  \lean{LMLExplore.Bandits.isLDP_empMean_of_abs_pullCount_sub_le,
+    LMLExplore.Bandits.isLDP_empMean_rateFunction_of_abs_pullCount_sub_le,
+    LMLExplore.Bandits.trajMeasure_map_empMean, LMLExplore.Bandits.ae_arrayMeasure_pullCount}
+  \leanok
+  \uses{def:ldp, lem:ldp_of_bounds, lem:ldp_pi, lem:good_rate_sum, lem:cramer, lem:rate_good}
+  Let the laws $P^k_n$ of the means of $n$ independent samples of $\nu_k$ satisfy the large
+  deviation principle with good rate functions $I_k$ (for instance the Cramér rate functions, when
+  the cumulant generating functions are finite near $0$), and let $\omega_k > 0$. If the numbers of
+  pulls of algorithms $\cA_T$ in the bandit $\nu$ satisfy $\abs{N_{T,k} - T \omega_k} \le K$ almost
+  surely, the laws of the vectors of the empirical means after $T$ rounds satisfy the large
+  deviation principle with speed $T$ and good rate function $x \mapsto \sum_k \omega_k I_k(x_k)$.
 \end{lemma}
 
 \begin{proof}
-  Upper bound: a union over the $(2K + 1)^K$ possible numbers of samples. Lower bound: the event
-  that the means of the stacks after every number of samples in the window are close to the
-  target has the same exponential rate.
+  \leanok
+  \uses{lem:ldp_of_bounds, lem:ldp_pi, lem:good_rate_sum, lem:cramer, lem:rate_good}
+  The law of the empirical means and the almost sure bound on the numbers of pulls transfer to
+  the stack-of-rewards model, where the empirical mean of arm $k$ is the mean of the first
+  $N_{T,k}$ samples of its stack. Upper bound: a union over the $(2K + 1)^K$ possible numbers of
+  samples, each bounded by Lemma~\ref{lem:ldp_pi}. Lower bound: the event of
+  Lemma~\ref{lem:ldp_pi} on which the means after every number of samples in the window are in
+  the neighbourhood. Lemma~\ref{lem:ldp_of_bounds} concludes.
 \end{proof}
 
 \begin{lemma}

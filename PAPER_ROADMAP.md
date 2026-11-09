@@ -15,9 +15,9 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R7 | Characteristic time of Gaussian best arm identification, `H ≤ T* ≤ 2H` | exists | `LMLExplore.Identification.charTime_baiTask_gaussianBandit_le` | – | |
 | R8 | Sub-Gaussian lower bound on the Cramér rate function | exists | `ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction` | – | |
 | R9 | Fixed-budget algorithm families, probability of error, rate, oracle difficulty, difficulty ratios, consistency | target | Identification 8.4 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
-| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | todo | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
+| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | proved | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
 | R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
-| R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
+| R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `ForLMLExplore/Bandits/StaticAllocation.lean`, `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | merged #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | proved | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
@@ -52,9 +52,15 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `neg_rateFunction_le_liminf_log_measure` for every law, by truncation as in [DZ98]), the
   goodness `isGoodRateFunction_rateFunction` when the cgf is finite near `0`, and the
   exponential-family form `isLDP_cramer_expFamily`. The laws are those of the empirical means
-  under `Measure.pi` over `Fin n`. `lem:ldp_pi` remains. [D23, Lemma 11] (`D2023/Lemma11.lean`)
-  is `isLDP_cramer_expFamily`, with the hypothesis `NeZero ρ` that the paper leaves implicit
-  (`notes/statement-corrections.md`).
+  under `Measure.pi` over `Fin n`. [D23, Lemma 11] (`D2023/Lemma11.lean`) is
+  `isLDP_cramer_expFamily`, with the hypothesis `NeZero ρ` that the paper leaves implicit
+  (`notes/statement-corrections.md`). `Basic.lean` also has the converse exponential bounds of a
+  principle (`IsLDP.eventually_measure_le_exp`, `IsLDP.eventually_exp_le_measure`), exponential
+  tightness on normed groups from a good rate function
+  (`IsLDP.exists_eventually_measure_norm_ge_le_exp`) and the goodness of positive weighted sums
+  of good rate functions on a finite product (`isGoodRateFunction_sum_mul`). The independence
+  across coordinates (`lem:ldp_pi`) is proved in the form the empirical means of a bandit need,
+  in `ForLMLExplore/Bandits/StaticAllocation.lean` (item R12).
 - R11: `IsStaticProportions`, `staticClass` and `staticDifficulty` (alternative first in the
   divergence, unlike `IdentTask.altCost`), with `lem:exists_static` (cumulative tracking, R6),
   `lem:exists_rec`, `lem:iSup_open_simplex` and `lem:staticDifficulty_eq_charTime`.
@@ -65,7 +71,19 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `i*(μ)` is not correct [GJ04]; [D23, Theorems 1, 12] are its exponential-family case under
   Assumption 1 (`D2023.IsRegular`, which the port should state for tasks on any mean functional).
   The recommendation rule needs the condition of erratum E1, and the families the closure
-  hypothesis of E2.
+  hypothesis of E2. Proved, without `sorry`: the first half, in
+  `ForLMLExplore/Bandits/StaticAllocation.lean` (namespace `LMLExplore.Bandits`), for any
+  algorithms whose numbers of pulls satisfy `|N_{T,a} - T w a| ≤ k` almost surely and any laws of
+  the arms whose empirical means satisfy a principle with a good rate function
+  (`isLDP_empMean_of_abs_pullCount_sub_le`), in particular any laws whose cgf is finite near `0`
+  with their Cramér rate functions (`isLDP_empMean_rateFunction_of_abs_pullCount_sub_le`). The
+  proof works in LML's array model: the rows of `streamMeasure ν` are independent i.i.d.
+  sequences (`streamMeasure_map_swap`), the upper bound is uniform over the numbers of samples
+  `n a ≥ T w a - k` (`exists_eventually_streamMeasure_mean_mem_le`), and the lower bound holds for
+  all the numbers of samples of the window at once
+  (`exists_eventually_le_streamMeasure_forall_mean_mem`). [D23, Theorem 12] (`D2023/Theorem12.lean`)
+  is its exponential-family case. The error exponent of static proportions ([D23, Theorem 1],
+  `D2023/Theorem1.lean`) remains.
 - R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5, the definitions
   of R9 and the bound `kl(a, b) ≥ a log (1/b) - log 2`, absent from LMLExplore (`lem:klBer_ge`, in
   `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`), with the change of measure

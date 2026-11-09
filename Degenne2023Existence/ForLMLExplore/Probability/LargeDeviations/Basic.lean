@@ -49,6 +49,12 @@ to the closed sets.
   give `-c ≤ liminf_n (1 / n) log u n`.
 * `LMLExplore.IsLDP.of_isClosed_of_mem_nhds`: the large deviation principle from the upper bound on
   the closed sets and the lower bound on the neighbourhoods of each point.
+* `LMLExplore.IsLDP.eventually_measure_le_exp`, `LMLExplore.IsLDP.eventually_exp_le_measure`: the
+  converse, exponential bounds on closed sets and on neighbourhoods of points, from the principle.
+* `LMLExplore.IsLDP.exists_eventually_measure_norm_ge_le_exp`: exponential tightness on a normed
+  group, from a principle with a good rate function.
+* `LMLExplore.isGoodRateFunction_sum_mul`: positive weighted sums of good rate functions on the
+  coordinates of a finite product are good.
 
 ## References
 
@@ -190,5 +196,104 @@ lemma IsLDP.of_isClosed_of_mem_nhds {P : ℕ → Measure X} {I : X → ℝ≥0�
       EReal.div_le_div_right_of_nonneg (by exact_mod_cast n.cast_nonneg)
         (ENNReal.log_monotone (measure_mono subset_closure))
     exact (limsup_le_limsup (Eventually.of_forall h_mono)).trans (h_upper _ isClosed_closure)
+
+/-! ### Exponential bounds from the bounds of a large deviation principle -/
+
+/-- **Exponential upper bounds from the upper bound of a large deviation principle.** If
+`limsup_n (1 / n) log u n ≤ -c`, then `u n ≤ exp (-(n r))` eventually, for every real `r < c`. -/
+lemma eventually_le_exp_of_limsup_log_div_le {u : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
+    (h : limsup (fun n : ℕ ↦ ENNReal.log (u n) / n) atTop ≤ -(c : EReal)) {r : ℝ}
+    (hr : (r : EReal) < c) :
+    ∀ᶠ n : ℕ in atTop, u n ≤ ENNReal.ofReal (Real.exp (-(n * r))) := by
+  have h' : limsup (fun n : ℕ ↦ ENNReal.log (u n) / n) atTop < ((-r : ℝ) : EReal) := by
+    rw [EReal.coe_neg]
+    exact h.trans_lt (EReal.neg_lt_neg_iff.2 hr)
+  filter_upwards [eventually_lt_of_limsup_lt h', eventually_ge_atTop 1] with n hn hn1
+  have hn0 : (0 : EReal) < n := by exact_mod_cast hn1
+  rw [EReal.div_lt_iff hn0 (EReal.natCast_ne_top n), ← EReal.coe_natCast, ← EReal.coe_mul,
+    show -r * n = Real.log (Real.exp (-(n * r))) by rw [Real.log_exp]; ring,
+    ← ENNReal.log_ofReal_of_pos (Real.exp_pos _), ENNReal.log_strictMono.lt_iff_lt] at hn
+  exact hn.le
+
+/-- **Exponential lower bounds from the lower bound of a large deviation principle.** If
+`-c ≤ liminf_n (1 / n) log u n`, then `exp (-(n r)) ≤ u n` eventually, for every real `r > c`. -/
+lemma eventually_exp_le_of_neg_le_liminf_log_div {u : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
+    (h : -(c : EReal) ≤ liminf (fun n : ℕ ↦ ENNReal.log (u n) / n) atTop) {r : ℝ}
+    (hr : (c : EReal) < r) :
+    ∀ᶠ n : ℕ in atTop, ENNReal.ofReal (Real.exp (-(n * r))) ≤ u n := by
+  have h' : ((-r : ℝ) : EReal) < liminf (fun n : ℕ ↦ ENNReal.log (u n) / n) atTop := by
+    rw [EReal.coe_neg]
+    exact (EReal.neg_lt_neg_iff.2 hr).trans_le h
+  filter_upwards [eventually_lt_of_lt_liminf h', eventually_ge_atTop 1] with n hn hn1
+  have hn0 : (0 : EReal) < n := by exact_mod_cast hn1
+  rw [EReal.lt_div_iff hn0 (EReal.natCast_ne_top n), ← EReal.coe_natCast, ← EReal.coe_mul,
+    show -r * n = Real.log (Real.exp (-(n * r))) by rw [Real.log_exp]; ring,
+    ← ENNReal.log_ofReal_of_pos (Real.exp_pos _), ENNReal.log_strictMono.lt_iff_lt] at hn
+  exact hn.le
+
+/-- Under a large deviation principle, the measure of a closed set `s` is eventually at most
+`exp (-(n r))`, for every real `r` below the infimum of the rate function on `s`. -/
+lemma IsLDP.eventually_measure_le_exp {P : ℕ → Measure X} {I : X → ℝ≥0∞} (h : IsLDP P I)
+    {s : Set X} (hs : IsClosed s) {r : ℝ} (hr : (r : EReal) < ⨅ x ∈ s, I x) :
+    ∀ᶠ n : ℕ in atTop, P n s ≤ ENNReal.ofReal (Real.exp (-(n * r))) :=
+  eventually_le_exp_of_limsup_log_div_le
+    ((h.limsup_le_neg_iInf_closure s).trans_eq (by rw [hs.closure_eq])) hr
+
+/-- Under a large deviation principle, the measure of a neighbourhood `s` of `x` is eventually at
+least `exp (-(n r))`, for every real `r > I x`. -/
+lemma IsLDP.eventually_exp_le_measure {P : ℕ → Measure X} {I : X → ℝ≥0∞} (h : IsLDP P I)
+    {x : X} {s : Set X} (hs : s ∈ 𝓝 x) {r : ℝ} (hr : (I x : EReal) < r) :
+    ∀ᶠ n : ℕ in atTop, ENNReal.ofReal (Real.exp (-(n * r))) ≤ P n s := by
+  refine eventually_exp_le_of_neg_le_liminf_log_div ((EReal.neg_le_neg_iff.2 ?_).trans
+    (h.neg_iInf_interior_le_liminf s)) hr
+  exact EReal.coe_ennreal_le_coe_ennreal_iff.2 (iInf₂_le x (mem_interior_iff_mem_nhds.2 hs))
+
+/-- **Exponential tightness.** Under a large deviation principle with a good rate function on a
+normed group, for every real `r` there is a radius `M` such that the measure of
+`{x | M ≤ ‖x‖}` is eventually at most `exp (-(n r))`: the sublevel set of the rate function at a
+level above `r` is compact, so bounded, and the upper bound applies to the closed set outside a
+ball that contains it. -/
+lemma IsLDP.exists_eventually_measure_norm_ge_le_exp {E : Type*} [SeminormedAddCommGroup E]
+    {mE : MeasurableSpace E} {P : ℕ → Measure E} {I : E → ℝ≥0∞} (h : IsLDP P I)
+    (hI : IsGoodRateFunction I) (r : ℝ) :
+    ∃ M : ℝ, ∀ᶠ n : ℕ in atTop, P n {x | M ≤ ‖x‖} ≤ ENNReal.ofReal (Real.exp (-(n * r))) := by
+  set c : ℝ≥0 := (max r 0 + 1).toNNReal
+  obtain ⟨C, hC⟩ := (Metric.isBounded_iff_subset_closedBall (0 : E)).1 (hI.2 c).isBounded
+  refine ⟨C + 1, h.eventually_measure_le_exp (isClosed_le continuous_const continuous_norm) ?_⟩
+  have hc : (((c : ℝ≥0∞)) : EReal) = ((max r 0 + 1 : ℝ) : EReal) := by
+    change ((ENNReal.ofReal (max r 0 + 1) : ℝ≥0∞) : EReal) = _
+    rw [EReal.coe_ennreal_ofReal, max_eq_left (by linarith [le_max_right r 0])]
+  refine lt_of_lt_of_le (b := ((c : ℝ≥0∞) : EReal)) ?_ (EReal.coe_ennreal_le_coe_ennreal_iff.2
+    (le_iInf₂ fun x hx ↦ ?_))
+  · rw [hc, EReal.coe_lt_coe_iff]
+    linarith [le_max_left r 0]
+  · by_contra hlt
+    have hx' := hC (show x ∈ {x | I x ≤ c} from (not_le.1 hlt).le)
+    rw [Metric.mem_closedBall, dist_zero_right] at hx'
+    simp only [Set.mem_ofPred_eq] at hx
+    linarith
+
+/-- **Weighted sums of good rate functions are good.** For good rate functions `I a` on spaces
+`X a`, indexed by a finite type, and positive weights `w a`, the function
+`x ↦ ∑ a, w a I a (x a)` on the product is a good rate function. -/
+lemma isGoodRateFunction_sum_mul {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ a, TopologicalSpace (X a)] {I : ∀ a, X a → ℝ≥0∞} (hI : ∀ a, IsGoodRateFunction (I a))
+    {w : ι → ℝ} (hw : ∀ a, 0 < w a) :
+    IsGoodRateFunction fun x : (∀ a, X a) ↦ ∑ a, ENNReal.ofReal (w a) * I a (x a) := by
+  have h_lsc : LowerSemicontinuous fun x : (∀ a, X a) ↦ ∑ a, ENNReal.ofReal (w a) * I a (x a) :=
+    lowerSemicontinuous_sum fun a _ ↦
+      (ENNReal.continuous_const_mul ENNReal.ofReal_ne_top).comp_lowerSemicontinuous
+        ((hI a).1.comp (continuous_apply a)) fun _ _ h ↦ by dsimp only; gcongr
+  refine ⟨h_lsc, fun c ↦ ?_⟩
+  refine (isCompact_univ_pi fun a ↦ (hI a).2 (c / (w a).toNNReal)).of_isClosed_subset
+    (h_lsc.isClosed_preimage _) fun x hx a _ ↦ ?_
+  have hw0 : (w a).toNNReal ≠ 0 := by simpa using hw a
+  have h_le : ENNReal.ofReal (w a) * I a (x a) ≤ c :=
+    (Finset.single_le_sum (f := fun a ↦ ENNReal.ofReal (w a) * I a (x a))
+      (fun _ _ ↦ zero_le) (Finset.mem_univ a)).trans hx
+  simp only [Set.mem_ofPred_eq, ENNReal.coe_div hw0]
+  rw [ENNReal.le_div_iff_mul_le (Or.inl (by simpa using hw0)) (Or.inl ENNReal.coe_ne_top),
+    mul_comm]
+  exact h_le
 
 end LMLExplore
