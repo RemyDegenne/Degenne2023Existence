@@ -52,8 +52,9 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `neg_rateFunction_le_liminf_log_measure` for every law, by truncation as in [DZ98]), the
   goodness `isGoodRateFunction_rateFunction` when the cgf is finite near `0`, and the
   exponential-family form `isLDP_cramer_expFamily`. The laws are those of the empirical means
-  under `Measure.pi` over `Fin n`. `lem:ldp_pi` remains, and `D2023/Lemma11.lean` keeps the
-  blocked headline statement (`notes/statement-corrections.md`).
+  under `Measure.pi` over `Fin n`. `lem:ldp_pi` remains. [D23, Lemma 11] (`D2023/Lemma11.lean`)
+  is `isLDP_cramer_expFamily`, with the hypothesis `NeZero ρ` that the paper leaves implicit
+  (`notes/statement-corrections.md`).
 - R11: `IsStaticProportions`, `staticClass` and `staticDifficulty` (alternative first in the
   divergence, unlike `IdentTask.altCost`), with `lem:exists_static` (cumulative tracking, R6),
   `lem:exists_rec`, `lem:iSup_open_simplex` and `lem:staticDifficulty_eq_charTime`.

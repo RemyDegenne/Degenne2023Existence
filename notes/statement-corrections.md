@@ -60,4 +60,8 @@ user's decision (`/lml:formalize-paper decide`). The errors of the paper itself 
   `isLDP_cramer_expFamily hμ`. Recommended decision: add the hypothesis `[NeZero ρ]` (or
   `ρ ≠ 0`).
 - **Found:** round of 2026-11-09, on top of commit 76f5b36.
-- **Decision:** pending (`/lml:formalize-paper decide`).
+- **Decision:** 2026-11-09, by the user (`/lml:formalize-paper decide`): add the hypothesis
+  `[NeZero ρ]`, which the paper leaves implicit. The relation stays `exactMatch`. The statement is
+  proved as `isLDP_cramer_expFamily hμ`, and its challenge
+  (`comparator/Challenge_isLDP_empiricalMean_expFamily.lean`) is regenerated, in the commit
+  "Decide: Lemma 11 takes the hypothesis NeZero ρ".
