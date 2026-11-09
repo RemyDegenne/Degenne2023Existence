@@ -55,6 +55,8 @@ In the namespace `LMLExplore.Identification`:
 ## Main statements
 
 * `IdentTask.inv_difficultyRatio`: `R_{H,T}(𝒜, θ)⁻¹ = H(θ) log (1 / p_{θ,T}(𝒜)) / T`.
+* `IdentTask.asymptoticRatio_eq_top`: a family whose probability of error at `θ` does not tend
+  to `0` has an infinite asymptotic difficulty ratio at `θ`, for `H(θ) < ∞`.
 
 ## References
 
@@ -140,6 +142,34 @@ lemma inv_difficultyRatio {H : Θ → ℝ≥0∞} {𝒜 : ℕ → IdentAlg Unit 
   rw [difficultyRatio, errorRate, ENNReal.inv_div (Or.inl hH) (Or.inl hH₀),
     ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr (ENNReal.natCast_ne_top T))
       (Or.inr (by exact_mod_cast hT)), mul_comm]
+
+/-- If the probability of error at `θ` does not tend to `0` and the difficulty `H θ` is finite,
+the asymptotic difficulty ratio at `θ` is infinite: along the budgets `T` with
+`p_{θ,T}(𝒜) > ε`, the rate `h_{θ,T}(𝒜)` is at least `T / log (1 / ε)`. -/
+lemma asymptoticRatio_eq_top {H : Θ → ℝ≥0∞} {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ}
+    (hH : H θ ≠ ∞) (hp : ¬ Tendsto (task.errorProb 𝒜 θ) atTop (𝓝 0)) :
+    task.asymptoticRatio H 𝒜 θ = ∞ := by
+  obtain ⟨ε, hε, hfreq⟩ : ∃ ε > 0, ∃ᶠ T in atTop, ε < task.errorProb 𝒜 θ T := by
+    simpa [ENNReal.tendsto_nhds_zero, Filter.not_eventually, Filter.frequently_atTop] using hp
+  set L := (-ENNReal.log ε).toENNReal
+  have hL : L ≠ ∞ := by
+    simp only [L, ne_eq, EReal.toENNReal_eq_top_iff, EReal.neg_eq_top_iff]
+    simpa using hε.ne'
+  refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
+  have hev : ∀ᶠ T : ℕ in atTop, (r : ℝ≥0∞) * H θ * L < T :=
+    ENNReal.tendsto_nat_nhds_top.eventually (eventually_gt_nhds
+      (ENNReal.mul_lt_top (ENNReal.mul_lt_top ENNReal.coe_lt_top hH.lt_top) hL.lt_top))
+  refine le_limsup_of_frequently_le ((hfreq.and_eventually hev).mono fun T ⟨hT, hrT⟩ ↦ ?_)
+    (by isBoundedDefault)
+  rw [difficultyRatio, errorRate]
+  have h1 : (T : ℝ≥0∞) / L ≤ T / (-ENNReal.log (task.errorProb 𝒜 θ T)).toENNReal := by
+    gcongr
+    exact EReal.toENNReal_le_toENNReal (EReal.neg_le_neg_iff.2 (ENNReal.log_le_log hT.le))
+  refine le_trans ?_ (ENNReal.div_le_div_right h1 _)
+  have hT0 : (T : ℝ≥0∞) ≠ 0 := (zero_le.trans_lt hrT).ne'
+  rw [ENNReal.le_div_iff_mul_le (Or.inr (by simp [ENNReal.div_eq_zero_iff, hT0, hL]))
+      (Or.inl hH), ENNReal.le_div_iff_mul_le (Or.inr hT0) (Or.inl hL)]
+  exact hrT.le
 
 section StaticProportions
 

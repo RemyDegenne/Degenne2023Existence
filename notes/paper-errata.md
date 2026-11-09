@@ -95,9 +95,11 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
   Theorem 7 through Theorem 3) bounds `max_ω inf_{λ ∈ D_{ε,δ}(μ)} H_{𝒞^{sp}}(λ) ∑_k ω_k KL(μ_k, λ_k)`.
 - **Correction:** Lemma 17 with the weights `σ_k⁻²` and the direction `(sign(u_k) σ_k)_k`; Lemma 18
   for the quantity of its proof, with `2((λ - η)ᵀ u)⁻²` in place of `H_{𝒞^{sp}}(λ)` (see E5).
-- **Lean:** Lemmas 17 and 18 are blueprint lemmas of the proof of
-  `Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane` (Theorem 7), stated in the
-  corrected forms in phase 2.
+- **Lean:** the Lean proof of Theorem 7, `Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane`,
+  does not go through Lemmas 17 and 18: it bounds `H_{𝒞^{sp}}` near `η` directly (E5) and uses
+  the alternatives `μ - t ((μ - η)ᵀ u) d` with the direction `d_k = sign(u_k) σ_k / ‖u · σ‖₁`
+  (`LMLExplore.Identification.exists_dotProduct_eq_one_sum_le`). Lemmas 17 and 18 remain blueprint
+  statements in the corrected forms (`lem:ball_half_space_difficulty`, `lem:ball_bound`).
 - **Kind:** typo.
 - **Found:** phase-1 statement check, 2026-11-09.
 
@@ -117,8 +119,11 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
   `((λ - η)ᵀ u)²` when `λ` is close to the hyperplane; the `ω^ε` perturbation of the proof then gives
   `H_{𝒞^{sp}}(λ) ≤ (1 + ε') 2((λ - η)ᵀ u)⁻²` for the alternatives used, `λ_{ω^ε}(μ)`, whose distance
   to the hyperplane is `x`, with `ε' → 0` as `x → 0`. Theorem 7 follows as in the paper.
-- **Lean:** `Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane` states Theorem 7 as
-  printed; the blueprint lemma `lem:static_near_hyperplane` carries the correction.
+- **Lean:** `Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane` states and proves Theorem 7
+  as printed; `Degenne2023Existence.exists_ofReal_le_inv_staticDifficulty_of_hyperplane`
+  (blueprint `lem:static_near_hyperplane`) carries the correction: for every `c ∈ (0, 1)`, near
+  `η`, `H_{𝒞^{sp}}(λ)⁻¹ ≥ c ((λ - η)ᵀ u)² / (2 ‖u · σ‖₁²)`, with the allocation
+  `c ω* + (1 - c)/K`.
 - **Kind:** gap in the proof.
 - **Found:** phase-1 statement check, 2026-11-09.
 

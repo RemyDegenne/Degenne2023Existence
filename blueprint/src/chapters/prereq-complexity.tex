@@ -146,3 +146,106 @@ and put no weight outside $s$. Corollary~\ref{cor:corner_lb} uses only the inequ
   The expected stopping time is $T$; the simplex is compact (LMLExplore's
   \texttt{isCompact\_simplex}).
 \end{proof}
+
+\section{Gaussian arms and half-spaces}
+
+For \texttt{ForLMLExplore/Identification/Task/}: Gaussian arms with known variances $\sigma_k^2 =
+v_k > 0$, and half-space identification with normal vector $u \ne 0$. Write $L = \sum_k \abs{u_k}
+\sigma_k$.
+
+\begin{lemma}
+  \label{lem:cost_gaussianReal}
+  \lean{LMLExplore.Identification.IdentTask.cost_gaussianReal,
+    LMLExplore.Identification.IdentTask.cost_comm_gaussianReal}
+  \leanok
+  For Gaussian arms with variances $v_k > 0$ and $\omega \ge 0$,
+  $\sum_k \omega_k \KL(\nu_k(\mu), \nu_k(\lambda)) = \sum_k \omega_k (\mu_k - \lambda_k)^2 / (2
+  v_k)$, which is symmetric in $\mu$ and $\lambda$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  $\KL(\mathcal N(x, v), \mathcal N(y, v)) = (x - y)^2 / (2 v)$ (LMLExplore).
+\end{proof}
+
+\begin{lemma}
+  \label{lem:alternatives_halfSpace}
+  \lean{LMLExplore.Identification.mem_alternatives_halfSpaceTask_iff}
+  \leanok
+  \uses{def:alternatives}
+  For half-space identification and $u^{\top} \mu \ne 0$, $\lambda \in \Alt(\mu)$ if and only if
+  $(u^{\top} \mu)(u^{\top} \lambda) < 0$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The correct answer is the sign of $u^{\top} \mu$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:halfspace_direction}
+  \lean{LMLExplore.Identification.exists_dotProduct_eq_one_sum_le}
+  \leanok
+  The direction $d_k = \mathrm{sign}(u_k) \sigma_k / L$ has $u^{\top} d = 1$, and for every $\omega
+  \in \Simplex$ and $s \in \R$, $\sum_k \omega_k (s d_k)^2 / (2 v_k) \le s^2 / (2 L^2)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  $u_k d_k = \abs{u_k} \sigma_k / L$, and $(s d_k)^2 / v_k \le s^2 / L^2$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:halfspace_cauchy_schwarz}
+  \lean{LMLExplore.Identification.sq_dotProduct_div_le_sum}
+  \leanok
+  If $(u^{\top} x)(u^{\top} y) \le 0$, then at $\omega^{\star}_k = \abs{u_k} \sigma_k / L$,
+  $(u^{\top} x)^2 / (2 L^2) \le \sum_k \omega^{\star}_k (y_k - x_k)^2 / (2 v_k)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  $(u^{\top} x)^2 \le (u^{\top}(x - y))^2 \le (\sum_k \abs{u_k} \sigma_k L) (\sum_k \abs{u_k}
+  \sigma_k (x_k - y_k)^2 / (L v_k))$ by the Cauchy--Schwarz inequality.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:halfspace_static}
+  \lean{LMLExplore.Identification.inv_staticDifficulty_halfSpaceTask_gaussianReal,
+    LMLExplore.Identification.staticDifficulty_halfSpaceTask_gaussianReal,
+    LMLExplore.Identification.exists_mem_alternatives_halfSpaceTask_gaussianReal,
+    LMLExplore.Identification.ofReal_le_cost_halfSpaceTask_gaussianReal}
+  \leanok
+  \uses{def:static_difficulty, lem:cost_gaussianReal, lem:alternatives_halfSpace,
+    lem:halfspace_direction, lem:halfspace_cauchy_schwarz}
+  For Gaussian half-space identification and $u^{\top} \mu \ne 0$,
+  $\Hsp(\mu)^{-1} = (u^{\top} \mu)^2 / (2 L^2)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:cost_gaussianReal, lem:alternatives_halfSpace, lem:halfspace_direction,
+    lem:halfspace_cauchy_schwarz}
+  Upper bound: for $t > 1$, the alternative $\mu - t (u^{\top} \mu) d$
+  (Lemma~\ref{lem:halfspace_direction}) costs at most $t^2 (u^{\top} \mu)^2 / (2 L^2)$ for every
+  allocation; let $t \downarrow 1$. Lower bound: at $\omega^{\star}$, every alternative costs at
+  least $(u^{\top} \mu)^2 / (2 L^2)$ (Lemma~\ref{lem:halfspace_cauchy_schwarz}).
+\end{proof}
+
+\begin{lemma}
+  \label{lem:halfspace_ratio}
+  \lean{LMLExplore.Identification.iSup_iInf_staticDifficulty_mul_cost_halfSpaceTask_le_one}
+  \leanok
+  \uses{lem:halfspace_static, lem:halfspace_direction}
+  For Gaussian half-space identification and $u^{\top} \mu \ne 0$,
+  $\max_{\omega \in \Simplex} \inf_{\lambda \in \Alt(\mu)} \Hsp(\lambda) \sum_k \omega_k
+  \KL(\nu_k(\mu), \nu_k(\lambda)) \le 1$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:halfspace_static, lem:halfspace_direction}
+  At $\lambda = \mu - t (u^{\top} \mu) d$, $\Hsp(\lambda) = 2 L^2 / ((t - 1)^2 (u^{\top} \mu)^2)$
+  (Lemma~\ref{lem:halfspace_static}) and the cost is at most $t^2 (u^{\top} \mu)^2 / (2 L^2)$, so
+  the product is at most $t^2 / (t - 1)^2$, which tends to $1$ as $t \to \infty$.
+\end{proof}

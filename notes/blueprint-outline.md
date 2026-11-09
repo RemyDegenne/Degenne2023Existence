@@ -172,6 +172,8 @@ Definitions `def:fixed_budget_family`, `def:alternatives`, `def:error_prob`, `de
   `(u ⬝ μ)² / (2 ∑ u_a² v_a / w_a)` (LMLExplore `Task/HalfSpace.lean` for a common variance), and
   Cauchy–Schwarz for the maximum over `w`.
 - Lemma 16: Theorem 3 (second part), Lemma 15, and `max_w inf_{a > 0} (√a + |u ⬝ ν|)² / (a ‖u‖²) = 1`.
+  Done (round 2 of 2026-11-09) with Theorem 3 (first part) at the single model `u`, the bound `≤ 1`
+  (`lem:halfspace_ratio`) and `lem:asymptoticRatio_eq_top`: consistency at one model suffices.
 - Lemma 17 (`lem:ball_half_space_difficulty`), Lemma 18 (`lem:ball_bound`): the computations of the
   appendix with the weights `σ_a⁻²` (E4); Lemma 18 with `2 ((λ - η) ⬝ u)⁻²` in place of
   `H^{sp}(λ)`.
@@ -179,7 +181,12 @@ Definitions `def:fixed_budget_family`, `def:alternatives`, `def:error_prob`, `de
   alternatives `λ` close enough to `η`, with the alternatives outside the ball costing at least
   `min_a w_a (r - ‖λ - η‖)² / (2 max_a v_a)` (the fix of E5).
 - Theorem 7: Theorem 3 (first part) with `D(μ) = Alt(μ) ∩ B(η, r')`, Lemma 18 and
-  `lem:static_near_hyperplane`, then `ε, δ → 0`.
+  `lem:static_near_hyperplane`, then `ε, δ → 0`. Done (round 2 of 2026-11-09) by a shorter route,
+  without Lemmas 17 and 18: `lem:static_near_hyperplane` in the form
+  `H^{sp}(λ)⁻¹ ≥ c ((λ - η) ⬝ u)² / (2 L²)` near `η` for every `c < 1`, the model `μ = η - s u` for
+  `s > 0` small, the alternatives `μ - t ((μ - η) ⬝ u) d` (`lem:halfspace_direction`), whose
+  product `H^{sp}(λ) cost` is at most `t² / (c (t - 1)²)`, `c = 1 - 1/t` and `t → ∞`. Lemmas 17
+  and 18 stay as blueprint statements (numbered results of the paper, still to be stated in Lean).
 
 ### Chapter `bai` (Theorems 8, 10, Lemmas 9, 19, 20; Section 5, Appendix D)
 - Theorem 8: `H_𝒞 ≤ H_{𝒞^{sp}} ≤ H^{sp}` (`lem:oracleDifficulty_mono`,
@@ -214,3 +221,5 @@ Definitions `def:fixed_budget_family`, `def:alternatives`, `def:error_prob`, `de
 | `lem:ldp_pi`, `lem:ldp_window`, `lem:ldp_speed` | independent coordinates, bounded perturbations of the speeds | `Probability/LargeDeviations/Basic.lean` |
 | `lem:rate_ge_sq_of_subgaussian` | sub-Gaussian rate | `Probability/Moments/RateFunction.lean` |
 | `lem:staticDifficulty_eq_charTime` | symmetric divergences | `FixedBudgetComplexity.lean` |
+| `lem:cost_gaussianReal` | the Gaussian transportation cost with per-arm variances | `Identification/Task/ExpFamily.lean` |
+| `lem:alternatives_halfSpace`, `lem:halfspace_direction`, `lem:halfspace_cauchy_schwarz`, `lem:halfspace_static`, `lem:halfspace_ratio` | Gaussian half-space identification with per-arm variances: [D23, Lemma 15] and the bound of the proof of Lemma 16 | `Identification/Task/HalfSpace.lean` |

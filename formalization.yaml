@@ -70,7 +70,14 @@ status:
     fixed-budget algorithms (ForLMLExplore/Identification/ErrorLowerBound.lean), the bound
     kl(p, q) >= p log(1/q) - log 2 (ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean)
     and the maximin bound on the simplex (ForLMLExplore/Analysis/Convex/Simplex.lean).
-  sorry_count: 18
+    Phase 2, second round of 2026-11-09: Gaussian half-space identification and tasks with a flat
+    boundary (Lemmas 15, 16, Theorem 7; blueprint chapter range) are proved, over the static
+    value of Gaussian half-space identification with per-arm variances
+    (ForLMLExplore/Identification/Task/HalfSpace.lean), the per-arm Gaussian transportation cost
+    (ForLMLExplore/Identification/Task/ExpFamily.lean) and the infinite ratio of families that
+    are not consistent at a model (asymptoticRatio_eq_top). The proof of Theorem 7 does not use
+    Lemmas 17 and 18, which remain blueprint statements.
+  sorry_count: 15
   sorry_in_definitions: 0
 
 automation:
@@ -166,9 +173,9 @@ alignment:
     - source: "thm:flat_boundary — Theorem 7"
       lean: "Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane"
       module: "Degenne2023Existence.D2023.Theorem7"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
-      note: "Does not assume Assumption 1; sup-norm ball (an equivalent hypothesis). The proof follows the corrections E4, E5."
+      note: "Does not assume Assumption 1; sup-norm ball (an equivalent hypothesis). The proof follows the correction E5, by a shorter route than the paper's, without Lemmas 17 and 18 (E4)."
     - source: "thm:gaussian_bai_no_complexity — Theorem 8"
       lean: "Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian"
       module: "Degenne2023Existence.D2023.Theorem8"
@@ -210,13 +217,13 @@ alignment:
     - source: "lem:half_space_difficulty — Lemma 15"
       lean: "Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian"
       module: "Degenne2023Existence.D2023.Lemma15"
-      status: "stated"
+      status: "proved"
       relation: "broadMatch"
       note: "Without the normalization sum_a |u_a| sigma_a = 1."
     - source: "lem:half_space — Lemma 16"
       lean: "Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian"
       module: "Degenne2023Existence.D2023.Lemma16"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
     - source: "lem:exp_fam_bai — Lemma 19"
       lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_expFamily_two"

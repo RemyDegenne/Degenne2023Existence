@@ -6,13 +6,16 @@ Authors: Remy Degenne
 module
 
 public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.ForLMLExplore.Identification.Task.HalfSpace
 
 /-!
 # Lemma 15 of [D23]: the static-proportions difficulty of Gaussian half-space identification
 
 For Gaussian arms with variances `σ_a² > 0` and the half-space task with normal vector `u`, the
 static-proportions difficulty is `H^{sp}(λ)⁻¹ = (λ ⬝ u)² / (2 (∑ a, |u_a| σ_a)²)`, which is
-`(λ ⬝ u)² / 2` for the normalization `∑ a, |u_a| σ_a = 1` of the paper.
+`(λ ⬝ u)² / 2` for the normalization `∑ a, |u_a| σ_a = 1` of the paper. The proof is
+`LMLExplore.Identification.inv_staticDifficulty_halfSpaceTask_gaussianReal`, in
+`Degenne2023Existence/ForLMLExplore/Identification/Task/HalfSpace.lean`.
 
 ## Main statements
 
@@ -32,20 +35,24 @@ open scoped ENNReal NNReal
 
 namespace Degenne2023Existence
 
-variable {α : Type*} [Fintype α] {mα : MeasurableSpace α} [MeasurableSingletonClass α]
+variable {α : Type*} [Fintype α] {mα : MeasurableSpace α}
 
 /-- **The static-proportions difficulty of Gaussian half-space identification**
 [D23, Lemma 15]. For Gaussian arms with variances `v a ≠ 0` and the half-space task with normal
 vector `u ≠ 0`, every admissible model `μ` (with `u ⬝ μ ≠ 0`) has
 `H^{sp}(μ)⁻¹ = (u ⬝ μ)² / (2 (∑ a, |u a| √(v a))²)`.
 
-The paper normalizes `∑ a, |u a| √(v a) = 1`. -/
-theorem inv_staticDifficulty_halfSpaceTask_gaussian (ν : (α → ℝ) → Kernel α ℝ)
+The paper normalizes `∑ a, |u a| √(v a) = 1`. The proof does not use the hypothesis
+`[MeasurableSingletonClass α]`, which the statement keeps as it was frozen at the end of phase 1;
+`LMLExplore.Identification.inv_staticDifficulty_halfSpaceTask_gaussianReal` drops it. -/
+@[nolint unusedArguments]
+theorem inv_staticDifficulty_halfSpaceTask_gaussian [MeasurableSingletonClass α]
+    (ν : (α → ℝ) → Kernel α ℝ)
     [∀ μ, IsMarkovKernel (ν μ)] {v : α → ℝ≥0} (hv : ∀ a, v a ≠ 0)
     (hν : ∀ μ a, ν μ a = gaussianReal (μ a) (v a)) {u : α → ℝ} (hu : u ≠ 0) {μ : α → ℝ}
     (hμ : u ⬝ᵥ μ ≠ 0) :
     ((halfSpaceTask ν id u).staticDifficulty μ)⁻¹ =
-      ENNReal.ofReal ((u ⬝ᵥ μ) ^ 2 / (2 * (∑ a, |u a| * √(v a : ℝ)) ^ 2)) := by
-  sorry
+      ENNReal.ofReal ((u ⬝ᵥ μ) ^ 2 / (2 * (∑ a, |u a| * √(v a : ℝ)) ^ 2)) :=
+  inv_staticDifficulty_halfSpaceTask_gaussianReal ν hv hν hu hμ
 
 end Degenne2023Existence

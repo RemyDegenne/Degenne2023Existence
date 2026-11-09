@@ -82,7 +82,7 @@ Theorem~\ref{thm:oracle_difficulty_class}.
   \label{lem:half_space_difficulty}
   \lean{Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian}
   \leanok
-  \uses{def:static_difficulty}
+  \uses{def:static_difficulty, lem:halfspace_static}
   For Gaussian arms with variances $\sigma_k^2 > 0$ and the half-space task with normal vector
   $u \ne 0$, every $\lambda \in \cD$ has
   $\Hsp(\lambda)^{-1} = (\lambda^{\top} u)^2 / (2 (\sum_k \abs{u_k} \sigma_k)^2)$, which is
@@ -90,37 +90,46 @@ Theorem~\ref{thm:oracle_difficulty_class}.
 \end{lemma}
 
 \begin{proof}
+  \leanok
+  \uses{lem:halfspace_static}
   The infimum of $\frac12 \sum_k \omega_k \sigma_k^{-2} (\nu_k - \lambda_k)^2$ over the other side
   of the hyperplane is $(\lambda^{\top} u)^2 / (2 \sum_k u_k^2 \sigma_k^2 / \omega_k)$, and by
   Cauchy--Schwarz the minimum of $\sum_k u_k^2 \sigma_k^2 / \omega_k$ over the simplex is
-  $(\sum_k \abs{u_k} \sigma_k)^2$.
+  $(\sum_k \abs{u_k} \sigma_k)^2$. The Lean proof is Lemma~\ref{lem:halfspace_static}, which
+  bounds the infimum above by moving along one direction for every allocation, and below at the
+  optimal allocation $\abs{u_k} \sigma_k / \sum_j \abs{u_j} \sigma_j$.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 16]{D23}}]
   \label{lem:half_space}
   \lean{Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian}
   \leanok
-  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup_all, lem:asymptoticRatio_eq_top}
+  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup, lem:halfspace_ratio,
+    lem:asymptoticRatio_eq_top}
   For Gaussian half-space identification,
   $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) \ge 1$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup_all, lem:asymptoticRatio_eq_top}
+  \leanok
+  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup, lem:halfspace_ratio,
+    lem:asymptoticRatio_eq_top}
   With $\sum_k \abs{u_k} \sigma_k = 1$, for every $\nu \in \cD$,
   $\max_{\omega} \inf_{\lambda \in \Alt(\nu)} \Hsp(\lambda) \sum_k \omega_k \KL(\nu_k, \lambda_k) =
   \max_{\omega} \inf_{a > 0} (\sqrt a + \abs{u^{\top} \nu})^2 / (a \norm{u}^2_{\omega^{-1} \sigma^2})
-  = 1$ (Lemma~\ref{lem:half_space_difficulty}); conclude by
+  = 1$ (Lemma~\ref{lem:half_space_difficulty}). The paper concludes by
   Theorem~\ref{thm:asm_R_LB_limsup_all} for consistent families and
-  Lemma~\ref{lem:asymptoticRatio_eq_top} for the others.
+  Lemma~\ref{lem:asymptoticRatio_eq_top} for the others. The Lean proof uses one model, $\nu = u$:
+  the inequality $\le 1$ (Lemma~\ref{lem:halfspace_ratio}) and Theorem~\ref{thm:asm_R_LB_limsup}
+  over $\Alt(u)$ when $p_{u, T} \to 0$, and Lemma~\ref{lem:asymptoticRatio_eq_top} otherwise.
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 7]{D23}}]
   \label{thm:flat_boundary}
   \lean{Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane}
   \leanok
-  \uses{thm:asm_R_LB_limsup, lem:ball_bound, lem:static_near_hyperplane,
-    lem:asymptoticRatio_eq_top}
+  \uses{thm:asm_R_LB_limsup, lem:static_near_hyperplane, lem:halfspace_direction,
+    lem:cost_gaussianReal, lem:asymptoticRatio_eq_top}
   Suppose that in a ball $B(\eta, r)$, $r > 0$, the task has two answers $i \ne j$ and the
   admissible models are the vectors off a hyperplane through $\eta$, with the answer $i$ on one
   side and $j$ on the other. Then for Gaussian arms with known variances,
@@ -131,13 +140,26 @@ The paper uses a Euclidean ball; balls of the different norms of $\R^K$ contain 
 the Lean statement uses the sup-norm ball. It does not need Assumption 1.
 
 \begin{proof}
-  \uses{thm:asm_R_LB_limsup, lem:ball_bound, lem:static_near_hyperplane,
-    lem:asymptoticRatio_eq_top}
-  For $\mu$ close to $\eta$, Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \Alt(\mu) \cap
-  B(\eta, r')$, Lemma~\ref{lem:static_near_hyperplane} to bound $\Hsp$ on $D(\mu)$ and
+  \leanok
+  \uses{thm:asm_R_LB_limsup, lem:static_near_hyperplane, lem:halfspace_direction,
+    lem:cost_gaussianReal, lem:asymptoticRatio_eq_top}
+  The paper: for $\mu$ close to $\eta$, Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \Alt(\mu)
+  \cap B(\eta, r')$, Lemma~\ref{lem:static_near_hyperplane} to bound $\Hsp$ on $D(\mu)$ and
   Lemma~\ref{lem:ball_bound} bound the inverse of the maximal ratio by $(1 + \eps)^2 (1 +
   \delta)^2$; let $\eps, \delta \to 0$. Families that are not consistent at $\mu$ have an infinite
   ratio there (Lemma~\ref{lem:asymptoticRatio_eq_top}).
+
+  The Lean proof does without Lemmas~\ref{lem:ball_half_space_difficulty}
+  and~\ref{lem:ball_bound}. Let $L = \sum_k \abs{u_k} \sigma_k$, $t > 1$, $c = 1 - 1/t$, and $\rho$
+  given by Lemma~\ref{lem:static_near_hyperplane} for $c$. For $s > 0$ small, the model $\mu = \eta -
+  s u$ and the alternative $\lambda = \mu - t ((\mu - \eta)^{\top} u) d$, with the direction $d$ of
+  Lemma~\ref{lem:halfspace_direction}, are within $\rho$ of $\eta$, and $(\lambda - \eta)^{\top} u =
+  (t - 1) s \norm{u}^2 > 0$. For every allocation $\omega$, $\Hsp(\lambda) \le 2 L^2 / (c ((\lambda -
+  \eta)^{\top} u)^2)$ and $\sum_k \omega_k \KL(\nu_k(\mu), \nu_k(\lambda)) \le t^2 s^2 \norm{u}^4 / (2
+  L^2)$, whose product is $t^2 / (c (t - 1)^2) = (1 - 1/t)^{-3}$. Theorem~\ref{thm:asm_R_LB_limsup}
+  with $D(\mu) = \Alt(\mu) \cap B(\eta, \rho)$ bounds the inverse of the maximal ratio by this, for
+  the families with $p_{\mu, T} \to 0$; the others have an infinite ratio at $\mu$
+  (Lemma~\ref{lem:asymptoticRatio_eq_top}). Let $t \to \infty$.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 17]{D23}}]
@@ -182,16 +204,24 @@ Lemma~\ref{lem:ball_half_space_difficulty} does not give (E4, E5).
 
 \begin{lemma}
   \label{lem:static_near_hyperplane}
-  \uses{lem:ball_half_space_difficulty}
-  In the setting of Theorem~\ref{thm:flat_boundary}, for every $\eps > 0$ there is $\rho > 0$
-  such that every $\lambda \in \cD$ with $\norm{\lambda - \eta} < \rho$ has
-  $\Hsp(\lambda) \le (1 + \eps)\, 2 ((\lambda - \eta)^{\top} u)^{-2}$.
+  \lean{Degenne2023Existence.exists_ofReal_le_inv_staticDifficulty_of_hyperplane}
+  \leanok
+  \uses{lem:halfspace_cauchy_schwarz, lem:cost_gaussianReal}
+  In the setting of Theorem~\ref{thm:flat_boundary}, with $L = \sum_k \abs{u_k} \sigma_k$, for
+  every $c \in (0, 1)$ there is $\rho \in (0, r]$ such that every $\lambda$ with $\norm{\lambda -
+  \eta}_{\infty} < \rho$ and $(\lambda - \eta)^{\top} u \ne 0$ has
+  $\Hsp(\lambda)^{-1} \ge c ((\lambda - \eta)^{\top} u)^2 / (2 L^2)$, that is
+  $\Hsp(\lambda) \le c^{-1}\, 2 L^2 ((\lambda - \eta)^{\top} u)^{-2}$.
 \end{lemma}
 
 \begin{proof}
-  For allocations with all coordinates at least $\eps'$, the alternatives outside $B(\eta, r)$
-  cost at least $\eps' (r - \norm{\lambda - \eta})^2 / (2 \max_k \sigma_k^2)$, large compared to
-  $((\lambda - \eta)^{\top} u)^2$ near $\eta$, and those inside are handled by
-  Lemma~\ref{lem:ball_half_space_difficulty}; the perturbation $\omega^{\eps'}$ costs a factor
-  $1 + \eps'$ (E5).
+  \leanok
+  \uses{lem:halfspace_cauchy_schwarz, lem:cost_gaussianReal}
+  Take the allocation $\omega = c \omega^{\star} + (1 - c) / K$, with $\omega^{\star}_k = \abs{u_k}
+  \sigma_k / L$. The alternatives to $\lambda$ inside $B(\eta, r)$ are on the other side of the
+  hyperplane, and cost at least $c ((\lambda - \eta)^{\top} u)^2 / (2 L^2)$
+  (Lemma~\ref{lem:halfspace_cauchy_schwarz} with $x = \lambda - \eta$). Those outside move some arm
+  by at least $r - \rho \ge r / 2$, and cost at least $(1 - c) (r / 2)^2 / (2 K \sum_k \sigma_k^2)$,
+  which is larger than $((\lambda - \eta)^{\top} u)^2 / (2 L^2) \le (\sum_k \abs{u_k})^2 \rho^2 / (2
+  L^2)$ for $\rho$ small (E5).
 \end{proof}

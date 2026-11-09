@@ -169,11 +169,14 @@ proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
 
 \begin{lemma}
   \label{lem:asymptoticRatio_eq_top}
+  \lean{LMLExplore.Identification.IdentTask.asymptoticRatio_eq_top}
+  \leanok
   \uses{def:difficulty_ratio}
-  If $\mu \in \cD$, $H(\mu) < \infty$ and $p_{\mu, T}(\cA) \not\to 0$, then
+  If $H(\mu) < \infty$ and $p_{\mu, T}(\cA) \not\to 0$, then
   $R_{H, \infty}(\cA, \mu) = \infty$.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Along a subsequence $p_{\mu, T} \ge c > 0$, so $h_{\mu, T} \ge T / \log(1/c) \to \infty$.
 \end{proof}

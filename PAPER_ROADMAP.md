@@ -21,7 +21,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | proved | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | todo | `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
-| R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | todo | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean` |
+| R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | proved | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
 | R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean` |
 
 ## Notes
@@ -62,5 +62,11 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 - R15–R17: Identification 8.4, the results of [D23] on the existence of a complexity
   (Theorems 5–8 and 10, Lemmas 15–18). The proofs of Theorems 6 and 7 follow the corrections E3–E5
   of `notes/paper-errata.md`, and the one of Theorem 8 the correction E6.
+- R16: the static-proportions difficulty of Gaussian half-space identification with per-arm
+  variances (`ForLMLExplore/Identification/Task/HalfSpace.lean`, [D23, Lemma 15]) generalizes
+  LMLExplore's common-variance `Identification/Task/HalfSpace.lean`, with the reversed cost; the
+  per-arm Gaussian transportation cost (`ForLMLExplore/Identification/Task/ExpFamily.lean`)
+  generalizes `IdentTask.cost_gaussianBandit` and belongs next to it. The Lean proof of Theorem 7
+  does not use Lemmas 17 and 18.
 
 ## Proposed targets
