@@ -77,6 +77,13 @@ status:
     (ForLMLExplore/Identification/Task/ExpFamily.lean) and the infinite ratio of families that
     are not consistent at a model (asymptoticRatio_eq_top). The proof of Theorem 7 does not use
     Lemmas 17 and 18, which remain blueprint statements.
+    Phase 2, third round of 2026-11-09: Cramér's theorem on R (blueprint chapter prereq-ldp,
+    ForLMLExplore/Probability/LargeDeviations/Cramer.lean) is proved, the upper bound for every law
+    with a mean and the lower bound for every law (by truncation and exponential tilting), with
+    the goodness of the rate function when the cumulant generating function is finite near 0, and
+    its exponential-family form isLDP_cramer_expFamily. The headline Lemma 11 is blocked: as frozen
+    it is false for the zero base measure (notes/statement-corrections.md), and with the hypothesis
+    NeZero rho it is isLDP_cramer_expFamily.
   sorry_count: 15
   sorry_in_definitions: 0
 
@@ -195,9 +202,10 @@ alignment:
     - source: "lem:ldp_single_arm — Lemma 11"
       lean: "Degenne2023Existence.isLDP_empiricalMean_expFamily"
       module: "Degenne2023Existence.D2023.Lemma11"
-      status: "stated"
+      status: "blocked"
+      blocked: "statement-corrections: Lemma 11"
       relation: "exactMatch"
-      note: "The rate KL(x, mu) is extended to every level by the Cramér rate function of the member of mean mu."
+      note: "The rate KL(x, mu) is extended to every level by the Cramér rate function of the member of mean mu. False for the zero base measure (notes/statement-corrections.md); with NeZero rho it is LMLExplore.isLDP_cramer_expFamily."
     - source: "thm:ldp — Theorem 12"
       lean: "Degenne2023Existence.isLDP_empMean_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem12"

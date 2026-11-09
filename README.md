@@ -12,6 +12,8 @@ and [Mathlib](https://github.com/leanprover-community/mathlib4). Made from
   push to `main`. `scripts/formalize.sh` also commits the literature links, as
   `literature/annotations.jsonl`, when the paper is formalized and after the final bump.
 - The paper: `source/`. Errors found in it, with their corrections: `notes/paper-errata.md`.
+  Errors found in the project's own headline statements, where the paper is right:
+  `notes/statement-corrections.md`.
 - The paper's results: `Degenne2023Existence/D2023/`, one file per result, listed with their status
   in `formalization.yaml`; comparator challenges in `comparator/`. The plan:
   `notes/blueprint-outline.md`.

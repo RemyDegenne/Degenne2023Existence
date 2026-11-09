@@ -15,7 +15,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R7 | Characteristic time of Gaussian best arm identification, `H ≤ T* ≤ 2H` | exists | `LMLExplore.Identification.charTime_baiTask_gaussianBandit_le` | – | |
 | R8 | Sub-Gaussian lower bound on the Cramér rate function | exists | `ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction` | – | |
 | R9 | Fixed-budget algorithm families, probability of error, rate, oracle difficulty, difficulty ratios, consistency | target | Identification 8.4 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
-| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | todo | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `D2023/Lemma11.lean` |
+| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | todo | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
 | R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
 | R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | PR #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
@@ -45,7 +45,14 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   LMLExplore's Cramér–Chernoff bounds and the lower bound by exponential tilting at the means of the
   generated family and by truncation at the other levels of finite rate; [D23, Lemma 11] (the
   exponential-family case) is its specialization. Also the goodness of the rate function, and the
-  independence across coordinates (`lem:ldp_pi`).
+  independence across coordinates (`lem:ldp_pi`). Proved so far, without `sorry`: the criteria for
+  the bounds and `IsLDP.of_isClosed_of_mem_nhds` (`Basic.lean`), and in `Cramer.lean` Cramér's
+  theorem `isLDP_cramer` for every law with a mean (the lower bound
+  `neg_rateFunction_le_liminf_log_measure` for every law, by truncation as in [DZ98]), the
+  goodness `isGoodRateFunction_rateFunction` when the cgf is finite near `0`, and the
+  exponential-family form `isLDP_cramer_expFamily`. The laws are those of the empirical means
+  under `Measure.pi` over `Fin n`. `lem:ldp_pi` remains, and `D2023/Lemma11.lean` keeps the
+  blocked headline statement (`notes/statement-corrections.md`).
 - R11: `IsStaticProportions`, `staticClass` and `staticDifficulty` (alternative first in the
   divergence, unlike `IdentTask.altCost`), with `lem:exists_static` (cumulative tracking, R6),
   `lem:exists_rec`, `lem:iSup_open_simplex` and `lem:staticDifficulty_eq_charTime`.

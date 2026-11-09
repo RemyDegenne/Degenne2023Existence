@@ -26,3 +26,4 @@ public import Degenne2023Existence.ForLMLExplore.Identification.Task.ExpFamily
 public import Degenne2023Existence.ForLMLExplore.Identification.Task.HalfSpace
 public import Degenne2023Existence.ForLMLExplore.InformationTheory.KullbackLeibler.Bernoulli
 public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Basic
+public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Cramer

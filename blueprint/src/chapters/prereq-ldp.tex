@@ -24,43 +24,106 @@ principle exists in Mathlib, Tau Ceti, LML or LMLExplore.
   $\limsup_n \frac1n \log P_n(S) \le -\inf_{\cl S} I$ \cite{DZ98}.
 \end{definition}
 
-\begin{lemma}[Cramér's theorem]
-  \label{lem:cramer}
+\begin{lemma}
+  \label{lem:ldp_of_bounds}
+  \lean{LMLExplore.IsLDP.of_isClosed_of_mem_nhds,
+    LMLExplore.limsup_log_div_le_neg_of_le_mul_exp,
+    LMLExplore.neg_le_liminf_log_div_of_mul_exp_le}
+  \leanok
   \uses{def:ldp}
-  Let $P$ be a probability measure on $\R$ whose cumulant generating function is finite on a
-  neighbourhood of $0$. The empirical means of $n$ independent samples of $P$ satisfy the large
-  deviation principle with speed $n$ and the Cramér rate function
-  $I(x) = \sup_t (t x - \log \E_P[e^{t X}])$ \cite[Theorem 2.2.3]{DZ98}.
+  If $I$ is lower semicontinuous, $\limsup_n \frac1n \log P_n(F) \le -\inf_F I$ for every closed
+  set $F$, and $-I(x) \le \liminf_n \frac1n \log P_n(U)$ for every neighbourhood $U$ of every point
+  $x$, then $(P_n)$ satisfies the large deviation principle with rate function $I$. Bounds
+  $u_n \le C e^{-n r}$ for every $r < c$ give $\limsup_n \frac1n \log u_n \le -c$, and bounds
+  $C e^{-n r} \le u_n$ with $C > 0$ for every $r > c$ give $-c \le \liminf_n \frac1n \log u_n$.
 \end{lemma}
 
 \begin{proof}
-  Upper bound: LMLExplore's Cramér--Chernoff bounds on the half-lines, the closed sets of $\R$
-  being covered by the two half-lines at the points of the complement nearest to the mean.
-  Lower bound: for $x$ in the interior of the means of the exponential family of $P$, exponential
-  tilting (LMLExplore, \texttt{ExponentialFamily/Cramer.lean}); at the other levels of finite
-  rate, truncation.
+  \leanok
+  Monotonicity of the measures: $P_n(\inter S) \le P_n(S) \le P_n(\cl S)$, and $\inter S$ is a
+  neighbourhood of each of its points. For the exponential bounds, $\frac1n \log(C e^{-n r}) =
+  \frac{\log C}{n} - r \to -r$.
+\end{proof}
+
+\begin{lemma}[Cramér's theorem]
+  \label{lem:cramer}
+  \lean{LMLExplore.isLDP_cramer, LMLExplore.limsup_log_measure_le_neg_iInf_rateFunction,
+    LMLExplore.neg_rateFunction_le_liminf_log_measure}
+  \leanok
+  \uses{def:ldp, lem:ldp_of_bounds}
+  Let $P$ be a probability measure on $\R$ with a mean. The empirical means of $n$ independent
+  samples of $P$ satisfy the large deviation principle with speed $n$ and the Cramér rate function
+  $I(x) = \sup_t (t x - \log \E_P[e^{t X}])$ \cite[Theorem 2.2.3]{DZ98}. The lower bound
+  $-I(x) \le \liminf_n \frac1n \log P_n(U)$ on the neighbourhoods $U$ of $x$ holds for every
+  probability measure $P$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:ldp_of_bounds}
+  Upper bound: LMLExplore's Cramér--Chernoff bounds on the half-lines, a closed set $F$ not
+  containing the mean $m$ lying in the two half-lines bounded by $\min(F \cap [m, \infty))$ and
+  $\max(F \cap (-\infty, m])$, where $I \ge \inf_F I$.
+  Lower bound at a level $x$ of finite rate. If $P$ gives no mass to one side of $x$, then
+  $I(x) = -\log P(\{x\})$ and the empirical mean is $x$ with probability at least $P(\{x\})^n$.
+  Otherwise, as in \cite{DZ98}, truncate $P$ to $[-M, M]$: the normalized truncation $P_M$ has every
+  exponential moment and charges both sides of $x$, so $t \mapsto \Lambda_M(t) - t x$ is coercive
+  and its minimizer is a tilt of mean $x$; LMLExplore's exponential tilting
+  (\texttt{ExponentialFamily/Cramer.lean}) gives $P_M^{\otimes n}(\abs{S_n - n x} \le n \delta) \ge
+  e^{-n (I_M(x) + \varepsilon)}$ eventually, and $P^{\otimes n} \ge P([-M, M])^n P_M^{\otimes n}$.
+  The functions $g_M(t) = \int_{[-M, M]} e^{t (y - x)} \, dP(y)$ increase to $g(t) = \int e^{t (y - x)}
+  \, dP(y) \ge e^{-I(x)}$, and they are continuous and, for $M$ large, coercive uniformly in $M$:
+  if $\inf_t g_M < e^{-I(x) - \varepsilon}$ for every $M$, the nested compact sets
+  $\{t \in [-A, A] \mid g_M(t) \le e^{-I(x) - \varepsilon}\}$ have a common point $t_0$, and
+  $g(t_0) = \sup_M g_M(t_0) < e^{-I(x)}$ by monotone convergence, a contradiction. Hence
+  $I_M(x) - \log P([-M, M]) \le I(x) + \varepsilon$ for some $M$.
 \end{proof}
 
 \begin{lemma}
   \label{lem:rate_good}
+  \lean{LMLExplore.isGoodRateFunction_rateFunction}
+  \leanok
   \uses{def:good_rate}
-  Under the hypothesis of Lemma~\ref{lem:cramer}, the Cramér rate function is a good rate
-  function.
+  If the cumulant generating function of $P$ is finite on a neighbourhood of $0$, the Cramér rate
+  function is a good rate function \cite[Lemma 2.2.5]{DZ98}.
 \end{lemma}
 
 \begin{proof}
-  It is a supremum of continuous functions, and $I(x) \ge t \abs{x} - C$ for some $t > 0$.
+  \leanok
+  It is lower semicontinuous, and $I(x) \ge t \abs{x} - C$ for some $t > 0$, so its sublevel sets
+  are closed and bounded.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:cramer_expFamily}
+  \lean{LMLExplore.isLDP_cramer_expFamily}
+  \leanok
+  \uses{lem:cramer, lem:rate_good}
+  For a nonzero measure $\rho$ on $\R$ and a mean $\mu$ of its exponential family, the empirical
+  means of $n$ independent samples of the member of mean $\mu$ satisfy the large deviation
+  principle with speed $n$ and the good rate function $x \mapsto \KL(x, \mu)$, extended to every
+  level by the Cramér rate function of the member of mean $\mu$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:cramer, lem:rate_good}
+  The member of mean $\mu$ has natural parameter in the interior of the natural parameters, so it
+  is a probability measure whose cumulant generating function is finite near $0$.
 \end{proof}
 
 \begin{lemma}
   \label{lem:rate_continuousOn}
-  For an exponential family whose samples lie in the closure of its means, the rate function
+  \lean{MeasureTheory.Measure.continuousOn_expFamilyRate_left}
+  \leanok
+  For an exponential family whose statistic is not almost everywhere constant, the rate function
   $x \mapsto \KL(x, \mu)$ is continuous on the closure of the means.
 \end{lemma}
 
 \begin{proof}
-  It is convex and lower semicontinuous, finite on the closure of the means, and a convex function
-  on an interval is upper semicontinuous at its endpoints along the interval.
+  \leanok
+  It is convex and lower semicontinuous, and a convex function on an interval is upper
+  semicontinuous at its endpoints along the interval (LMLExplore).
 \end{proof}
 
 \begin{lemma}
@@ -94,10 +157,13 @@ principle exists in Mathlib, Tau Ceti, LML or LMLExplore.
 
 \begin{lemma}
   \label{lem:rate_ge_sq_of_subgaussian}
+  \lean{ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction}
+  \leanok
   If $P$ is $\sigma^2$-sub-Gaussian around its mean $m$, its Cramér rate function satisfies
   $I(x) \ge (x - m)^2 / (2 \sigma^2)$.
 \end{lemma}
 
 \begin{proof}
-  $I(x) \ge t (x - m) - \sigma^2 t^2 / 2$, maximal at $t = (x - m) / \sigma^2$.
+  \leanok
+  $I(x) \ge t (x - m) - \sigma^2 t^2 / 2$, maximal at $t = (x - m) / \sigma^2$ (LMLExplore).
 \end{proof}
