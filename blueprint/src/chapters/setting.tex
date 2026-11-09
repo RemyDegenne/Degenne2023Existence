@@ -1,0 +1,132 @@
+\chapter{Setting}
+\label{chap:setting}
+
+This chapter follows Sections 1 and 2 of \cite{D23}. A fixed budget identification task asks a
+question about a bandit with $K$ arms. In Lean it is an identification task of LMLExplore: a type
+of models $\Theta$, for each model $\theta$ a bandit $\nu(\theta)$ whose arm $a$ returns an
+observation of law $\nu_a(\theta)$, a set $\cD$ of admissible models and, for each model, the set
+of its correct answers. The paper's tasks have a single correct answer $i^{\star}(\mu)$ on every
+admissible model, and their models are the vectors of means $\mu = (\mu_1, \dots, \mu_K)$ of arms
+in one-parameter canonical exponential families, the arm $k$ having means in an open interval
+$\cM_k$. For an answer $i$, $\cD_i$ is the set of admissible models whose correct answer is $i$.
+
+\begin{definition}
+  \label{def:alternatives}
+  \lean{LMLExplore.Identification.IdentTask.alternatives}
+  \leanok
+  The alternatives $\Alt(\theta)$ to a model $\theta$ are the admissible models that have no
+  correct answer in common with $\theta$. For a single-answer task and $\mu \in \cD$,
+  $\Alt(\mu) = \{\lambda \in \cD \mid i^{\star}(\lambda) \ne i^{\star}(\mu)\}$.
+\end{definition}
+
+\begin{definition}[{\cite[Assumption 1]{D23}}]
+  \label{asm:answer_nhds}
+  \lean{Degenne2023Existence.IsRegular}
+  \leanok
+  A task on the vectors of means satisfies Assumption 1 for the set $S = \prod_k \cM_k$ of the
+  vectors of means of the families if $\cD \subseteq S$, $\cD = \bigcup_i \cD_i$, every $\cD_i$ is
+  open and equal to $\inter(\cl(\cD_i))$, and $S \subseteq \bigcup_i \cl(\cD_i)$.
+\end{definition}
+
+\begin{definition}
+  \label{def:fixed_budget_family}
+  \lean{LMLExplore.Identification.IsFixedBudgetFamily}
+  \leanok
+  An algorithm family $\cA = (\cA_T)_{T \in \N}$ is a sequence of identification algorithms such
+  that $\cA_T$ stops after exactly $T$ rounds. An algorithm class is a set of algorithm families;
+  $\cC_{\infty}$ is the class of all algorithm families.
+\end{definition}
+
+\begin{definition}
+  \label{def:error_prob}
+  \lean{LMLExplore.Identification.IdentTask.errorProb}
+  \leanok
+  \uses{def:fixed_budget_family}
+  The probability of error $p_{\theta, T}(\cA)$ of the family $\cA$ on the model $\theta$ is the
+  probability that the output of $\cA_T$, run on the bandit of $\theta$, is not a correct answer
+  of $\theta$.
+\end{definition}
+
+\begin{definition}
+  \label{def:error_rate}
+  \lean{LMLExplore.Identification.IdentTask.errorRate}
+  \leanok
+  \uses{def:error_prob}
+  The rate of $\cA$ at $\theta$ is $h_{\theta, T}(\cA) = T / \log(1 / p_{\theta, T}(\cA)) \in
+  [0, \infty]$, so that $p_{\theta, T}(\cA) = \exp(-T / h_{\theta, T}(\cA))$. It is $0$ if
+  $p_{\theta, T}(\cA) = 0$ and $\infty$ if $p_{\theta, T}(\cA) = 1$ and $T > 0$.
+\end{definition}
+
+\begin{definition}
+  \label{def:oracle_difficulty}
+  \lean{LMLExplore.Identification.IdentTask.oracleDifficulty}
+  \leanok
+  \uses{def:error_rate}
+  The oracle difficulty of an algorithm class $\cC$ is
+  $H_{\cC}(\theta) = \inf_{\cA \in \cC} \limsup_{T \to \infty} h_{\theta, T}(\cA)$. The class admits
+  a complexity if a single $\cA \in \cC$ satisfies $\limsup_T h_{\mu, T}(\cA) \le H_{\cC}(\mu)$ for
+  all $\mu \in \cD$.
+\end{definition}
+
+\begin{definition}
+  \label{def:difficulty_ratio}
+  \lean{LMLExplore.Identification.IdentTask.difficultyRatio,
+    LMLExplore.Identification.IdentTask.asymptoticRatio, LMLExplore.Identification.IdentTask.maxRatio}
+  \leanok
+  \uses{def:error_rate}
+  For a difficulty function $H : \Theta \to [0, \infty]$, the difficulty ratio of $\cA$ at
+  $\theta$ is $R_{H, T}(\cA, \theta) = h_{\theta, T}(\cA) / H(\theta)$, its asymptotic version is
+  $R_{H, \infty}(\cA, \theta) = \limsup_{T \to \infty} R_{H, T}(\cA, \theta)$, and the maximal
+  difficulty ratio of $\cA$ is $\sup_{\theta \in \cD} R_{H, \infty}(\cA, \theta)$.
+\end{definition}
+
+\begin{definition}
+  \label{def:consistent}
+  \lean{LMLExplore.Identification.IdentTask.IsConsistent}
+  \leanok
+  \uses{def:error_prob}
+  The family $\cA$ is consistent if $p_{\mu, T}(\cA) \to 0$ for every $\mu \in \cD$.
+\end{definition}
+
+\begin{definition}
+  \label{def:static_proportions}
+  \lean{LMLExplore.Identification.IdentTask.IsStaticProportions}
+  \leanok
+  \uses{def:fixed_budget_family}
+  Let $\omega \in \Simplex^0$, the proportions with positive coordinates, and let
+  $\mathrm{rec}$ map vectors of means to answers. A static proportions family with proportions
+  $\omega$ and recommendation rule $\mathrm{rec}$ is a family $\cA$ such that, on every
+  $\mu \in \cD$ and for every $T$, almost surely $\abs{N_{T,k} - T \omega_k} \le K$ for every arm
+  $k$, where $N_{T,k}$ is the number of pulls of arm $k$ in the first $T$ rounds, and the output of
+  $\cA_T$ is $\mathrm{rec}(\hat\mu_T)$, with $\hat\mu_T$ the vector of the empirical means.
+\end{definition}
+
+The paper takes $\mathrm{rec} = i^{\star}$, extended arbitrarily outside $\cD$. Theorem 1 fails for
+some extensions (\texttt{notes/paper-errata.md}, E1).
+
+\begin{definition}
+  \label{def:static_class}
+  \lean{LMLExplore.Identification.IdentTask.staticClass}
+  \leanok
+  \uses{def:static_proportions}
+  The class $\Csp$ of static proportions algorithms contains the static proportions families with
+  any proportions $\omega \in \Simplex^0$ and any recommendation rule that gives a correct answer
+  on $\cD$.
+\end{definition}
+
+\begin{definition}
+  \label{def:static_difficulty}
+  \lean{LMLExplore.Identification.IdentTask.staticDifficulty}
+  \leanok
+  \uses{def:alternatives}
+  The static-proportions difficulty of a model $\theta$ is
+  \[ \Hsp(\theta) = \Bigl( \max_{\omega \in \Simplex} \inf_{\lambda \in \Alt(\theta)}
+    \sum_{k=1}^K \omega_k \KL(\nu_k(\lambda), \nu_k(\theta)) \Bigr)^{-1}, \]
+  with the alternative first in the divergence. By Theorem~\ref{thm:oracle_difficulty_class}, it
+  is the oracle difficulty $H_{\Csp}$ of the static proportions algorithms, the notation of the
+  paper.
+\end{definition}
+
+The statements about $H_{\Csp}$ of Sections 4 and 5 of the paper are stated with $\Hsp$; those
+quantifying over the classes $\cC \supseteq \Csp$ (Theorems~\ref{thm:gaussian_bai_no_complexity}
+and~\ref{thm:bernoulli_bai_no_complexity}) use the oracle difficulty $H_{\cC}$.

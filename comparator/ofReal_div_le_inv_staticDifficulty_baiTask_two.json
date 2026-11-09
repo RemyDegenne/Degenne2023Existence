@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_ofReal_div_le_inv_staticDifficulty_baiTask_two",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.ofReal_div_le_inv_staticDifficulty_baiTask_two"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

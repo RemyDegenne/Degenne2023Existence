@@ -1,14 +1,30 @@
 {
-  "Deg23": {
-    "uri": "",
+  "D23": {
+    "uri": "https://arxiv.org/abs/2303.09468",
     "citation": {
-      "id": "Deg23",
-      "type": "article",
-      "title": "<title of the paper>",
-      "author": [{"family": "<family name>", "given": "<given name>"}],
-      "issued": {"date-parts": [[2026]]}
+      "id": "D23",
+      "type": "paper-conference",
+      "title": "On the Existence of a Complexity in Fixed Budget Bandit Identification",
+      "author": [{"family": "Degenne", "given": "Rémy"}],
+      "container-title": "Proceedings of Thirty Sixth Conference on Learning Theory (COLT)",
+      "collection-title": "Proceedings of Machine Learning Research",
+      "volume": "195",
+      "issued": {"date-parts": [[2023]]}
     },
-    "identifiers": {},
-    "version": ""
+    "identifiers": {"arxiv": "2303.09468"},
+    "version": "v2"
+  },
+  "DZ98": {
+    "uri": "https://doi.org/10.1007/978-1-4612-5320-4",
+    "citation": {
+      "id": "DZ98",
+      "type": "book",
+      "title": "Large Deviations Techniques and Applications",
+      "author": [{"family": "Dembo", "given": "Amir"}, {"family": "Zeitouni", "given": "Ofer"}],
+      "edition": "2",
+      "publisher": "Springer New York",
+      "DOI": "10.1007/978-1-4612-5320-4",
+      "issued": {"date-parts": [[1998]]}
+    }
   }
 }

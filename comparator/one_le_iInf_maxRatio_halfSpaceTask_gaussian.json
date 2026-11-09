@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_one_le_iInf_maxRatio_halfSpaceTask_gaussian",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

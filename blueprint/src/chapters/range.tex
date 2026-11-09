@@ -1,0 +1,197 @@
+\chapter{The range of the difficulty ratio}
+\label{chap:range}
+
+Section 4 and Appendix C of \cite{D23}: the smallest maximal difficulty ratio to $\Hsp$ over all
+algorithm families, $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA,
+\lambda)$, is at most $K$ on every task, equal to $K$ for positivity, and at least $1$ for Gaussian
+arms on tasks with a flat boundary. The paper writes $H_{\Csp}$, equal to $\Hsp$ by
+Theorem~\ref{thm:oracle_difficulty_class}.
+
+\begin{theorem}[{\cite[Theorem 5]{D23}}]
+  \label{thm:uniform_upper_bound}
+  \lean{Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions}
+  \leanok
+  \uses{thm:oracle_difficulty_sp, def:static_difficulty}
+  Under the hypotheses of Theorem~\ref{thm:oracle_difficulty_sp}, a static proportions family
+  $\cA^{sp}_{\omega}$ with proportions $\omega \in \Simplex^0$ has a finite maximal difficulty ratio
+  to $\Hsp$, and $\sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA^{sp}_{\omega}, \lambda) \le (\min_j
+  \omega_j)^{-1}$.
+\end{theorem}
+
+\begin{proof}
+  \uses{thm:oracle_difficulty_sp}
+  For every $\omega' \in \Simplex$, $\omega_k \ge \omega'_k \min_j \omega_j$, so
+  $\inf_{\Alt(\mu)} \sum_k \omega_k \KL \ge \min_j \omega_j \inf_{\Alt(\mu)} \sum_k \omega'_k \KL$;
+  take the supremum over $\omega'$ and apply Theorem~\ref{thm:oracle_difficulty_sp}.
+\end{proof}
+
+\begin{corollary}[{\cite[Theorem 5]{D23}}]
+  \label{thm:uniform_upper_bound_uniform}
+  \lean{Degenne2023Existence.maxRatio_staticDifficulty_le_card}
+  \leanok
+  \uses{thm:uniform_upper_bound}
+  The uniform allocation $\cA_u$ satisfies
+  $\sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA_u, \lambda) \le K$.
+\end{corollary}
+
+\begin{proof}
+  \uses{thm:uniform_upper_bound}
+  Theorem~\ref{thm:uniform_upper_bound} with $\omega_j = 1/K$.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 6]{D23}}]
+  \label{thm:positivity_LB}
+  \lean{Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card}
+  \leanok
+  \uses{cor:corner_lb, thm:ldp, lem:exists_static, lem:static_minThreshold_one_low,
+    lem:asymptoticRatio_eq_top}
+  For the positivity task with threshold $\gamma$, a mean of every family,
+  $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) = K$.
+\end{theorem}
+
+\begin{proof}
+  \uses{cor:corner_lb, thm:ldp, lem:exists_static, lem:static_minThreshold_one_low,
+    lem:asymptoticRatio_eq_top}
+  Upper bound: the uniform static proportions family recommending whether some empirical mean is
+  below $\gamma$ (Lemma~\ref{lem:exists_static}); by Theorem~\ref{thm:ldp} and the monotonicity of
+  the rate functions on each side of the means, its rate is the one of
+  Theorem~\ref{thm:oracle_difficulty_sp}, and the argument of Theorem~\ref{thm:uniform_upper_bound}
+  bounds its ratio by $K$. Lower bound: let $m > \gamma > \ell$ be means, $\mu = (m, \dots, m)$
+  and $\lambda^{(j)}$ equal to $\mu$ except $\lambda^{(j)}_j = \ell$. If $p_{\mu,T} \not\to 0$ the
+  ratio is infinite (Lemma~\ref{lem:asymptoticRatio_eq_top}); otherwise
+  Corollary~\ref{cor:corner_lb} and $\Hsp(\lambda^{(j)}) = \KL(\gamma, \ell)^{-1}$
+  (Lemma~\ref{lem:static_minThreshold_one_low}) give the bound $K \KL(\gamma, \ell) / \KL(m,
+  \ell)$, which tends to $K$ as $m \downarrow \gamma$. The paper lets $\ell$ tend to the lower end
+  of the means instead, which does not give a ratio tending to $1$ in general (E3).
+\end{proof}
+
+\begin{lemma}
+  \label{lem:static_minThreshold_one_low}
+  \uses{def:static_difficulty}
+  For the positivity task with threshold $\gamma$ and a vector of means $\lambda$ with exactly one
+  arm $j$ below $\gamma$, $\Hsp(\lambda) = \KL(\gamma, \lambda_j)^{-1}$.
+\end{lemma}
+
+\begin{proof}
+  The alternatives have all means above $\gamma$; the cost of moving the arm $j$ there is
+  $\omega_j \KL(\gamma, \lambda_j)$ in the limit, the other arms can stay, and the maximum over
+  $\omega$ is at $\omega = \delta_j$.
+\end{proof}
+
+\begin{lemma}[{\cite[Lemma 15]{D23}}]
+  \label{lem:half_space_difficulty}
+  \lean{Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian}
+  \leanok
+  \uses{def:static_difficulty}
+  For Gaussian arms with variances $\sigma_k^2 > 0$ and the half-space task with normal vector
+  $u \ne 0$, every $\lambda \in \cD$ has
+  $\Hsp(\lambda)^{-1} = (\lambda^{\top} u)^2 / (2 (\sum_k \abs{u_k} \sigma_k)^2)$, which is
+  $\frac12 (\lambda^{\top} u)^2$ for $\sum_k \abs{u_k} \sigma_k = 1$.
+\end{lemma}
+
+\begin{proof}
+  The infimum of $\frac12 \sum_k \omega_k \sigma_k^{-2} (\nu_k - \lambda_k)^2$ over the other side
+  of the hyperplane is $(\lambda^{\top} u)^2 / (2 \sum_k u_k^2 \sigma_k^2 / \omega_k)$, and by
+  Cauchy--Schwarz the minimum of $\sum_k u_k^2 \sigma_k^2 / \omega_k$ over the simplex is
+  $(\sum_k \abs{u_k} \sigma_k)^2$.
+\end{proof}
+
+\begin{lemma}[{\cite[Lemma 16]{D23}}]
+  \label{lem:half_space}
+  \lean{Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian}
+  \leanok
+  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup_all, lem:asymptoticRatio_eq_top}
+  For Gaussian half-space identification,
+  $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) \ge 1$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:half_space_difficulty, thm:asm_R_LB_limsup_all, lem:asymptoticRatio_eq_top}
+  With $\sum_k \abs{u_k} \sigma_k = 1$, for every $\nu \in \cD$,
+  $\max_{\omega} \inf_{\lambda \in \Alt(\nu)} \Hsp(\lambda) \sum_k \omega_k \KL(\nu_k, \lambda_k) =
+  \max_{\omega} \inf_{a > 0} (\sqrt a + \abs{u^{\top} \nu})^2 / (a \norm{u}^2_{\omega^{-1} \sigma^2})
+  = 1$ (Lemma~\ref{lem:half_space_difficulty}); conclude by
+  Theorem~\ref{thm:asm_R_LB_limsup_all} for consistent families and
+  Lemma~\ref{lem:asymptoticRatio_eq_top} for the others.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 7]{D23}}]
+  \label{thm:flat_boundary}
+  \lean{Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane}
+  \leanok
+  \uses{thm:asm_R_LB_limsup, lem:ball_bound, lem:static_near_hyperplane,
+    lem:asymptoticRatio_eq_top}
+  Suppose that in a ball $B(\eta, r)$, $r > 0$, the task has two answers $i \ne j$ and the
+  admissible models are the vectors off a hyperplane through $\eta$, with the answer $i$ on one
+  side and $j$ on the other. Then for Gaussian arms with known variances,
+  $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) \ge 1$.
+\end{theorem}
+
+The paper uses a Euclidean ball; balls of the different norms of $\R^K$ contain each other, and
+the Lean statement uses the sup-norm ball. It does not need Assumption 1.
+
+\begin{proof}
+  \uses{thm:asm_R_LB_limsup, lem:ball_bound, lem:static_near_hyperplane,
+    lem:asymptoticRatio_eq_top}
+  For $\mu$ close to $\eta$, Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \Alt(\mu) \cap
+  B(\eta, r')$, Lemma~\ref{lem:static_near_hyperplane} to bound $\Hsp$ on $D(\mu)$ and
+  Lemma~\ref{lem:ball_bound} bound the inverse of the maximal ratio by $(1 + \eps)^2 (1 +
+  \delta)^2$; let $\eps, \delta \to 0$. Families that are not consistent at $\mu$ have an infinite
+  ratio there (Lemma~\ref{lem:asymptoticRatio_eq_top}).
+\end{proof}
+
+\begin{lemma}[{\cite[Lemma 17]{D23}}]
+  \label{lem:ball_half_space_difficulty}
+  In the setting of Theorem~\ref{thm:flat_boundary} with the ball of the norm
+  $\norm{\cdot}_{\sigma^{-2}}$ and $\sum_k \abs{u_k} \sigma_k = 1$, for $\mu \in B(\eta, r / (\sqrt K
+  + 1))$ with $\mu^{\top} u < \eta^{\top} u$,
+  \[ \max_{\omega \in \Simplex} \inf_{\lambda \in \Alt(\mu) \cap B(\eta, r)} \sum_k \omega_k
+    \sigma_k^{-2} (\lambda_k - \mu_k)^2 = \max_{\omega \in \Simplex} \inf_{(\lambda - \eta)^{\top} u
+    \ge 0} \sum_k \omega_k \sigma_k^{-2} (\lambda_k - \mu_k)^2 = ((\mu - \eta)^{\top} u)^2. \]
+\end{lemma}
+
+The paper prints the statement without the weights $\sigma_k^{-2}$, and moves $\mu$ along $\sigma$
+instead of $(\mathrm{sign}(u_k) \sigma_k)_k$ (E4).
+
+\begin{proof}
+  The half-space value is attained at $\omega_k = \abs{u_k} \sigma_k$; the point $\mu - ((\mu -
+  \eta)^{\top} u) (\mathrm{sign}(u_k) \sigma_k)_k$ is on the hyperplane and in $B(\eta, r)$, and the
+  alternatives in the ball lie in the half-space.
+\end{proof}
+
+\begin{lemma}[{\cite[Lemma 18]{D23}}]
+  \label{lem:ball_bound}
+  \uses{lem:ball_half_space_difficulty}
+  Let $\delta, \eps > 0$, $r' = r / (\sqrt K + 1)$ and $r'' = \frac12 r' \frac{\delta\eps}{(1 +
+  \delta)(1 + \eps)}$. For $\mu \in B(\eta, r'')$ with $(\mu - \eta)^{\top} u > 0$ and
+  $D(\mu) = \Alt(\mu) \cap B(\eta, r')$,
+  \[ \max_{\omega \in \Simplex} \inf_{\lambda \in D(\mu)} \frac{2}{((\lambda - \eta)^{\top} u)^2}
+    \sum_k \omega_k \KL(\mu_k, \lambda_k) \le (1 + \eps)(1 + \delta)^2. \]
+\end{lemma}
+
+The paper prints the statement without the factor $2((\lambda - \eta)^{\top} u)^{-2}$ and with the
+arguments of $\KL$ swapped, and its proof replaces that factor by $\Hsp(\lambda)$, which
+Lemma~\ref{lem:ball_half_space_difficulty} does not give (E4, E5).
+
+\begin{proof}
+  \uses{lem:ball_half_space_difficulty}
+  The perturbation $\omega^{\eps} = (\omega + \eps) / (1 + \eps)$ and the explicit alternative
+  $\lambda_{\omega^{\eps}}(\mu)$ at distance $x = \frac12 r' \frac{\eps}{(1 + \delta)(1 + \eps)}$
+  beyond the hyperplane, which lies in $B(\eta, r')$, as in the paper.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:static_near_hyperplane}
+  \uses{lem:ball_half_space_difficulty}
+  In the setting of Theorem~\ref{thm:flat_boundary}, for every $\eps > 0$ there is $\rho > 0$
+  such that every $\lambda \in \cD$ with $\norm{\lambda - \eta} < \rho$ has
+  $\Hsp(\lambda) \le (1 + \eps)\, 2 ((\lambda - \eta)^{\top} u)^{-2}$.
+\end{lemma}
+
+\begin{proof}
+  For allocations with all coordinates at least $\eps'$, the alternatives outside $B(\eta, r)$
+  cost at least $\eps' (r - \norm{\lambda - \eta})^2 / (2 \max_k \sigma_k^2)$, large compared to
+  $((\lambda - \eta)^{\top} u)^2$ near $\eta$, and those inside are handled by
+  Lemma~\ref{lem:ball_half_space_difficulty}; the perturbation $\omega^{\eps'}$ costs a factor
+  $1 + \eps'$ (E5).
+\end{proof}

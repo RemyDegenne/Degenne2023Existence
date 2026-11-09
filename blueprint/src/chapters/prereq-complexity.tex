@@ -1,0 +1,123 @@
+\chapter{Fixed-budget complexity}
+\label{chap:prereq_complexity}
+
+Library-shaped material on fixed-budget algorithm families and static proportions, for
+\texttt{ForLMLExplore/Identification/}. The definitions are those of Chapter~\ref{chap:setting}.
+
+\begin{lemma}
+  \label{lem:inv_difficultyRatio}
+  \uses{def:difficulty_ratio}
+  If $H(\theta) \ne 0, \infty$ and $T > 0$, then $R_{H,T}(\cA, \theta)^{-1} = H(\theta)
+  \log(1/p_{\theta,T}(\cA)) / T$.
+\end{lemma}
+
+\begin{proof}
+  The definitions, in $[0, \infty]$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:tendsto_errorRate_iff}
+  \uses{def:error_rate}
+  For $c \in [0, \infty]$, $h_{\theta, T}(\cA) \to c^{-1}$ if and only if
+  $-\frac1T \log p_{\theta, T}(\cA) \to c$.
+\end{lemma}
+
+\begin{proof}
+  $h_{\theta, T} = (-\frac1T \log p_{\theta, T})^{-1}$ for $T > 0$, and inversion is a
+  homeomorphism of $[0, \infty]$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:oracleDifficulty_mono}
+  \uses{def:oracle_difficulty}
+  If $\cC \subseteq \cC'$, then $H_{\cC'} \le H_{\cC}$, and $R_{H_{\cC}, T} \le R_{H_{\cC'}, T}$.
+\end{lemma}
+
+\begin{proof}
+  An infimum over a larger set is smaller.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:iSup_open_simplex}
+  \uses{def:static_difficulty}
+  The supremum of $\omega \mapsto \inf_{\lambda \in \Alt(\theta)} \sum_k \omega_k
+  \KL(\nu_k(\lambda), \nu_k(\theta))$ over the positive proportions $\Simplex^0$ is its supremum
+  over $\Simplex$.
+\end{lemma}
+
+\begin{proof}
+  The function is concave and nonnegative: along the segment from $\omega \in \Simplex$ to the
+  uniform allocation, its values are at least $(1 - t)$ times its value at $\omega$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:iSup_iInf_mul}
+  For a finite set $s$ of arms and $c_j \in (0, \infty]$,
+  $\max_{\omega \in \Simplex} \min_{j \in s} c_j \omega_j = (\sum_{j \in s} c_j^{-1})^{-1}$.
+\end{lemma}
+
+\begin{proof}
+  Equalize $c_j \omega_j$ on $s$ and put no weight outside $s$; LMLExplore's
+  \texttt{answerValue\_eq\_of\_altCost\_eq\_iInf} is the case $s = $ all the arms.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:staticDifficulty_eq_charTime}
+  \uses{def:static_difficulty}
+  If $\KL(\nu_k(\lambda), \nu_k(\theta)) = \KL(\nu_k(\theta), \nu_k(\lambda))$ for all models and
+  arms (Gaussian arms with known variances), then for a single-answer task $\Hsp(\theta)$ is the
+  characteristic time $T^{\star}(\theta)$ of LMLExplore at every admissible model.
+\end{lemma}
+
+\begin{proof}
+  Both are the inverse of the same maximin, the alternatives to $\theta$ being the alternatives to
+  its answer.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:exists_static}
+  \uses{def:static_proportions}
+  For every $\omega \in \Simplex^0$ and every measurable recommendation rule, there is a static
+  proportions family with proportions $\omega$ and that rule.
+\end{lemma}
+
+\begin{proof}
+  Cumulative tracking with the constant targets $\omega$ (LMLExplore,
+  \texttt{Identification/CumulativeTracking.lean}) has $\abs{N_{T,k} - T \omega_k} \le K - 1$
+  almost surely; the fixed-budget algorithm with budget $T$ and the deterministic output rule
+  $\mathrm{rec}(\hat\mu_T)$ (\texttt{fixedBudget}) completes it.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:fb_change_of_measure}
+  \uses{def:fixed_budget_family}
+  For an algorithm $\cA_T$ with budget $T$, two models $\mu, \lambda$ and an event $E$ of the
+  output, $\kl(\Prob_{\mu}(E), \Prob_{\lambda}(E)) \le \sum_k \E_{\mu}[N_{T,k}] \KL(\nu_k(\mu),
+  \nu_k(\lambda))$.
+\end{lemma}
+
+\begin{proof}
+  The data processing inequality for the law of (history, output), and the divergence
+  decomposition of LML at the stopping time $T$ (LMLExplore's
+  \texttt{Identification/ChangeOfMeasure.lean}).
+\end{proof}
+
+\begin{lemma}
+  \label{lem:klBer_ge}
+  For $a, b \in [0, 1]$, $\kl(a, b) \ge a \log(1/b) - \log 2$.
+\end{lemma}
+
+\begin{proof}
+  $\kl(a, b) = a \log\frac1b + (1 - a) \log\frac1{1 - b} - H(a) \ge a \log\frac1b - \log 2$, with
+  $H(a) \le \log 2$ the binary entropy.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:tendsto_subseq_proportions}
+  For a fixed-budget family, every sequence of budgets has a subsequence along which the expected
+  proportions $\E_{\mu}[N_T / T]$ converge in $\Simplex$.
+\end{lemma}
+
+\begin{proof}
+  They lie in the compact simplex (LMLExplore's \texttt{expectedPullProportion\_mem\_simplex}).
+\end{proof}

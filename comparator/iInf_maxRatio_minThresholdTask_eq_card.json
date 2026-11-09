@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_iInf_maxRatio_minThresholdTask_eq_card",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

@@ -7,9 +7,19 @@ version: "v0.4"
 project:
   name: "Degenne2023Existence"
   description: >-
-    <One paragraph: which paper, which results, on which libraries (LMLExplore, and through it
-    LML, Tau Ceti and Mathlib), in which generality, and the two-phase plan (phase 1 sorry-ed
-    headline statements with comparator challenges, phase 2 proofs).>
+    A Lean 4 formalization of "On the Existence of a Complexity in Fixed Budget Bandit
+    Identification" (Rémy Degenne, COLT 2023), on top of LMLExplore, and through it LML, Tau Ceti
+    and Mathlib. In fixed budget identification, an algorithm family samples K arms for T rounds
+    and answers a query about their means; its probability of error p decreases like exp(-T/h).
+    The paper compares the rates h of algorithm families to the oracle difficulty of the static
+    proportions algorithms through the difficulty ratio, proves generic lower bounds on that ratio
+    by a change of measure, shows that it is at most K and equal to K for positivity, at least 1
+    for Gaussian tasks with a flat boundary, and that best arm identification has no complexity
+    for Gaussian arms with K large and for two Bernoulli arms. The statements use LMLExplore's
+    identification tasks, fixed-budget algorithms and exponential families on any task, and new
+    library-shaped notions (algorithm families, rates, oracle difficulties, difficulty ratios,
+    static proportions, large deviation principles) to be ported to LMLExplore. Phase 1 states the
+    headline results with sorry and freezes them as comparator challenges; phase 2 proves them.
   authors:
     - "Remy Degenne"
   responsible_maintainers:
@@ -22,38 +32,46 @@ repository:
   role: "substantive-development"
 
 sources:
-  - title: "<Paper title>"
+  - title: "On the Existence of a Complexity in Fixed Budget Bandit Identification"
     authors:
-      - "<Paper author>"
-    id: "<Venue year, paper number or arXiv id, with the revision whose numbering the citations use>"
+      - "Rémy Degenne"
+    id: "COLT 2023, PMLR 195; arXiv:2303.09468v2 (the numbering of the citations)"
     type: "conference-paper"
-    location: "<Which results of the paper are formalized; see status.scope>"
+    location: "All numbered results: Theorems 1-3, 5-8, 10, 12, 13, Corollaries 4, 14, Lemmas 9, 11, 15-20; see status.scope"
     relationship: "formalizes"
     license: ""
     author_endorsement: "not-contacted"
     note: >-
-      <Where the paper source lives (source/), that the blueprint is a derived artifact of this
-      project, and whether the formalizer is an author. Errors found in the paper are in
-      notes/paper-errata.md.>
+      The arXiv sources of revision v2 are in source/. The blueprint (blueprint/src/) is a derived
+      artifact of this project. The formalizer is the author of the paper. The statements started
+      from the statement-only draft of the paper in the LMLPapers project
+      (Papers/COLT2023/Degenne2023Existence), rebased on LMLExplore. Errors found in the paper are
+      in notes/paper-errata.md.
 
-related_formalizations: []   # earlier or parallel formalizations of this paper, if any
+related_formalizations: []   # the LMLPapers draft has statements only, on another library
 
 classification:
-  arxiv: ["<primary arXiv category>"]
+  arxiv: ["stat.ML", "cs.LG"]
   msc2020:
-    - "<MSC code>"   # <meaning>
+    - "62L05"   # sequential statistical design
+    - "68T05"   # learning and adaptive systems
+    - "60F10"   # large deviations
 
 status:
   scope: >-
-    <Phase 1: list every headline result with its Lean name and blueprint label.
-    Phase 2: what is proved, what is not, and the dated history of major changes.>
-  sorry_count: 0
+    Phase 1 (2026-11-09): the 24 headline statements below are stated with sorry in
+    Degenne2023Existence/D2023/ (namespace Degenne2023Existence, one file per result), over
+    the library-shaped definitions of Degenne2023Existence/ForLMLExplore/
+    (Identification/FixedBudgetComplexity.lean, Probability/LargeDeviations/Basic.lean) and
+    Assumption 1 (D2023/Setting.lean). Lemmas 17 and 18 are blueprint lemmas of the proof of
+    Theorem 7 (misprinted, E4). The outline is notes/blueprint-outline.md.
+  sorry_count: 24
   sorry_in_definitions: 0
 
 automation:
   methods:
     - method: "agent"
-      models: ["<the Claude models that wrote the code, e.g. claude-opus-5-5>"]
+      models: ["claude-opus-5-5"]
       framework: "Claude Code"
       tool_setup: >-
         The formalize-paper skill of the lml plugin
@@ -65,11 +83,13 @@ review:
   # unchecked until the phase-1 statement check; then self-assessed once the user has checked the
   # statements (author-verified when the user is an author of the paper), agent-reviewed while only
   # an agent has.
-  status: "unchecked"
+  status: "agent-reviewed"
   reviewers: []
   notes: >-
-    <Who checked the headline statements against the paper, and when. Comparator checks that the
-    project proves exactly them.>
+    2026-11-09: the headline statements were checked against the paper by the agent (Claude),
+    which found the errata E1-E7. The author of the paper (the formalizer) accepted that check and
+    its modelling decisions without reviewing the statements line by line, so the status stays
+    agent-reviewed. Comparator checks that the project proves exactly them.
 
 alignment:
   namespace: "Degenne2023Existence"
@@ -78,11 +98,143 @@ alignment:
     carries a \lean{} tag. Only the headline statements are repeated here. Each has its Literature
     Links relation, read "paper relation Lean": exactMatch, closeMatch, broadMatch (the Lean
     statement is more general), narrowMatch (the paper's is) or hasPart; and its entry in
-    notes/paper-errata.md when the paper had to be corrected.
+    notes/paper-errata.md when the paper had to be corrected. H_{C^sp} of the paper is
+    LMLExplore.Identification.IdentTask.staticDifficulty, equal to the oracle difficulty of the
+    static proportions algorithms by Theorem 1.
   statements:
-    - source: "<blueprint label> — <Theorem 1 of the paper>"
-      lean: "Degenne2023Existence.<name>"
-      module: "Degenne2023Existence.Deg2023.<File>"
+    - source: "thm:oracle_difficulty_sp — Theorem 1"
+      lean: "Degenne2023Existence.tendsto_errorRate_of_isStaticProportions"
+      module: "Degenne2023Existence.D2023.Theorem1"
+      status: "stated"
+      relation: "narrowMatch"
+      erratum: "E1"
+      note: "Assumes a recommendation rule that answers i off the closure of the alternatives to i (E1) and samples in the closure of the means (E2)."
+    - source: "thm:oracle_difficulty_class — Theorem 1 (displayed consequence)"
+      lean: "Degenne2023Existence.oracleDifficulty_staticClass"
+      module: "Degenne2023Existence.D2023.Theorem1"
+      status: "stated"
+      relation: "narrowMatch"
+      erratum: "E1"
+      note: "Assumes samples in the closure of the means (E2). The class of static proportions algorithms takes every recommendation rule correct on the models (E1); the maximum is over the closed simplex."
+    - source: "thm:R_LB — Theorem 2"
+      lean: "Degenne2023Existence.inv_difficultyRatio_mul_le"
+      module: "Degenne2023Existence.D2023.Theorem2"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Any task; disjoint correct answers instead of mu, lambda in D with different answers; log 2 / sqrt T moved to the right, in [0, ∞]."
+    - source: "thm:asm_R_LB_limsup — Theorem 3 (first inequality)"
+      lean: "Degenne2023Existence.inv_iSup_asymptoticRatio_le"
+      module: "Degenne2023Existence.D2023.Theorem3"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Assumes only that the probability of error at mu tends to 0, not consistency."
+    - source: "thm:asm_R_LB_limsup_all — Theorem 3 (second inequality)"
+      lean: "Degenne2023Existence.inv_maxRatio_le"
+      module: "Degenne2023Existence.D2023.Theorem3"
       status: "stated"
       relation: "exactMatch"
-      # erratum: "E1"
+    - source: "cor:corner_lb — Corollary 4"
+      lean: "Degenne2023Existence.sum_inv_le_iSup_asymptoticRatio"
+      module: "Degenne2023Existence.D2023.Corollary4"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Any set of arms instead of all the arms, as used in the proof of Theorem 8."
+    - source: "thm:uniform_upper_bound — Theorem 5"
+      lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions"
+      module: "Degenne2023Existence.D2023.Theorem5"
+      status: "stated"
+      relation: "narrowMatch"
+      erratum: "E1"
+      note: "H_{C^sp} is the static-proportions difficulty, equal to it by Theorem 1."
+    - source: "thm:uniform_upper_bound_uniform — Theorem 5 (uniform allocation)"
+      lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_card"
+      module: "Degenne2023Existence.D2023.Theorem5"
+      status: "stated"
+      relation: "narrowMatch"
+      erratum: "E1"
+    - source: "thm:positivity_LB — Theorem 6"
+      lean: "Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card"
+      module: "Degenne2023Existence.D2023.Theorem6"
+      status: "stated"
+      relation: "exactMatch"
+      note: "Positivity is LMLExplore's minimum threshold task; the threshold is a mean of every family. The proof follows the correction E3."
+    - source: "thm:flat_boundary — Theorem 7"
+      lean: "Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane"
+      module: "Degenne2023Existence.D2023.Theorem7"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Does not assume Assumption 1; sup-norm ball (an equivalent hypothesis). The proof follows the corrections E4, E5."
+    - source: "thm:gaussian_bai_no_complexity — Theorem 8"
+      lean: "Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian"
+      module: "Degenne2023Existence.D2023.Theorem8"
+      status: "stated"
+      relation: "exactMatch"
+      note: "The proof follows the correction E6."
+    - source: "cor:bernoulli_bai_H — Lemma 9"
+      lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_bernoulli_two"
+      module: "Degenne2023Existence.D2023.Lemma9"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "thm:bernoulli_bai_no_complexity — Theorem 10"
+      lean: "Degenne2023Existence.one_lt_iInf_maxRatio_baiTask_bernoulli_two"
+      module: "Degenne2023Existence.D2023.Theorem10"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "lem:ldp_single_arm — Lemma 11"
+      lean: "Degenne2023Existence.isLDP_empiricalMean_expFamily"
+      module: "Degenne2023Existence.D2023.Lemma11"
+      status: "stated"
+      relation: "exactMatch"
+      note: "The rate KL(x, mu) is extended to every level by the Cramér rate function of the member of mean mu."
+    - source: "thm:ldp — Theorem 12"
+      lean: "Degenne2023Existence.isLDP_empMean_of_isStaticProportions"
+      module: "Degenne2023Existence.D2023.Theorem12"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "thm:asm_R_LB — Theorem 13"
+      lean: "Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le"
+      module: "Degenne2023Existence.D2023.Theorem13"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Disjoint correct answers instead of D(mu) ⊆ Alt(mu)."
+    - source: "cor:asm_R_LB_all — Corollary 14"
+      lean: "Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le_liminf"
+      module: "Degenne2023Existence.D2023.Corollary14"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "lem:half_space_difficulty — Lemma 15"
+      lean: "Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian"
+      module: "Degenne2023Existence.D2023.Lemma15"
+      status: "stated"
+      relation: "broadMatch"
+      note: "Without the normalization sum_a |u_a| sigma_a = 1."
+    - source: "lem:half_space — Lemma 16"
+      lean: "Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian"
+      module: "Degenne2023Existence.D2023.Lemma16"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "lem:exp_fam_bai — Lemma 19"
+      lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_expFamily_two"
+      module: "Degenne2023Existence.D2023.Lemma19"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "lem:exp_fam_bai_min — Lemma 19 (the minimizers)"
+      lean: "Degenne2023Existence.iInf_cost_baiTask_expFamily_two"
+      module: "Degenne2023Existence.D2023.Lemma19"
+      status: "stated"
+      relation: "hasPart"
+    - source: "lem:exp_fam_bai_max — Lemma 19 (the maximizer)"
+      lean: "Degenne2023Existence.isMaxOn_iInf_cost_baiTask_expFamily_two"
+      module: "Degenne2023Existence.D2023.Lemma19"
+      status: "stated"
+      relation: "hasPart"
+    - source: "lem:subgaussian_bai — Lemma 20"
+      lean: "Degenne2023Existence.ofReal_div_le_inv_staticDifficulty_baiTask_two"
+      module: "Degenne2023Existence.D2023.Lemma20"
+      status: "stated"
+      relation: "exactMatch"
+    - source: "lem:gaussian_bai_two — Lemma 20 (Gaussian case)"
+      lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_gaussian_two"
+      module: "Degenne2023Existence.D2023.Lemma20"
+      status: "stated"
+      relation: "hasPart"

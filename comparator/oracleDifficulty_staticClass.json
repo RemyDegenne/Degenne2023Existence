@@ -1,0 +1,14 @@
+{
+    "challenge_module": "Challenge_oracleDifficulty_staticClass",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.oracleDifficulty_staticClass",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_1",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_2"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

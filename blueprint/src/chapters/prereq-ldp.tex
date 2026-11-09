@@ -1,0 +1,103 @@
+\chapter{Large deviations}
+\label{chap:prereq_ldp}
+
+Library-shaped large deviation theory, for \texttt{ForLMLExplore/Probability/LargeDeviations/}.
+It is the subject of the LMLRoadmaps target Identification, Layer 8.3; no large deviation
+principle exists in Mathlib, Tau Ceti, LML or LMLExplore.
+
+\begin{definition}
+  \label{def:good_rate}
+  \lean{LMLExplore.IsGoodRateFunction}
+  \leanok
+  A good rate function $I : X \to [0, \infty]$ is lower semicontinuous with compact sublevel sets
+  $\{x \mid I(x) \le c\}$, $c < \infty$ \cite{DZ98}.
+\end{definition}
+
+\begin{definition}
+  \label{def:ldp}
+  \lean{LMLExplore.IsLDP}
+  \leanok
+  A sequence of measures $(P_n)$ on a topological space $X$ satisfies the large deviation
+  principle with speed $n$ and rate function $I$ if $I$ is lower semicontinuous and for every set
+  $S$,
+  $-\inf_{\inter S} I \le \liminf_n \frac1n \log P_n(S)$ and
+  $\limsup_n \frac1n \log P_n(S) \le -\inf_{\cl S} I$ \cite{DZ98}.
+\end{definition}
+
+\begin{lemma}[Cramér's theorem]
+  \label{lem:cramer}
+  \uses{def:ldp}
+  Let $P$ be a probability measure on $\R$ whose cumulant generating function is finite on a
+  neighbourhood of $0$. The empirical means of $n$ independent samples of $P$ satisfy the large
+  deviation principle with speed $n$ and the Cramér rate function
+  $I(x) = \sup_t (t x - \log \E_P[e^{t X}])$ \cite[Theorem 2.2.3]{DZ98}.
+\end{lemma}
+
+\begin{proof}
+  Upper bound: LMLExplore's Cramér--Chernoff bounds on the half-lines, the closed sets of $\R$
+  being covered by the two half-lines at the points of the complement nearest to the mean.
+  Lower bound: for $x$ in the interior of the means of the exponential family of $P$, exponential
+  tilting (LMLExplore, \texttt{ExponentialFamily/Cramer.lean}); at the other levels of finite
+  rate, truncation.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:rate_good}
+  \uses{def:good_rate}
+  Under the hypothesis of Lemma~\ref{lem:cramer}, the Cramér rate function is a good rate
+  function.
+\end{lemma}
+
+\begin{proof}
+  It is a supremum of continuous functions, and $I(x) \ge t \abs{x} - C$ for some $t > 0$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:rate_continuousOn}
+  For an exponential family whose samples lie in the closure of its means, the rate function
+  $x \mapsto \KL(x, \mu)$ is continuous on the closure of the means.
+\end{lemma}
+
+\begin{proof}
+  It is convex and lower semicontinuous, finite on the closure of the means, and a convex function
+  on an interval is upper semicontinuous at its endpoints along the interval.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:ldp_pi}
+  \uses{def:ldp}
+  If for each $k$ the measures $P^k_n$ satisfy the large deviation principle with speed $n$ and
+  good rate function $I_k$, and $n_k(T) / T \to \omega_k > 0$, then the products $\bigotimes_k
+  P^k_{n_k(T)}$ satisfy the large deviation principle with speed $T$ and good rate function
+  $\sum_k \omega_k I_k$.
+\end{lemma}
+
+\begin{proof}
+  Lower bound on the products of open sets around a point; upper bound on compact sets by a
+  finite cover with products of open sets, and exponential tightness from the goodness of the
+  rates.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:ldp_window}
+  \uses{def:ldp}
+  In the stack-of-rewards model, the empirical means after $N_{T,k}$ samples, with
+  $\abs{N_{T,k} - T\omega_k} \le K$ and $N_{T,k}$ arbitrary otherwise, satisfy the same large
+  deviation bounds as the empirical means after $\lfloor T \omega_k \rfloor$ samples.
+\end{lemma}
+
+\begin{proof}
+  Upper bound: a union over the $(2K + 1)^K$ possible numbers of samples. Lower bound: the event
+  that the means of the stacks after every number of samples in the window are close to the
+  target has the same exponential rate.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:rate_ge_sq_of_subgaussian}
+  If $P$ is $\sigma^2$-sub-Gaussian around its mean $m$, its Cramér rate function satisfies
+  $I(x) \ge (x - m)^2 / (2 \sigma^2)$.
+\end{lemma}
+
+\begin{proof}
+  $I(x) \ge t (x - m) - \sigma^2 t^2 / 2$, maximal at $t = (x - m) / \sigma^2$.
+\end{proof}

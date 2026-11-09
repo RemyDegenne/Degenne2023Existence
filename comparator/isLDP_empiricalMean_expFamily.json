@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_isLDP_empiricalMean_expFamily",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.isLDP_empiricalMean_expFamily"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

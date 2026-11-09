@@ -1,0 +1,14 @@
+{
+    "challenge_module": "Challenge_ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_1",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_2"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

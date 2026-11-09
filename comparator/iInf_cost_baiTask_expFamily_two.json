@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_iInf_cost_baiTask_expFamily_two",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.iInf_cost_baiTask_expFamily_two"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

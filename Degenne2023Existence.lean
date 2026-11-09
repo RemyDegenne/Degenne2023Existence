@@ -1,3 +1,23 @@
 module  -- shake: keep-all --deprecated_module: ignore
 
-public import Degenne2023Existence.Deg2023.Basic
+public import Degenne2023Existence.D2023.Corollary14
+public import Degenne2023Existence.D2023.Corollary4
+public import Degenne2023Existence.D2023.Lemma11
+public import Degenne2023Existence.D2023.Lemma15
+public import Degenne2023Existence.D2023.Lemma16
+public import Degenne2023Existence.D2023.Lemma19
+public import Degenne2023Existence.D2023.Lemma20
+public import Degenne2023Existence.D2023.Lemma9
+public import Degenne2023Existence.D2023.Setting
+public import Degenne2023Existence.D2023.Theorem1
+public import Degenne2023Existence.D2023.Theorem10
+public import Degenne2023Existence.D2023.Theorem12
+public import Degenne2023Existence.D2023.Theorem13
+public import Degenne2023Existence.D2023.Theorem2
+public import Degenne2023Existence.D2023.Theorem3
+public import Degenne2023Existence.D2023.Theorem5
+public import Degenne2023Existence.D2023.Theorem6
+public import Degenne2023Existence.D2023.Theorem7
+public import Degenne2023Existence.D2023.Theorem8
+public import Degenne2023Existence.ForLMLExplore.Identification.FixedBudgetComplexity
+public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Basic

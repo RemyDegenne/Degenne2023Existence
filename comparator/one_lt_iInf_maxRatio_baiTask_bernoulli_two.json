@@ -1,0 +1,14 @@
+{
+    "challenge_module": "Challenge_one_lt_iInf_maxRatio_baiTask_bernoulli_two",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.one_lt_iInf_maxRatio_baiTask_bernoulli_two",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_1",
+        "LMLExplore.Identification.IdentTask.IsStaticProportions._proof_2"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

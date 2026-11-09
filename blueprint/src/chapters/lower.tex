@@ -1,0 +1,140 @@
+\chapter{Lower bounds on the difficulty ratio}
+\label{chap:lower}
+
+Section 3 and Appendix B of \cite{D23}. These results hold for every identification task, with
+any models and observations; $H$ is a difficulty function, positive and finite where it is used.
+
+\begin{theorem}[{\cite[Theorem 2]{D23}}]
+  \label{thm:R_LB}
+  \lean{Degenne2023Existence.inv_difficultyRatio_mul_le}
+  \leanok
+  \uses{def:difficulty_ratio, lem:fb_change_of_measure, lem:klBer_ge, lem:inv_difficultyRatio}
+  Let $\mu, \lambda$ be models without a common correct answer, with $0 < H(\lambda) \le \sqrt T$.
+  Then for every algorithm family $\cA$,
+  \[ R_{H,T}(\cA, \lambda)^{-1} (1 - p_{\mu,T}(\cA)) - \frac{\log 2}{\sqrt T}
+    \le H(\lambda) \sum_{k=1}^K \E_{\mu}\Bigl[\frac{N_{T,k}}{T}\Bigr] \KL(\nu_k(\mu), \nu_k(\lambda)). \]
+\end{theorem}
+
+\begin{proof}
+  \uses{lem:fb_change_of_measure, lem:klBer_ge, lem:inv_difficultyRatio}
+  By the change of measure at the budget (Lemma~\ref{lem:fb_change_of_measure}) applied to the
+  event $E$ that the output is a correct answer of $\mu$,
+  $\kl(\Prob_{\mu}(E), \Prob_{\lambda}(E)) \le \sum_k \E_{\mu}[N_{T,k}] \KL(\nu_k(\mu), \nu_k(\lambda))$.
+  With $\Prob_{\mu}(E) = 1 - p_{\mu,T}$, $\Prob_{\lambda}(E) \le p_{\lambda,T}$ and
+  $\kl(a, b) \ge a \log(1/b) - \log 2$ (Lemma~\ref{lem:klBer_ge}),
+  $(1 - p_{\mu,T}) \log(1/p_{\lambda,T}) - \log 2 \le \sum_k \E_{\mu}[N_{T,k}] \KL$. Divide by
+  $T / H(\lambda)$, use $\log(1/p_{\lambda,T}) H(\lambda) / T = R_{H,T}(\cA, \lambda)^{-1}$
+  (Lemma~\ref{lem:inv_difficultyRatio}) and $H(\lambda) / T \le 1 / \sqrt T$.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 3]{D23}}]
+  \label{thm:asm_R_LB_limsup}
+  \lean{Degenne2023Existence.inv_iSup_asymptoticRatio_le}
+  \leanok
+  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
+  Let $\cA$ be an algorithm family with $p_{\mu,T}(\cA) \to 0$ at the model $\mu$, and $D(\mu)$ a
+  set of models without a common correct answer with $\mu$. Then
+  \[ \Bigl(\sup_{\lambda \in D(\mu)} R_{H,\infty}(\cA, \lambda)\Bigr)^{-1}
+    \le \max_{\omega \in \Simplex} \inf_{\lambda \in D(\mu)} H(\lambda) \sum_{k=1}^K \omega_k
+    \KL(\nu_k(\mu), \nu_k(\lambda)). \]
+\end{theorem}
+
+The paper assumes $\cA$ consistent and $D(\mu) \subseteq \Alt(\mu)$ for $\mu \in \cD$.
+
+\begin{proof}
+  \uses{thm:R_LB, lem:tendsto_subseq_proportions}
+  Along a subsequence $T_n$, $\E_{\mu}[N_{T_n}/T_n]$ converges to some $\omega_{\mu} \in \Simplex$
+  (Lemma~\ref{lem:tendsto_subseq_proportions}). For $\lambda \in D(\mu)$, Theorem~\ref{thm:R_LB}
+  for large $n$ and $1 - p_{\mu,T_n} \to 1$ give
+  $\liminf_n R_{H,T_n}(\cA, \lambda)^{-1} \le H(\lambda) \sum_k \omega_{\mu,k} \KL$, hence
+  $R_{H,\infty}(\cA, \lambda)^{-1} = \liminf_T R_{H,T}(\cA, \lambda)^{-1}$ is at most the same.
+  Take the infimum over $\lambda$ and replace $\omega_{\mu}$ by the maximum over the simplex.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 3]{D23}}]
+  \label{thm:asm_R_LB_limsup_all}
+  \lean{Degenne2023Existence.inv_maxRatio_le}
+  \leanok
+  \uses{thm:asm_R_LB_limsup, def:consistent}
+  For every consistent algorithm family $\cA$,
+  \[ \Bigl(\sup_{\lambda \in \cD} R_{H,\infty}(\cA, \lambda)\Bigr)^{-1}
+    \le \inf_{\mu \in \cD} \max_{\omega \in \Simplex} \inf_{\lambda \in \Alt(\mu)} H(\lambda)
+    \sum_{k=1}^K \omega_k \KL(\nu_k(\mu), \nu_k(\lambda)). \]
+\end{theorem}
+
+\begin{proof}
+  \uses{thm:asm_R_LB_limsup}
+  Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \Alt(\mu)$ for every $\mu \in \cD$, and
+  $\sup_{\Alt(\mu)} R \le \sup_{\cD} R$.
+\end{proof}
+
+\begin{corollary}[{\cite[Corollary 4]{D23}}]
+  \label{cor:corner_lb}
+  \lean{Degenne2023Existence.sum_inv_le_iSup_asymptoticRatio}
+  \leanok
+  \uses{thm:asm_R_LB_limsup, lem:iSup_iInf_mul}
+  Let $s$ be a set of arms and, for $j \in s$, $\lambda^{(j)}$ a model without a common correct
+  answer with $\mu$ that differs from $\mu$ only along the arm $j$, with $H(\lambda^{(j)})$
+  positive and finite. For every algorithm family $\cA$ with $p_{\mu,T}(\cA) \to 0$,
+  \[ \sup_{j \in s} R_{H,\infty}(\cA, \lambda^{(j)}) \ge \sum_{j \in s}
+    \frac{1}{H(\lambda^{(j)}) \KL(\nu_j(\mu), \nu_j(\lambda^{(j)}))}. \]
+\end{corollary}
+
+The paper takes $s$ to be all the arms, and applies the corollary to the arms $2, \dots, K$ in the
+proof of Theorem~\ref{thm:gaussian_bai_no_complexity}.
+
+\begin{proof}
+  \uses{thm:asm_R_LB_limsup, lem:iSup_iInf_mul}
+  Theorem~\ref{thm:asm_R_LB_limsup} with $D(\mu) = \{\lambda^{(j)} \mid j \in s\}$: the sum of
+  the divergences reduces to $\omega_j \KL(\nu_j(\mu), \nu_j(\lambda^{(j)}))$, and
+  $\max_{\omega} \min_{j \in s} c_j \omega_j = (\sum_{j \in s} c_j^{-1})^{-1}$
+  (Lemma~\ref{lem:iSup_iInf_mul}).
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem 13]{D23}}]
+  \label{thm:asm_R_LB}
+  \lean{Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le}
+  \leanok
+  \uses{thm:R_LB}
+  Let $\cA$ be an algorithm family with $p_{\mu,T}(\cA) \to 0$ at $\mu$, and $D(\mu)$ a set of
+  models without a common correct answer with $\mu$ with $\sup_{\lambda \in D(\mu)} H(\lambda) <
+  \infty$. Then
+  \[ \Bigl(\liminf_{T \to \infty} \sup_{\lambda \in D(\mu)} R_{H,T}(\cA, \lambda)\Bigr)^{-1}
+    \le \max_{\omega \in \Simplex} \inf_{\lambda \in D(\mu)} H(\lambda) \sum_{k=1}^K \omega_k
+    \KL(\nu_k(\mu), \nu_k(\lambda)). \]
+\end{theorem}
+
+\begin{proof}
+  \uses{thm:R_LB}
+  For $T$ large, Theorem~\ref{thm:R_LB} applies to every $\lambda \in D(\mu)$; take the infimum
+  over $\lambda$, bound $\E_{\mu}[N_T / T]$ by the maximum over the simplex, and let $T \to \infty$.
+\end{proof}
+
+\begin{corollary}[{\cite[Corollary 14]{D23}}]
+  \label{cor:asm_R_LB_all}
+  \lean{Degenne2023Existence.inv_liminf_iSup_difficultyRatio_le_liminf}
+  \leanok
+  \uses{thm:asm_R_LB}
+  Let $\Alt_x(\mu) = \Alt(\mu) \cap \{\lambda \mid H(\lambda) \le x\}$. For every consistent
+  algorithm family $\cA$,
+  \[ \Bigl(\liminf_{T \to \infty} \sup_{\lambda \in \cD} R_{H,T}(\cA, \lambda)\Bigr)^{-1}
+    \le \liminf_{x \to \infty} \inf_{\mu \in \cD} \max_{\omega \in \Simplex}
+    \inf_{\lambda \in \Alt_x(\mu)} H(\lambda) \sum_{k=1}^K \omega_k \KL(\nu_k(\mu), \nu_k(\lambda)). \]
+\end{corollary}
+
+\begin{proof}
+  \uses{thm:asm_R_LB}
+  Theorem~\ref{thm:asm_R_LB} with $D(\mu) = \Alt_x(\mu)$, whose left-hand side is at least the one
+  for $\cD$; take the infimum over $\mu$ and the liminf over $x$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:asymptoticRatio_eq_top}
+  \uses{def:difficulty_ratio}
+  If $\mu \in \cD$, $H(\mu) < \infty$ and $p_{\mu, T}(\cA) \not\to 0$, then
+  $R_{H, \infty}(\cA, \mu) = \infty$.
+\end{lemma}
+
+\begin{proof}
+  Along a subsequence $p_{\mu, T} \ge c > 0$, so $h_{\mu, T} \ge T / \log(1/c) \to \infty$.
+\end{proof}

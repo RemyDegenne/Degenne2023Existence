@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_inv_difficultyRatio_mul_le",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "Degenne2023Existence.inv_difficultyRatio_mul_le"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}
