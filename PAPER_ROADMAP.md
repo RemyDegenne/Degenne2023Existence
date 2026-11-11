@@ -1,6 +1,6 @@
 # Paper roadmap: On the Existence of a Complexity in Fixed Budget Bandit Identification
 
-Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmaps 468f19f45fae · Refreshed 2026-11-09
+Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmaps 468f19f45fae · Refreshed 2026-11-11
 
 ## Items
 
@@ -15,11 +15,11 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R7 | Characteristic time of Gaussian best arm identification, `H ≤ T* ≤ 2H` | exists | `LMLExplore.Identification.charTime_baiTask_gaussianBandit_le` | – | |
 | R8 | Sub-Gaussian lower bound on the Cramér rate function | exists | `ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction` | – | |
 | R9 | Fixed-budget algorithm families, probability of error, rate, oracle difficulty, difficulty ratios, consistency | target | Identification 8.4 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
-| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | proved | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
+| R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | PR #261 | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
 | R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
 | R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `ForLMLExplore/Bandits/StaticAllocation.lean`, `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | merged #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
-| R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | PR #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
+| R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | merged #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
 | R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | PR #259 | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
 | R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean` |
@@ -64,7 +64,14 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   (`IsLDP.exists_eventually_measure_norm_ge_le_exp`) and the goodness of positive weighted sums
   of good rate functions on a finite product (`isGoodRateFunction_sum_mul`). The independence
   across coordinates (`lem:ldp_pi`) is proved in the form the empirical means of a bandit need,
-  in `ForLMLExplore/Bandits/StaticAllocation.lean` (item R12).
+  in `ForLMLExplore/Bandits/StaticAllocation.lean` (item R12). PR #261 ports `Basic.lean` and
+  `Cramer.lean` from commit 5afa577, to `LMLExplore/Probability/LargeDeviations/`:
+  `IsGoodRateFunction` becomes a structure with named fields, no bodies are exposed, and the
+  exponential-family form `Measure.isLDP_cramer_expFamily` is generalized to any statistic on any
+  measurable space and split from its goodness, `Measure.isGoodRateFunction_expFamilyRate_left`.
+  It adds the form for i.i.d. sequences `isLDP_cramer_of_iIndepFun` and
+  `Measure.map_pi_comp_eq_map_pi_map` (new file `LMLExplore/MeasureTheory/Constructions/Pi.lean`),
+  does not port `D2023/Lemma11.lean`, and removes or renames no public declaration.
 - R11: `IsStaticProportions`, `staticClass` and `staticDifficulty` (alternative first in the
   divergence, unlike `IdentTask.altCost`), with `lem:exists_static` (cumulative tracking, R6),
   `lem:exists_rec`, `lem:iSup_open_simplex` and `lem:staticDifficulty_eq_charTime`. PR #260
@@ -132,7 +139,9 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `sq_div_le_expFamilyDiv_of_hasSubgaussianMGF`, and does not port the paper-form restatements of
   `D2023/Lemma19.lean` and `Lemma20.lean`. It moves the module
   `LMLExplore.Identification.Task.BestArm` to `LMLExplore.Identification.Task.BestArm.Basic`, and
-  removes or renames no public declaration.
+  removes or renames no public declaration. Merged on 2026-11-09 (LMLExplore commit faf2c0906563,
+  after the pin); the final bump replaces the local copies of these files by the LMLExplore
+  declarations and moves the imports of `Task.BestArm` to `Task.BestArm.Basic`.
 - R15: Theorem 5 is proved for measurable sets of correct answers (the `_of_measurableSet` lemmas
   of `D2023/Theorem5.lean`), and its headline statements, which take `[MeasurableSingletonClass ℐ]`
   as those of Theorem 1, follow from them. Theorem 6 remains.
