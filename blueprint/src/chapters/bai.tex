@@ -8,23 +8,56 @@ the set of vectors of means with a unique best arm.
   \label{thm:gaussian_bai_no_complexity}
   \lean{Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian}
   \leanok
-  \uses{cor:corner_lb, lem:oracleDifficulty_mono, lem:oracleDifficulty_staticClass_le,
-    lem:isRegular_baiTask, lem:staticDifficulty_eq_charTime, lem:asymptoticRatio_eq_top}
+  \uses{cor:corner_lb, lem:gaussian_bai_oracle_le, lem:oracleDifficulty_mono,
+    lem:staticDifficulty_eq_charTime, lem:asymptoticRatio_eq_top}
   For best arm identification with Gaussian arms of variance $1$ and every class $\cC \supseteq
   \Csp$, $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{H_{\cC}, \infty}(\cA, \lambda) \ge
   \frac{3}{80} \log K$.
 \end{theorem}
 
 \begin{proof}
-  \uses{cor:corner_lb, lem:oracleDifficulty_mono, lem:oracleDifficulty_staticClass_le,
-    lem:isRegular_baiTask, lem:staticDifficulty_eq_charTime, lem:asymptoticRatio_eq_top}
-  $H_{\cC} \le H_{\Csp} \le \Hsp = T^{\star} \le 2 H_{\Delta}$ (Lemmas~\ref{lem:oracleDifficulty_mono},
-  \ref{lem:oracleDifficulty_staticClass_le}, \ref{lem:staticDifficulty_eq_charTime} and the
-  bound of \cite{GK16} in LMLExplore), so $R_{H_{\cC}} \ge R_{H_{\Delta}} / 2$. Apply
-  Corollary~\ref{cor:corner_lb} at $\mu_1 = 0$, $\mu_k = -k \Delta$ with the arms $j = 2, \dots,
-  K$ and $\lambda^{(j)}_j = -\mu_j$: $H_{\Delta}(\lambda^{(j)}) \KL(\mu_j, \lambda^{(j)}_j) \le 8 j$,
-  and $\frac18 \sum_{j=2}^K \frac1j \ge \frac{3}{40} \log K$. The paper derives the last
-  inequality from $\log((K + 1) / 2) \ge \frac35 \log K$, which fails for $K = 2$ (E6).
+  \leanok
+  \uses{cor:corner_lb, lem:gaussian_bai_oracle_le, lem:oracleDifficulty_mono,
+    lem:staticDifficulty_eq_charTime, lem:asymptoticRatio_eq_top}
+  $H_{\cC} \le \Hsp = T^{\star} \le 2 H_{\Delta}$ on $\cD$
+  (Lemmas~\ref{lem:gaussian_bai_oracle_le}, \ref{lem:staticDifficulty_eq_charTime} and the
+  bound of \cite{GK16} in LMLExplore), and the asymptotic ratio at $\lambda$ is antitone in the
+  value of the difficulty function at $\lambda$ (Lemma~\ref{lem:oracleDifficulty_mono}). For
+  $K \le 1$ the bound is $0$. Number the arms $0, \dots, K - 1$ and let $\mu_k = -k$. If
+  $p_{\mu,T}(\cA) \not\to 0$, the ratio at $\mu$ is infinite
+  (Lemma~\ref{lem:asymptoticRatio_eq_top}, with $H_{\cC}(\mu) \le T^{\star}(\mu) < \infty$).
+  Otherwise apply Corollary~\ref{cor:corner_lb} with $H = \Hsp$ at $\mu$, with the arms $j = 1,
+  \dots, K - 1$ and $\lambda^{(j)}$ equal to $\mu$ except $\lambda^{(j)}_j = -\mu_j = j$. The best
+  arm of $\lambda^{(j)}$ is $j$, its gaps are $j$ for the arm $0$ (the second best) and $j + k$
+  for the arms $k \ne 0, j$, so that, with $\sum_{k \ge 0} (j + k)^{-2} \le 2 / j$,
+  \[ 2 H_{\Delta}(\lambda^{(j)}) \le 2 \Bigl(\frac{2}{j^2} + \sum_{k \ne j} \frac{2}{(j + k)^2}
+    \Bigr) \le \frac{4}{j^2} + \frac{8}{j} \le \frac{12}{j} \quad \text{and} \quad
+    \Hsp(\lambda^{(j)}) \KL(\mu_j, \lambda^{(j)}_j) \le \frac{12}{j} \cdot 2 j^2 = 24 j. \]
+  The bound is then $\frac{1}{24} \sum_{j=1}^{K-1} \frac1j \ge \frac{1}{24} \log K \ge
+  \frac{3}{80} \log K$, for every $K$.
+
+  The paper takes $\mu_1 = 0$ and $\mu_k = -k \Delta$ for $k \ge 2$, bounds
+  $H_{\Delta}(\lambda^{(j)}) \KL(\mu_j, \lambda^{(j)}_j) \le 8 j$, and derives
+  $\frac18 \sum_{j=2}^K \frac1j \ge \frac{3}{40} \log K$ from $\log((K + 1) / 2) \ge \frac35 \log
+  K$, which fails for $K = 2$ (E6).
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 8]{D23}}]
+  \label{lem:gaussian_bai_oracle_le}
+  \lean{Degenne2023Existence.oracleDifficulty_le_staticDifficulty_baiTask_gaussian}
+  \leanok
+  \uses{lem:oracleDifficulty_mono, lem:oracleDifficulty_staticClass_le, lem:isRegular_baiTask}
+  For best arm identification with Gaussian arms of variance $1$ and every class $\cC \supseteq
+  \Csp$, $H_{\cC}(\mu) \le H_{\Csp}(\mu) \le \Hsp(\mu)$ for every $\mu \in \cD$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:oracleDifficulty_mono, lem:oracleDifficulty_staticClass_le, lem:isRegular_baiTask}
+  The first inequality is Lemma~\ref{lem:oracleDifficulty_mono}. The means of the Gaussian family
+  are all of $\R$, its samples are in their closure, and the task satisfies Assumption 1 on
+  $\R^K$ (Lemma~\ref{lem:isRegular_baiTask}), so Lemma~\ref{lem:oracleDifficulty_staticClass_le}
+  applies; the sets of correct answers are measurable, as the arms are finitely many.
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 19]{D23}}]
@@ -192,12 +225,21 @@ the set of vectors of means with a unique best arm.
 
 \begin{lemma}
   \label{lem:isRegular_baiTask}
+  \lean{Degenne2023Existence.isRegular_baiTask,
+    LMLExplore.Identification.convex_answerSet_baiTask,
+    LMLExplore.Identification.mem_closure_answerSet_baiTask_restrict,
+    LMLExplore.Identification.subset_iUnion_closure_answerSet_baiTask_restrict,
+    LMLExplore.Identification.interior_closure_answerSet_baiTask_restrict}
+  \leanok
   \uses{asm:answer_nhds}
-  Best arm identification on the vectors of means of a family satisfies Assumption 1, and so do
-  the positivity and half-space tasks.
+  Best arm identification on an open convex set $S$ of vectors of means ($\R^K$ for Gaussian arms,
+  $(0, 1)^K$ for Bernoulli arms) satisfies Assumption 1 on $S$.
 \end{lemma}
 
 \begin{proof}
-  The answer sets $\{\mu \mid \mu_a > \mu_b \text{ for } b \ne a\}$ are open and regular, and their
-  closures cover all vectors.
+  \leanok
+  The answer sets $\{\mu \in S \mid \mu_a > \mu_b \text{ for } b \ne a\}$ are open and convex,
+  hence the interiors of their closures. A vector $\mu \in S$ whose largest mean is attained at $a$
+  is the limit of $\mu + t e_a \in S$ as $t \downarrow 0$, whose unique best arm is $a$: the
+  closures of the answer sets cover $S$.
 \end{proof}

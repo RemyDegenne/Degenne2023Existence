@@ -6,6 +6,7 @@ Authors: Remy Degenne
 module
 
 public import Degenne2023Existence.ForLMLExplore.Identification.FixedBudgetComplexity
+public import Degenne2023Existence.ForLMLExplore.Identification.Task.BestArm
 public import Degenne2023Existence.ForLMLExplore.Probability.LargeDeviations.Basic
 public import LMLExplore.Bandits.Instances
 public import LMLExplore.Identification.Task.Classical
@@ -30,12 +31,18 @@ difficulty ratios, static proportions) are in
 `Degenne2023Existence/ForLMLExplore/Identification/FixedBudgetComplexity.lean`, and the large
 deviation principles in
 `Degenne2023Existence/ForLMLExplore/Probability/LargeDeviations/Basic.lean`. This file states the
-paper's standing assumption.
+paper's standing assumption, and checks it for best arm identification, which the paper does
+implicitly after the statement of Assumption 1.
 
 ## Main definitions
 
 * `Degenne2023Existence.IsRegular task S`: Assumption 1 of [D23], for the set `S` of the
   vectors of means of the families.
+
+## Main statements
+
+* `Degenne2023Existence.isRegular_baiTask`: best arm identification on an open convex set of
+  vectors of means satisfies Assumption 1.
 
 ## References
 
@@ -67,5 +74,28 @@ structure IsRegular (task : IdentTask α (α → ℝ) ℐ 𝓨) (S : Set (α →
   interior_closure_answerSet (i : ℐ) : interior (closure (task.answerSet i)) = task.answerSet i
   /-- The closures of the `𝒟_i` cover the vectors of means of the families. -/
   subset_iUnion_closure : S ⊆ ⋃ i, closure (task.answerSet i)
+
+/-- **Assumption 1 for best arm identification.** For finitely many arms and an open convex set
+`S` of vectors of means (all of `ℝ^K` for Gaussian arms, `(0, 1)^K` for Bernoulli arms), best arm
+identification restricted to `S` satisfies Assumption 1 on `S`: its answer sets, the vectors of
+`S` with a unique best arm `a`, are open and convex, hence the interiors of their closures, and
+every vector of `S` is a limit of vectors of `S` whose unique best arm is one of its arms of
+largest mean. -/
+lemma isRegular_baiTask [Finite α] [Nonempty α] (ν : (α → ℝ) → ProbabilityTheory.Kernel α 𝓨)
+    [∀ μ, ProbabilityTheory.IsMarkovKernel (ν μ)] {S : Set (α → ℝ)} (hS : IsOpen S)
+    (hSc : Convex ℝ S) :
+    IsRegular ((baiTask ν id).restrict S) S where
+  M_subset := by
+    rw [IdentTask.M_restrict]
+    exact Set.inter_subset_right
+  M_subset_iUnion := by
+    rw [IdentTask.M_restrict, M_baiTask]
+    rintro μ ⟨⟨a, ha⟩, hμS⟩
+    refine Set.mem_iUnion.2 ⟨a, ?_⟩
+    rw [IdentTask.answerSet_restrict]
+    exact ⟨(mem_answerSet_baiTask_iff ν id).2 ha, hμS⟩
+  isOpen_answerSet := isOpen_answerSet_baiTask_restrict ν hS
+  interior_closure_answerSet := interior_closure_answerSet_baiTask_restrict ν hS hSc
+  subset_iUnion_closure := subset_iUnion_closure_answerSet_baiTask_restrict ν hS
 
 end Degenne2023Existence

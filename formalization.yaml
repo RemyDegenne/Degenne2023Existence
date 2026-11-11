@@ -133,7 +133,19 @@ status:
     antitonicity of the oracle difficulty and of the difficulty ratios, and the static-proportions
     difficulty as the characteristic time for symmetric divergences. The proof does not use the
     condition of Assumption 1 that each answer set is the interior of its closure.
-  sorry_count: 3
+    Phase 2, second round of 2026-11-11: no complexity in Gaussian best arm identification for many
+    arms (Theorem 8; blueprint chapter bai) is proved: the oracle difficulty of every class
+    containing the static proportions algorithms is at most the static-proportions difficulty,
+    equal to the characteristic time for Gaussian arms, and Corollary 4 at the means
+    (0, -1, ..., -(K - 1)) gives the bound (1/24) log K, at least (3/80) log K for every K (a
+    variant of the paper's construction, which needs no special case for K = 2, E6). Over it:
+    Assumption 1 for best arm identification on every open convex set of vectors of means
+    (D2023/Setting.lean, isRegular_baiTask), from the convexity and the closures of its answer
+    sets (ForLMLExplore/Identification/Task/BestArm.lean), the static-proportions difficulty of
+    Gaussian arms as their characteristic time (ForLMLExplore/Identification/Task/ExpFamily.lean),
+    and the antitonicity of the asymptotic ratio at a model in the value of the difficulty there
+    (ForLMLExplore/Identification/FixedBudgetComplexity.lean).
+  sorry_count: 2
   sorry_in_definitions: 0
 
 automation:
@@ -236,9 +248,9 @@ alignment:
     - source: "thm:gaussian_bai_no_complexity — Theorem 8"
       lean: "Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian"
       module: "Degenne2023Existence.D2023.Theorem8"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
-      note: "The proof follows the correction E6."
+      note: "The proof takes a variant of the paper's construction, the means (0, -1, ..., -(K - 1)), whose bound (1/24) log K >= (3/80) log K holds for every K, without the last inequality of the paper's proof, which fails for K = 2 (E6)."
     - source: "cor:bernoulli_bai_H — Lemma 9"
       lean: "Degenne2023Existence.inv_staticDifficulty_baiTask_bernoulli_two"
       module: "Degenne2023Existence.D2023.Lemma9"

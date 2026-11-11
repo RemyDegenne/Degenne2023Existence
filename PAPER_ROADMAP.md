@@ -22,7 +22,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | merged #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
 | R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | PR #259 | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
-| R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean` |
+| R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean`, `ForLMLExplore/Identification/Task/BestArm.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
 
 ## Notes
 
@@ -45,8 +45,8 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   use) with the rate as an inverse (`errorRate_eq_inv`) and the one-sided form
   `inv_le_liminf_errorRate_of_neg_le_liminf`, `lem:oracleDifficulty_mono` as the antitonicity of
   the oracle difficulty in the class and of the difficulty ratios in the difficulty function
-  (`oracleDifficulty_anti`, `difficultyRatio_anti`, `asymptoticRatio_anti`, `maxRatio_anti`),
-  `alternatives_eq_alt` and, for R11, `IsStaticProportions.errorProb_eq` (the probability of
+  (`oracleDifficulty_anti`, `difficultyRatio_anti`, `asymptoticRatio_anti`, `maxRatio_anti`, and
+  at a single model `asymptoticRatio_le_of_le`), `alternatives_eq_alt` and, for R11, `IsStaticProportions.errorProb_eq` (the probability of
   error of a static proportions family as a probability of the trajectory, for a measurable set of
   correct answers; the recommendation rule need not be measurable).
 - R10: Identification 8.3 asks for Cramér's theorem for every law on `ℝ` whose cumulant generating
@@ -165,6 +165,21 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 - R15–R17: Identification 8.4, the results of [D23] on the existence of a complexity
   (Theorems 5–8 and 10, Lemmas 15–18). The proofs of Theorems 6 and 7 follow the corrections E3–E5
   of `notes/paper-errata.md`, and the one of Theorem 8 the correction E6.
+- R17: Theorem 8 is proved (`D2023/Theorem8.lean`), for any class containing the static
+  proportions algorithms, by Corollary 4 (R13) at the means `(0, -1, …, -(K - 1))`, with
+  `H_𝒞 ≤ H^{sp} = T* ≤ 2 H_Δ` (R11, R7). It uses three library-shaped additions: the convexity and
+  the closures of the answer sets of best arm identification on vectors of means
+  (`ForLMLExplore/Identification/Task/BestArm.lean`: `convex_answerSet_baiTask`,
+  `mem_closure_answerSet_baiTask_restrict`, `subset_iUnion_closure_answerSet_baiTask_restrict`,
+  `interior_closure_answerSet_baiTask_restrict`, next to `isOpen_answerSet_baiTask` of LMLExplore's
+  `Identification/Task/BestArm.lean`), the static-proportions difficulty of Gaussian arms with
+  known variances as their characteristic time
+  (`IdentTask.staticDifficulty_eq_charTime_gaussianReal`, added to
+  `ForLMLExplore/Identification/Task/ExpFamily.lean` after the R16 port's commit; it needs
+  `staticDifficulty`, R11), and `asymptoticRatio_le_of_le` (R9). Assumption 1 for best arm
+  identification on any open convex set of vectors of means is `D2023.isRegular_baiTask`
+  (`D2023/Setting.lean`), from these; it also covers the Bernoulli case `(0, 1)²` of Theorem 10.
+  Theorem 10 remains.
 - R16: the static-proportions difficulty of Gaussian half-space identification with per-arm
   variances (`ForLMLExplore/Identification/Task/HalfSpace.lean`, [D23, Lemma 15]) generalizes
   LMLExplore's common-variance `Identification/Task/HalfSpace.lean`, with the reversed cost; the

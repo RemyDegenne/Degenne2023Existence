@@ -64,6 +64,8 @@ In the namespace `LMLExplore.Identification`:
   gives `c⁻¹ ≤ liminf_T h_{θ,T}(𝒜)`.
 * `IdentTask.oracleDifficulty_anti`, `IdentTask.maxRatio_anti`: the oracle difficulty is antitone
   in the class, and the maximal difficulty ratio in the difficulty function.
+* `IdentTask.asymptoticRatio_le_of_le`: the asymptotic difficulty ratio at `θ` is antitone in the
+  value of the difficulty function at `θ`.
 * `IdentTask.iSup_pos_iInf_cost_eq`: the supremum over the positive allocations of the cost of a
   set of models is its supremum over the simplex.
 * `IdentTask.staticDifficulty_eq_charTime`: with symmetric divergences, the static-proportions
@@ -273,10 +275,18 @@ lemma difficultyRatio_anti (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) (θ : Θ) 
     Antitone fun H ↦ task.difficultyRatio H 𝒜 θ T :=
   fun _ _ h ↦ ENNReal.div_le_div_left (h θ) _
 
+/-- The asymptotic difficulty ratio at `θ` depends on the difficulty function only through its
+value at `θ`, and is antitone in that value: if `H θ ≤ H' θ`, then
+`R_{H',∞}(𝒜, θ) ≤ R_{H,∞}(𝒜, θ)`. -/
+lemma asymptoticRatio_le_of_le {H H' : Θ → ℝ≥0∞} (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) {θ : Θ}
+    (h : H θ ≤ H' θ) :
+    task.asymptoticRatio H' 𝒜 θ ≤ task.asymptoticRatio H 𝒜 θ :=
+  limsup_le_limsup (Eventually.of_forall fun _ ↦ ENNReal.div_le_div_left h _)
+
 /-- The asymptotic difficulty ratio is antitone in the difficulty function. -/
 lemma asymptoticRatio_anti (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) (θ : Θ) :
     Antitone fun H ↦ task.asymptoticRatio H 𝒜 θ :=
-  fun _ _ h ↦ limsup_le_limsup (Eventually.of_forall fun T ↦ task.difficultyRatio_anti 𝒜 θ T h)
+  fun _ _ h ↦ task.asymptoticRatio_le_of_le 𝒜 (h θ)
 
 /-- The maximal difficulty ratio is antitone in the difficulty function: against the oracle
 difficulty of a larger class, it is larger (`oracleDifficulty_anti`). -/

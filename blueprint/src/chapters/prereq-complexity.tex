@@ -91,12 +91,14 @@ is an outer measure, which is $1$ for every algorithm under the trivial $\sigma$
   \lean{LMLExplore.Identification.IdentTask.oracleDifficulty_anti,
     LMLExplore.Identification.IdentTask.difficultyRatio_anti,
     LMLExplore.Identification.IdentTask.asymptoticRatio_anti,
+    LMLExplore.Identification.IdentTask.asymptoticRatio_le_of_le,
     LMLExplore.Identification.IdentTask.maxRatio_anti}
   \leanok
   \uses{def:oracle_difficulty}
   If $\cC \subseteq \cC'$, then $H_{\cC'} \le H_{\cC}$, and $R_{H_{\cC}, T} \le R_{H_{\cC'}, T}$.
   More generally, the difficulty ratios, their asymptotic forms and the maximal difficulty ratio
-  are antitone in the difficulty function.
+  are antitone in the difficulty function, and the asymptotic ratio at $\theta$ in its value at
+  $\theta$.
 \end{lemma}
 
 \begin{proof}
@@ -141,7 +143,8 @@ and put no weight outside $s$. Corollary~\ref{cor:corner_lb} uses only the inequ
 
 \begin{lemma}
   \label{lem:staticDifficulty_eq_charTime}
-  \lean{LMLExplore.Identification.IdentTask.staticDifficulty_eq_charTime}
+  \lean{LMLExplore.Identification.IdentTask.staticDifficulty_eq_charTime,
+    LMLExplore.Identification.IdentTask.staticDifficulty_eq_charTime_gaussianReal}
   \leanok
   \uses{def:static_difficulty}
   Let $\theta$ be a model with the single correct answer $i$. If $\KL(\nu_k(\lambda),

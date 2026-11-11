@@ -193,7 +193,13 @@ Definitions `def:fixed_budget_family`, `def:alternatives`, `def:error_prob`, `de
   `lem:oracleDifficulty_staticClass_le`, `lem:isRegular_baiTask`), `H^{sp} = T*` for Gaussian arms
   (symmetric divergence, `lem:staticDifficulty_eq_charTime`), `T* ≤ 2 H_Δ` (LMLExplore
   `charTime_baiTask_gaussianBandit_le`), Corollary 4 at `μ_k = -k Δ` with the arms `k ≥ 2`,
-  `H_Δ(λ⁽ʲ⁾) KL(μ_j, λ⁽ʲ⁾_j) ≤ 8 j`, and `∑_{j=2}^K 1/j ≥ (3/5) log K` (E6).
+  `H_Δ(λ⁽ʲ⁾) KL(μ_j, λ⁽ʲ⁾_j) ≤ 8 j`, and `∑_{j=2}^K 1/j ≥ (3/5) log K` (E6). Route taken (round
+  of 2026-11-11): the means `μ_k = -k` for the arms `k = 0, …, K - 1` and `λ⁽ʲ⁾_j = j`, so that
+  `2 H_Δ(λ⁽ʲ⁾) ≤ 12 / j` by `∑_{k ≥ 0} (j + k)⁻² ≤ 2 / j` (Mathlib `sum_Ioo_inv_sq_le`) and
+  `H^{sp}(λ⁽ʲ⁾) KL(μ_j, λ⁽ʲ⁾_j) ≤ 24 j`, and the bound `(1/24) H_{K-1} ≥ (1/24) log K`
+  (`log_add_one_le_harmonic`), with no special case for `K = 2`; `lem:isRegular_baiTask` is
+  proved for best arm identification on every open convex set of vectors of means, which also
+  covers the Bernoulli case `(0, 1)²` of Theorem 10.
 - Lemma 19: in natural parameters `y`, `w₀ d(ξ₀, y) + w₁ d(ξ₁, y)` (Bregman divergences of `φ`) is
   minimal at `y = w₀ ξ₀ + w₁ ξ₁`; the alternatives of two-armed best arm identification reduce to
   `λ₀ = λ₁` (LMLExplore `Task/BestArm.lean`, `Mean.lean`); the maximum over `w₀` solves

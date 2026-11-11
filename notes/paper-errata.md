@@ -137,7 +137,9 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
 - **Correction:** `∑_{j=2}^K 1/j ≥ (3/5) log K` for all `K ≥ 1` (at `K = 2`, `1/2 ≥ 0.416`), so
   `(1/8) ∑_{j=2}^K 1/j ≥ (3/40) log K` and the statement of Theorem 8 holds.
 - **Lean:** `Degenne2023Existence.ofReal_mul_log_le_iInf_maxRatio_baiTask_gaussian` states
-  Theorem 8 as printed.
+  Theorem 8 as printed. Its proof (round of 2026-11-11) takes the means `(0, -1, …, -(K - 1))`
+  instead of `(0, -2Δ, …, -KΔ)`, for which `H^{sp}(λ⁽ʲ⁾) KL(μ_j, λ⁽ʲ⁾_j) ≤ 24 j`, and concludes from
+  `(1/24) ∑_{j=1}^{K-1} 1/j ≥ (1/24) log K ≥ (3/80) log K`, which holds for every `K`.
 - **Kind:** wrong constant (in the proof).
 - **Found:** phase-1 statement check, 2026-11-09.
 
