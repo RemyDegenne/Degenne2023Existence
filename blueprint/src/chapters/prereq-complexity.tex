@@ -210,6 +210,33 @@ and put no weight outside $s$. Corollary~\ref{cor:corner_lb} uses only the inequ
 \end{proof}
 
 \begin{lemma}
+  \label{lem:klBer_ge_klFun}
+  \lean{LMLExplore.mul_klFun_div_le_klBerReal, InformationTheory.antitoneOn_klFun}
+  \leanok
+  Let $\varphi(r) = r \log r + 1 - r$. For $a \le b$ with $b \in (0, 1)$,
+  $\kl(a, b) \ge b \, \varphi(a / b)$; and $\varphi$ is antitone on $[0, 1]$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  $a \log \frac ab = b \frac ab \log \frac ab$, and $(1 - a) \log \frac{1 - a}{1 - b} \ge (1 - a)(1 -
+  \frac{1 - b}{1 - a}) = b - a$ by $\log t \ge 1 - 1/t$. The function $\varphi$ is convex on $[0,
+  \infty)$ with its minimum $0$ at $1$.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:klBer_ne_zero_of_eq}
+  \lean{LMLExplore.klBer_ne_zero_of_klBer_eq}
+  \leanok
+  If $\kl(z, a) = \kl(z, b)$ for distinct $a, b \in [0, 1]$, then $\kl(z, a) \ne 0$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  On $[0, 1]$, $\kl(z, c) = 0$ only for $c = z$.
+\end{proof}
+
+\begin{lemma}
   \label{lem:tendsto_subseq_proportions}
   \lean{LMLExplore.Identification.IsFixedBudget.expectedPullProportion_mem_simplex,
     LMLExplore.Identification.IsFixedBudget.lintegral_pullCount_div}

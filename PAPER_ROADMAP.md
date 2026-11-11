@@ -22,7 +22,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | merged #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
 | R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | PR #259 | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
-| R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | todo | `D2023/Theorem8.lean`, `D2023/Theorem10.lean`, `ForLMLExplore/Identification/Task/BestArm.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
+| R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | proved | `D2023/Theorem8.lean`, `D2023/Theorem10.lean`, `ForLMLExplore/Identification/Task/BestArm.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean` |
 
 ## Notes
 
@@ -208,7 +208,15 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `staticDifficulty`, R11), and `asymptoticRatio_le_of_le` (R9). Assumption 1 for best arm
   identification on any open convex set of vectors of means is `D2023.isRegular_baiTask`
   (`D2023/Setting.lean`), from these; it also covers the Bernoulli case `(0, 1)²` of Theorem 10.
-  Theorem 10 remains.
+  Theorem 10 is proved (`D2023/Theorem10.lean`), for any class containing the static proportions
+  algorithms, by Corollary 4 at the means `(x (1 + x), x)` with Lemma 9 (R14) and
+  `H_𝒞 ≤ H^{sp}` (`oracleDifficulty_le_staticDifficulty_baiTask_bernoulli`, for any number of
+  arms); it bounds the paper's limit below rather than computing it. The library-shaped
+  additions are in `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, next to the
+  R13 lemma of that file (merged): `mul_klFun_div_le_klBerReal`
+  (`q klFun (p / q) ≤ d(p, q)` for `p ≤ q`, `q ∈ (0, 1)`), `klBer_ne_zero_of_klBer_eq`, and
+  `InformationTheory.antitoneOn_klFun` (Mathlib's `klFun` is antitone on `[0, 1]`); they belong in
+  LMLExplore's `InformationTheory/KullbackLeibler/Bernoulli.lean`.
 - R16: the static-proportions difficulty of Gaussian half-space identification with per-arm
   variances (`ForLMLExplore/Identification/Task/HalfSpace.lean`, [D23, Lemma 15]) generalizes
   LMLExplore's common-variance `Identification/Task/HalfSpace.lean`, with the reversed cost; the

@@ -150,6 +150,6 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
   `x(1 + x) < 1/2`, that is `x < (√3 - 1)/2 ≈ 0.366`.
 - **Correction:** take `x ∈ (0, (√3 - 1)/2)`; the proof uses `x → 0` only.
 - **Lean:** `Degenne2023Existence.one_lt_iInf_maxRatio_baiTask_bernoulli_two` states
-  Theorem 10 as printed.
+  Theorem 10 as printed. Its proof (round of 2026-11-11) uses some `x ∈ (0, 1/20]`.
 - **Kind:** typo.
 - **Found:** phase-1 statement check, 2026-11-09.

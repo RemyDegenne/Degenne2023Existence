@@ -145,7 +145,16 @@ status:
     Gaussian arms as their characteristic time (ForLMLExplore/Identification/Task/ExpFamily.lean),
     and the antitonicity of the asymptotic ratio at a model in the value of the difficulty there
     (ForLMLExplore/Identification/FixedBudgetComplexity.lean).
-  sorry_count: 2
+    Phase 2, third round of 2026-11-11: no complexity in best arm identification with two Bernoulli
+    arms (Theorem 10; blueprint chapter bai) is proved: the oracle difficulty of every class
+    containing the static proportions algorithms is at most the static-proportions difficulty, and
+    Corollary 4 at the means (x (1 + x), x) with the alternatives (x / 2, x) and (x (1 + x), 1 / 2)
+    gives, with Lemma 9, a bound larger than 1 for some x in (0, 1/20]. The proof bounds the first
+    term of the bound below by klFun(4/5) > 0 and shows that the second tends to 1, instead of
+    computing the limit of the sum as the paper does. Over it, the lower bound
+    kl(p, q) >= q klFun(p / q) for p <= q and the antitonicity of klFun on [0, 1]
+    (ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean).
+  sorry_count: 1
   sorry_in_definitions: 0
 
 automation:
@@ -259,8 +268,9 @@ alignment:
     - source: "thm:bernoulli_bai_no_complexity — Theorem 10"
       lean: "Degenne2023Existence.one_lt_iInf_maxRatio_baiTask_bernoulli_two"
       module: "Degenne2023Existence.D2023.Theorem10"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
+      note: "The proof applies Corollary 4 at the paper's means for some x in (0, 1/20] (E7), and bounds the limit of the bound below by 1 + klFun(4/5) instead of computing it."
     - source: "lem:ldp_single_arm — Lemma 11"
       lean: "Degenne2023Existence.isLDP_empiricalMean_expFamily"
       module: "Degenne2023Existence.D2023.Lemma11"
