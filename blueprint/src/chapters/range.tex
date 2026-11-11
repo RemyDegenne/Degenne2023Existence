@@ -77,39 +77,109 @@ measurable.
   \label{thm:positivity_LB}
   \lean{Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card}
   \leanok
-  \uses{cor:corner_lb, thm:ldp, lem:exists_static, lem:static_minThreshold_one_low,
-    lem:asymptoticRatio_eq_top}
+  \uses{lem:positivity_upper, lem:positivity_lower}
   For the positivity task with threshold $\gamma$, a mean of every family,
   $\inf_{\cA \in \cC_{\infty}} \sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) = K$.
 \end{theorem}
 
 \begin{proof}
-  \uses{cor:corner_lb, thm:ldp, lem:exists_static, lem:static_minThreshold_one_low,
-    lem:asymptoticRatio_eq_top}
+  \leanok
+  \uses{lem:positivity_upper, lem:positivity_lower, lem:exists_static}
   Upper bound: the uniform static proportions family recommending whether some empirical mean is
-  below $\gamma$ (Lemma~\ref{lem:exists_static}); by Theorem~\ref{thm:ldp} and the monotonicity of
-  the rate functions on each side of the means, its rate is the one of
-  Theorem~\ref{thm:oracle_difficulty_sp}, and the argument of Theorem~\ref{thm:uniform_upper_bound}
-  bounds its ratio by $K$. Lower bound: let $m > \gamma > \ell$ be means, $\mu = (m, \dots, m)$
-  and $\lambda^{(j)}$ equal to $\mu$ except $\lambda^{(j)}_j = \ell$. If $p_{\mu,T} \not\to 0$ the
-  ratio is infinite (Lemma~\ref{lem:asymptoticRatio_eq_top}); otherwise
-  Corollary~\ref{cor:corner_lb} and $\Hsp(\lambda^{(j)}) = \KL(\gamma, \ell)^{-1}$
-  (Lemma~\ref{lem:static_minThreshold_one_low}) give the bound $K \KL(\gamma, \ell) / \KL(m,
-  \ell)$, which tends to $K$ as $m \downarrow \gamma$. The paper lets $\ell$ tend to the lower end
-  of the means instead, which does not give a ratio tending to $1$ in general (E3).
+  below $\gamma$ (Lemma~\ref{lem:exists_static}) has maximal ratio at most $K$
+  (Lemma~\ref{lem:positivity_upper}). Lower bound: Lemma~\ref{lem:positivity_lower}.
 \end{proof}
 
-\begin{lemma}
-  \label{lem:static_minThreshold_one_low}
-  \uses{def:static_difficulty}
-  For the positivity task with threshold $\gamma$ and a vector of means $\lambda$ with exactly one
-  arm $j$ below $\gamma$, $\Hsp(\lambda) = \KL(\gamma, \lambda_j)^{-1}$.
+Theorem~\ref{thm:uniform_upper_bound} gives the upper bound only for families whose samples lie in
+the closure of the means (E2), which the statement of Theorem~\ref{thm:positivity_LB} does not
+assume. For positivity, the monotonicity of the rate functions on each side of the means makes
+that assumption unnecessary.
+
+\begin{lemma}[{\cite[proof of Theorem 6]{D23}}]
+  \label{lem:positivity_rate}
+  \lean{Degenne2023Existence.limsup_log_errorProb_le_minThresholdTask}
+  \leanok
+  \uses{thm:ldp, lem:errorProb_static, def:static_proportions}
+  For the positivity task with threshold $\gamma$, a mean of every family, let $\cA$ be a static
+  proportions family with proportions $\omega$ whose recommendation rule answers whether some
+  empirical mean is below $\gamma$. At every $\mu \in \cD$,
+  $\limsup_T \frac1T \log p_{\mu, T}(\cA) \le -\inf_{\lambda \in \Alt(\mu)} \sum_k \omega_k
+  \KL(\lambda_k, \mu_k)$.
 \end{lemma}
 
 \begin{proof}
-  The alternatives have all means above $\gamma$; the cost of moving the arm $j$ there is
-  $\omega_j \KL(\gamma, \lambda_j)$ in the limit, the other arms can stay, and the maximum over
-  $\omega$ is at $\omega = \delta_j$.
+  \leanok
+  \uses{thm:ldp, lem:errorProb_static}
+  The family errs only when the empirical means lie in the closed set $F$ of the vectors with some
+  coordinate at most $\gamma$, if all the means of $\mu$ are above $\gamma$, and with all
+  coordinates at least $\gamma$ otherwise. Let $I(x) = \sum_k \omega_k \overline{\KL}(x_k, \mu_k)$
+  be the rate function of Theorem~\ref{thm:ldp}. For $x \in F$ with $x_a \le \gamma$ in the first
+  case, $y$ equal to $\mu$ except $y_a = \gamma$; in the second case, $y_k = \max(\mu_k, \gamma)$.
+  Then $y$ is a vector of means and a limit of alternatives to $\mu$, and $I(y) \le I(x)$, as
+  $\overline{\KL}(\cdot, \mu_k)$ is nonincreasing below $\mu_k$ and nondecreasing above. By the
+  continuity of $I$ on the vectors of means, $I(y) \ge \inf_{\Alt(\mu)} I$, and the upper bound of
+  the large deviation principle on $F$ concludes.
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 6]{D23}}]
+  \label{lem:positivity_upper}
+  \lean{Degenne2023Existence.maxRatio_staticDifficulty_minThresholdTask_le}
+  \leanok
+  \uses{lem:positivity_rate, lem:limsup_errorRate_le, def:static_difficulty}
+  In the setting of Lemma~\ref{lem:positivity_rate},
+  $\sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) \le (\min_j \omega_j)^{-1}$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:positivity_rate, lem:limsup_errorRate_le}
+  At $\mu \in \cD$, the alternatives contain a constant vector, whose costs are finite, so $V =
+  \max_{\omega' \in \Simplex} \inf_{\Alt(\mu)} \sum_k \omega'_k \KL(\lambda_k, \mu_k)$ is finite. By
+  Lemmas~\ref{lem:positivity_rate} and~\ref{lem:limsup_errorRate_le}, $\limsup_T h_{\mu, T}(\cA)
+  \le L_{\omega}^{-1}$ with $L_{\omega} = \inf_{\Alt(\mu)} \sum_k \omega_k \KL(\lambda_k, \mu_k) \ge
+  (\min_j \omega_j) V$, as in the proof of Theorem~\ref{thm:uniform_upper_bound}, so
+  $R_{\Hsp, \infty}(\cA, \mu) \le V / L_{\omega} \le (\min_j \omega_j)^{-1}$.
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 6]{D23}}]
+  \label{lem:static_minThreshold_one_low}
+  \lean{Degenne2023Existence.staticDifficulty_minThresholdTask_le}
+  \leanok
+  \uses{def:static_difficulty}
+  For the positivity task with threshold $\gamma$ and a vector of means $\lambda$ with an arm $j$
+  below $\gamma$, $\Hsp(\lambda) \le \KL(\gamma, \lambda_j)^{-1}$.
+\end{lemma}
+
+The paper states the equality when $j$ is the only arm below $\gamma$; the proof of
+Theorem~\ref{thm:positivity_LB} uses only the inequality.
+
+\begin{proof}
+  \leanok
+  The alternatives have all means above $\gamma$; with $\omega = \delta_j$, the cost of an
+  alternative $\lambda'$ is $\KL(\lambda'_j, \lambda_j) \ge \KL(\gamma, \lambda_j)$, as
+  $\KL(\cdot, \lambda_j)$ is nondecreasing above $\lambda_j$.
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 6]{D23}}]
+  \label{lem:positivity_lower}
+  \lean{Degenne2023Existence.card_le_maxRatio_minThresholdTask}
+  \leanok
+  \uses{cor:corner_lb, lem:static_minThreshold_one_low, lem:asymptoticRatio_eq_top}
+  For the positivity task with threshold $\gamma$, a mean of every family, every fixed-budget
+  family $\cA$ has $\sup_{\lambda \in \cD} R_{\Hsp, \infty}(\cA, \lambda) \ge K$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{cor:corner_lb, lem:static_minThreshold_one_low, lem:asymptoticRatio_eq_top}
+  Let $\ell < \gamma < m$ be means of every family, $\mu = (m, \dots, m)$ and $\lambda^{(j)}$ equal
+  to $\mu$ except $\lambda^{(j)}_j = \ell$. If $p_{\mu,T} \not\to 0$, the ratio at $\mu$ is infinite
+  (Lemma~\ref{lem:asymptoticRatio_eq_top}): $\Hsp(\mu)$ is finite, as the alternatives to $\mu$ cost
+  at least $\min_k \KL_k(\gamma, m) / K$ with the uniform allocation. Otherwise
+  Corollary~\ref{cor:corner_lb} and Lemma~\ref{lem:static_minThreshold_one_low} give the bound
+  $\sum_j \KL_j(\gamma, \ell) / \KL_j(m, \ell)$, which tends to $K$ as $m \downarrow \gamma$. The
+  paper lets $\ell$ tend to the lower end of the means instead, which does not give a ratio tending
+  to $1$ in general (E3).
 \end{proof}
 
 \begin{lemma}[{\cite[Lemma 15]{D23}}]

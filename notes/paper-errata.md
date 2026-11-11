@@ -63,7 +63,12 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
   exponential, …).
 - **Lean:** `Degenne2023Existence.tendsto_errorRate_of_isStaticProportions`,
   `Degenne2023Existence.oracleDifficulty_staticClass` and the two results of Theorem 5
-  assume `hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id)`.
+  assume `hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id)`. Theorem 6
+  (`Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card`) holds without it: for positivity,
+  the recommendation "some empirical mean is below the threshold" is defined everywhere, and the
+  monotonicity of the rate functions on each side of the means bounds the rate at every empirical
+  mean where it errs by the rate at a limit of alternatives
+  (`Degenne2023Existence.limsup_log_errorProb_le_minThresholdTask`).
 - **Kind:** missing hypothesis.
 - **Found:** phase-1 statement check, 2026-11-09.
 
@@ -78,7 +83,8 @@ Arms are numbered from `1` in the paper and from `0` in Lean.
   `KL(θ, ℓ) > 0`, the ratio tends to `1`, so the infimum is at least `K`. The statement of
   Theorem 6 is unaffected.
 - **Lean:** `Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card` states Theorem 6 as
-  printed (with the threshold a mean of every family); the proof follows the correction.
+  printed (with the threshold a mean of every family); its lower bound,
+  `Degenne2023Existence.card_le_maxRatio_minThresholdTask`, follows the correction.
 - **Kind:** gap in the proof.
 - **Found:** phase-1 statement check, 2026-11-09.
 

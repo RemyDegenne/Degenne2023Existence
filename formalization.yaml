@@ -154,7 +154,18 @@ status:
     computing the limit of the sum as the paper does. Over it, the lower bound
     kl(p, q) >= q klFun(p / q) for p <= q and the antitonicity of klFun on [0, 1]
     (ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean).
-  sorry_count: 1
+    Phase 2, fourth round of 2026-11-11: positivity has maximal difficulty ratio K (Theorem 6;
+    blueprint chapter range) is proved, and with it every headline statement. Upper bound: the
+    uniform static proportions family recommending whether some empirical mean is below the
+    threshold has rate at most the inverse of the cost of the alternatives, by the upper bound of the
+    large deviation principle of Theorem 12 on the closed set where it errs and the monotonicity of
+    the rate functions on each side of the means, so without the assumption of erratum E2 that
+    Theorem 5 takes, and the argument of Theorem 5 bounds its ratio by K. Lower bound: Corollary 4
+    at the models (m, ..., m) and their alternatives with one arm moved below the threshold, with
+    the bound H^sp(lambda) <= KL(threshold, lambda_j)^-1, as m decreases to the threshold (the
+    correction E3). Over it, the upper bound on the rate from an upper bound on the exponent of the
+    probability of error (ForLMLExplore/Identification/FixedBudgetComplexity.lean).
+  sorry_count: 0
   sorry_in_definitions: 0
 
 automation:
@@ -245,9 +256,9 @@ alignment:
     - source: "thm:positivity_LB — Theorem 6"
       lean: "Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card"
       module: "Degenne2023Existence.D2023.Theorem6"
-      status: "stated"
+      status: "proved"
       relation: "exactMatch"
-      note: "Positivity is LMLExplore's minimum threshold task; the threshold is a mean of every family. The proof follows the correction E3."
+      note: "Positivity is LMLExplore's minimum threshold task; the threshold is a mean of every family. The proof follows the correction E3, and its upper bound does not need the assumption of E2 that Theorem 5 takes."
     - source: "thm:flat_boundary — Theorem 7"
       lean: "Degenne2023Existence.one_le_iInf_maxRatio_of_hyperplane"
       module: "Degenne2023Existence.D2023.Theorem7"

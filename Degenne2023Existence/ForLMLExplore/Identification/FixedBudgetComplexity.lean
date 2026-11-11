@@ -62,6 +62,8 @@ In the namespace `LMLExplore.Identification`:
   `h_{θ,T}(𝒜) → c⁻¹`.
 * `IdentTask.inv_le_liminf_errorRate_of_neg_le_liminf`: `-c ≤ liminf_T (1 / T) log p_{θ,T}(𝒜)`
   gives `c⁻¹ ≤ liminf_T h_{θ,T}(𝒜)`.
+* `IdentTask.limsup_errorRate_le_inv_of_limsup_le_neg`: `limsup_T (1 / T) log p_{θ,T}(𝒜) ≤ -c`
+  gives `limsup_T h_{θ,T}(𝒜) ≤ c⁻¹`.
 * `IdentTask.oracleDifficulty_anti`, `IdentTask.maxRatio_anti`: the oracle difficulty is antitone
   in the class, and the maximal difficulty ratio in the difficulty function.
 * `IdentTask.asymptoticRatio_le_of_le`: the asymptotic difficulty ratio at `θ` is antitone in the
@@ -264,6 +266,26 @@ lemma inv_le_liminf_errorRate_of_neg_le_liminf {𝒜 : ℕ → IdentAlg Unit α 
       hg.map_liminf_of_continuousAt _ hgc.continuousAt
     _ = liminf (task.errorRate 𝒜 θ) atTop :=
       liminf_congr ((eventually_ne_atTop 0).mono fun T hT ↦ (task.errorRate_eq_inv hT).symm)
+
+/-- **An upper bound on the rate from an upper bound on the probability of error.** If
+`limsup_T (1 / T) log p_{θ,T}(𝒜) ≤ -c` for some `c ∈ [0, ∞]`, then
+`limsup_T h_{θ,T}(𝒜) ≤ c⁻¹`: the rate is a nondecreasing continuous function of
+`(1 / T) log p_{θ,T}(𝒜)`. -/
+lemma limsup_errorRate_le_inv_of_limsup_le_neg {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ}
+    {c : ℝ≥0∞}
+    (h : limsup (fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop ≤ -(c : EReal)) :
+    limsup (task.errorRate 𝒜 θ) atTop ≤ c⁻¹ := by
+  set g : EReal → ℝ≥0∞ := fun x ↦ (-x).toENNReal⁻¹
+  have hg : Monotone g := fun x y hxy ↦
+    ENNReal.inv_le_inv.2 (EReal.toENNReal_le_toENNReal (EReal.neg_le_neg_iff.2 hxy))
+  have hgc : Continuous g := continuous_inv.comp (EReal.continuous_toENNReal.comp continuous_neg)
+  calc limsup (task.errorRate 𝒜 θ) atTop
+      = limsup (g ∘ fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop :=
+        limsup_congr ((eventually_ne_atTop 0).mono fun T hT ↦ task.errorRate_eq_inv hT)
+    _ = g (limsup (fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop) :=
+        (hg.map_limsup_of_continuousAt _ hgc.continuousAt).symm
+    _ ≤ g (-(c : EReal)) := hg h
+    _ = c⁻¹ := by simp [g, EReal.toENNReal_coe]
 
 /-- The oracle difficulty is antitone in the class: a larger class has a smaller oracle
 difficulty. -/

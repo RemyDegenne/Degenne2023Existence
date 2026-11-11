@@ -20,7 +20,7 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | proved | `ForLMLExplore/Bandits/StaticAllocation.lean`, `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | merged #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | merged #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
-| R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
+| R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | proved | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
 | R16 | Tasks with a flat boundary, Gaussian half-space identification | target | Identification 8.4 | PR #259 | `D2023/Lemma15.lean`, `D2023/Lemma16.lean`, `D2023/Theorem7.lean`, `ForLMLExplore/Identification/Task/HalfSpace.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean` |
 | R17 | No complexity in best arm identification: Gaussian arms with `K` large, two Bernoulli arms | target | Identification 8.4 | proved | `D2023/Theorem8.lean`, `D2023/Theorem10.lean`, `ForLMLExplore/Identification/Task/BestArm.lean`, `ForLMLExplore/Identification/Task/ExpFamily.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean` |
 
@@ -190,7 +190,20 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   declarations and moves the imports of `Task.BestArm` to `Task.BestArm.Basic`.
 - R15: Theorem 5 is proved for measurable sets of correct answers (the `_of_measurableSet` lemmas
   of `D2023/Theorem5.lean`), and its headline statements, which take `[MeasurableSingletonClass ℐ]`
-  as those of Theorem 1, follow from them. Theorem 6 remains.
+  as those of Theorem 1, follow from them. Theorem 6 is proved (`D2023/Theorem6.lean`), for any
+  arms in exponential families with a threshold that is a mean of every family. Upper bound: the
+  static proportions family recommending whether some empirical mean is below `γ` has
+  `limsup_T (1 / T) log p_{μ,T} ≤ -inf_{Alt(μ)} ∑ w_a KL(λ_a, μ_a)`
+  (`limsup_log_errorProb_le_minThresholdTask`), by the upper bound of Theorem 12 on the closed set
+  where it errs and the monotonicity of the rate functions on each side of the means, without the
+  hypothesis of E2 that Theorem 5 takes; its maximal ratio is then at most `(min_j w_j)⁻¹`
+  (`maxRatio_staticDifficulty_minThresholdTask_le`). Lower bound
+  (`card_le_maxRatio_minThresholdTask`): Corollary 4 (R13) at `(m, …, m)` with one arm moved to
+  `ℓ < γ`, with `H^{sp}(λ) ≤ KL(γ, λ_j)⁻¹` (`staticDifficulty_minThresholdTask_le`), as `m ↓ γ`
+  (E3). It uses `IdentTask.limsup_errorRate_le_inv_of_limsup_le_neg`, the `limsup` counterpart of
+  `inv_le_liminf_errorRate_of_neg_le_liminf`, added to
+  `ForLMLExplore/Identification/FixedBudgetComplexity.lean` after PR #267 (R9), which does not have
+  it.
 - R15–R17: Identification 8.4, the results of [D23] on the existence of a complexity
   (Theorems 5–8 and 10, Lemmas 15–18). The proofs of Theorems 6 and 7 follow the corrections E3–E5
   of `notes/paper-errata.md`, and the one of Theorem 8 the correction E6.

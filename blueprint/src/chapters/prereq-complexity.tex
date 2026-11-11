@@ -54,6 +54,21 @@ direction.
 \end{proof}
 
 \begin{lemma}
+  \label{lem:limsup_errorRate_le}
+  \lean{LMLExplore.Identification.IdentTask.limsup_errorRate_le_inv_of_limsup_le_neg}
+  \leanok
+  \uses{def:error_rate, lem:tendsto_errorRate_iff}
+  For $c \in [0, \infty]$, if $\limsup_T \frac1T \log p_{\theta, T}(\cA) \le -c$, then
+  $\limsup_T h_{\theta, T}(\cA) \le c^{-1}$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:tendsto_errorRate_iff}
+  As in Lemma~\ref{lem:le_liminf_errorRate}, with the $\limsup$.
+\end{proof}
+
+\begin{lemma}
   \label{lem:alternatives_eq_alt}
   \lean{LMLExplore.Identification.IdentTask.alternatives_eq_alt}
   \leanok
