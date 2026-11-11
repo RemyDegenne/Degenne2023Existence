@@ -5,6 +5,7 @@ Authors: Remy Degenne
 -/
 module
 
+public import LMLExplore.Identification.CumulativeTracking
 public import LMLExplore.Identification.FixedBudget
 public import LMLExplore.Identification.Task.TransportationCost
 public import LeanMachineLearning.SequentialLearning.SumRewards
@@ -59,6 +60,16 @@ In the namespace `LMLExplore.Identification`:
   to `0` has an infinite asymptotic difficulty ratio at `θ`, for `H(θ) < ∞`.
 * `IdentTask.tendsto_errorRate_of_tendsto_log_div`: `(1 / T) log p_{θ,T}(𝒜) → -c` gives
   `h_{θ,T}(𝒜) → c⁻¹`.
+* `IdentTask.inv_le_liminf_errorRate_of_neg_le_liminf`: `-c ≤ liminf_T (1 / T) log p_{θ,T}(𝒜)`
+  gives `c⁻¹ ≤ liminf_T h_{θ,T}(𝒜)`.
+* `IdentTask.oracleDifficulty_anti`, `IdentTask.maxRatio_anti`: the oracle difficulty is antitone
+  in the class, and the maximal difficulty ratio in the difficulty function.
+* `IdentTask.iSup_pos_iInf_cost_eq`: the supremum over the positive allocations of the cost of a
+  set of models is its supremum over the simplex.
+* `IdentTask.staticDifficulty_eq_charTime`: with symmetric divergences, the static-proportions
+  difficulty of a single-answer model is its characteristic time.
+* `IdentTask.exists_isStaticProportions`: for positive proportions and a measurable recommendation
+  rule, a static proportions family exists (cumulative tracking).
 * `IdentTask.IsStaticProportions.errorProb_eq`: the probability of error of a static proportions
   family is the probability that the recommendation of the empirical means is not correct.
 
@@ -208,6 +219,15 @@ private lemma toENNReal_div_natCast (x : EReal) {n : ℕ} (hn : n ≠ 0) :
       EReal.toENNReal_of_ne_top (EReal.coe_ne_top _), EReal.toReal_coe, EReal.toReal_coe,
       ENNReal.ofReal_div_of_pos hn'', ENNReal.ofReal_natCast]
 
+/-- For a budget `T ≠ 0`, the rate `h_{θ,T}(𝒜)` is the inverse of the positive part of
+`-(1 / T) log p_{θ,T}(𝒜)`. -/
+lemma errorRate_eq_inv {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ} {T : ℕ} (hT : T ≠ 0) :
+    task.errorRate 𝒜 θ T = (-(ENNReal.log (task.errorProb 𝒜 θ T) / T)).toENNReal⁻¹ := by
+  have hneg (x : EReal) : -(x / T) = -x / T := by
+    rw [div_eq_mul_inv, div_eq_mul_inv, EReal.neg_mul]
+  rw [errorRate, hneg, toENNReal_div_natCast _ hT, ENNReal.inv_div (Or.inl
+    (ENNReal.natCast_ne_top T)) (Or.inl (by exact_mod_cast hT))]
+
 /-- **The rate from the exponent of the probability of error.** If
 `(1 / T) log p_{θ,T}(𝒜) → -c` for some `c ∈ [0, ∞]`, then `h_{θ,T}(𝒜) → c⁻¹`: for `T > 0`,
 `h_{θ,T}(𝒜)` is the inverse of the positive part of `-(1 / T) log p_{θ,T}(𝒜)`, and inversion is
@@ -222,10 +242,46 @@ lemma tendsto_errorRate_of_tendsto_log_div {𝒜 : ℕ → IdentAlg Unit α 𝓨
     simpa [Function.comp_def, EReal.toENNReal_coe] using this
   refine (tendsto_inv_iff.2 h1).congr' ?_
   filter_upwards [eventually_ne_atTop 0] with T hT
-  have hneg (x : EReal) : -(x / T) = -x / T := by
-    rw [div_eq_mul_inv, div_eq_mul_inv, EReal.neg_mul]
-  rw [errorRate, hneg, toENNReal_div_natCast _ hT, ENNReal.inv_div (Or.inl
-    (ENNReal.natCast_ne_top T)) (Or.inl (by exact_mod_cast hT))]
+  exact (task.errorRate_eq_inv hT).symm
+
+/-- **A lower bound on the rate from a lower bound on the probability of error.** If
+`-c ≤ liminf_T (1 / T) log p_{θ,T}(𝒜)` for some `c ∈ [0, ∞]`, then
+`c⁻¹ ≤ liminf_T h_{θ,T}(𝒜)`: the rate is a nondecreasing continuous function of
+`(1 / T) log p_{θ,T}(𝒜)`. -/
+lemma inv_le_liminf_errorRate_of_neg_le_liminf {𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ} {θ : Θ}
+    {c : ℝ≥0∞}
+    (h : -(c : EReal) ≤ liminf (fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop) :
+    c⁻¹ ≤ liminf (task.errorRate 𝒜 θ) atTop := by
+  set g : EReal → ℝ≥0∞ := fun x ↦ (-x).toENNReal⁻¹
+  have hg : Monotone g := fun x y hxy ↦
+    ENNReal.inv_le_inv.2 (EReal.toENNReal_le_toENNReal (EReal.neg_le_neg_iff.2 hxy))
+  have hgc : Continuous g := continuous_inv.comp (EReal.continuous_toENNReal.comp continuous_neg)
+  calc c⁻¹ = g (-(c : EReal)) := by simp [g, EReal.toENNReal_coe]
+    _ ≤ g (liminf (fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop) := hg h
+    _ = liminf (g ∘ fun T : ℕ ↦ ENNReal.log (task.errorProb 𝒜 θ T) / T) atTop :=
+      hg.map_liminf_of_continuousAt _ hgc.continuousAt
+    _ = liminf (task.errorRate 𝒜 θ) atTop :=
+      liminf_congr ((eventually_ne_atTop 0).mono fun T hT ↦ (task.errorRate_eq_inv hT).symm)
+
+/-- The oracle difficulty is antitone in the class: a larger class has a smaller oracle
+difficulty. -/
+lemma oracleDifficulty_anti : Antitone task.oracleDifficulty :=
+  fun _ _ h _ ↦ biInf_mono fun _ h' ↦ h h'
+
+/-- The difficulty ratio is antitone in the difficulty function. -/
+lemma difficultyRatio_anti (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) (θ : Θ) (T : ℕ) :
+    Antitone fun H ↦ task.difficultyRatio H 𝒜 θ T :=
+  fun _ _ h ↦ ENNReal.div_le_div_left (h θ) _
+
+/-- The asymptotic difficulty ratio is antitone in the difficulty function. -/
+lemma asymptoticRatio_anti (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) (θ : Θ) :
+    Antitone fun H ↦ task.asymptoticRatio H 𝒜 θ :=
+  fun _ _ h ↦ limsup_le_limsup (Eventually.of_forall fun T ↦ task.difficultyRatio_anti 𝒜 θ T h)
+
+/-- The maximal difficulty ratio is antitone in the difficulty function: against the oracle
+difficulty of a larger class, it is larger (`oracleDifficulty_anti`). -/
+lemma maxRatio_anti (𝒜 : ℕ → IdentAlg Unit α 𝓨 ℐ) : Antitone fun H ↦ task.maxRatio H 𝒜 :=
+  fun _ _ h ↦ iSup₂_mono fun θ _ ↦ task.asymptoticRatio_anti 𝒜 θ h
 
 section StaticProportions
 
@@ -237,6 +293,67 @@ with the alternative first in the divergence. It is the oracle difficulty of the
 proportions algorithms for tasks with arms in exponential families [D23, Theorem 1]. -/
 noncomputable def staticDifficulty (θ : Θ) : ℝ≥0∞ :=
   (⨆ w ∈ simplex α, ⨅ θ' ∈ task.alternatives θ, task.cost w θ' θ)⁻¹
+
+omit [MeasurableSpace ℐ] in
+/-- The supremum of `w ↦ inf_{θ' ∈ s} ∑ a, w a KL(ν_a(θ'), ν_a(θ))` over the positive
+allocations is its supremum over the simplex: along the segment from `w` to the uniform
+allocation, the cost is at least `(1 - t)` times the cost at `w`. -/
+lemma iSup_pos_iInf_cost_eq (s : Set Θ) (θ : Θ) :
+    ⨆ (w ∈ simplex α) (_ : ∀ a, 0 < w a), ⨅ θ' ∈ s, task.cost w θ' θ =
+      ⨆ w ∈ simplex α, ⨅ θ' ∈ s, task.cost w θ' θ := by
+  refine le_antisymm (iSup₂_mono fun w _ ↦ iSup_le fun _ ↦ le_rfl) (iSup₂_le fun w hw ↦ ?_)
+  have : Nonempty α := nonempty_of_mem_simplex hw
+  have hw0 := (mem_simplex_iff.1 hw).1
+  refine ENNReal.le_of_forall_lt_one_mul_le fun c hc ↦ ?_
+  have hc_top : c ≠ ∞ := ne_top_of_lt hc
+  have hc1 : c.toReal < 1 := by
+    simpa using (ENNReal.toReal_lt_toReal hc_top ENNReal.one_ne_top).2 hc
+  set u : α → ℝ := fun _ ↦ (Fintype.card α : ℝ)⁻¹
+  have hcw : c.toNNReal • w = c.toReal • w := by
+    ext a
+    simp [NNReal.smul_def, ENNReal.coe_toNNReal_eq_toReal]
+  set w' := c.toNNReal • w + (1 - c.toReal) • u
+  have hw' : w' ∈ simplex α := by
+    simp only [w', hcw]
+    exact convex_simplex α hw (uniform_mem_simplex α) ENNReal.toReal_nonneg (by linarith)
+      (by ring)
+  have hu : 0 ≤ (1 - c.toReal) • u := fun a ↦ by
+    simp only [u, Pi.zero_apply, Pi.smul_apply, smul_eq_mul]
+    exact mul_nonneg (by linarith) (by positivity)
+  have hcw0 : 0 ≤ c.toNNReal • w := fun a ↦ by
+    rw [hcw]
+    exact mul_nonneg ENNReal.toReal_nonneg (hw0 a)
+  have hpos (a : α) : 0 < w' a := by
+    simp only [w', u, Pi.add_apply, Pi.smul_apply, smul_eq_mul, NNReal.smul_def,
+      ENNReal.coe_toNNReal_eq_toReal]
+    exact add_pos_of_nonneg_of_pos (mul_nonneg ENNReal.toReal_nonneg (hw0 a))
+      (mul_pos (by linarith) (by positivity))
+  refine le_trans ?_ (le_iSup₂_of_le w' hw' (le_iSup_of_le hpos le_rfl))
+  refine le_iInf₂ fun θ' hθ' ↦ ?_
+  calc c * ⨅ θ' ∈ s, task.cost w θ' θ ≤ c * task.cost w θ' θ := by
+        gcongr
+        exact iInf₂_le θ' hθ'
+    _ = task.cost (c.toNNReal • w) θ' θ := by
+        rw [cost_smul, ENNReal.smul_def, smul_eq_mul, ENNReal.coe_toNNReal hc_top]
+    _ ≤ task.cost (c.toNNReal • w) θ' θ + task.cost ((1 - c.toReal) • u) θ' θ := le_self_add
+    _ = task.cost w' θ' θ := (task.cost_add hcw0 hu θ' θ).symm
+
+omit [MeasurableSpace ℐ] in
+/-- For a model `θ` with the single correct answer `i`, if the divergences between the arms of `θ`
+and those of its alternatives are symmetric (Gaussian arms with known variances), then the
+static-proportions difficulty of `θ` is its characteristic time `T*(θ)`: both are the inverse of
+the same maximin, the alternatives to `θ` being the alternatives to `i`. -/
+lemma staticDifficulty_eq_charTime {θ : Θ} {i : ℐ} (hi : task.correct θ = {i})
+    (hsymm : ∀ θ' ∈ task.alternatives θ, ∀ a,
+      InformationTheory.klDiv (task.ν θ' a) (task.ν θ a) =
+        InformationTheory.klDiv (task.ν θ a) (task.ν θ' a)) :
+    task.staticDifficulty θ = task.charTime θ := by
+  rw [staticDifficulty, charTime_def, gameValue_def, hi]
+  simp only [Set.mem_singleton_iff, iSup_iSup_eq_left, answerValue_def, altCost_def]
+  rw [← task.alternatives_eq_alt hi]
+  refine congrArg _ (iSup_congr fun w ↦ iSup_congr fun _ ↦
+    iInf_congr fun θ' ↦ iInf_congr fun hθ' ↦ ?_)
+  simp only [cost_def, hsymm θ' hθ']
 
 variable [DecidableEq α] (task : IdentTask α (α → ℝ) ℐ ℝ)
 
@@ -256,6 +373,29 @@ positive proportions and some recommendation rule that is correct on the admissi
 def staticClass : Set (ℕ → IdentAlg Unit α ℝ ℐ) :=
   {𝒜 | ∃ rec : (α → ℝ) → ℐ, (∀ μ ∈ task.M, rec μ ∈ task.correct μ) ∧
     ∃ w, task.IsStaticProportions rec 𝒜 w}
+
+/-- **Existence of static proportions families.** For positive proportions `w` summing to `1` and
+a measurable recommendation rule `rec`, some family is a static proportions family with
+proportions `w` and recommendation rule `rec`: cumulative tracking with the constant targets `w`
+has `|N_{T,a} - T w a| ≤ K - 1` almost surely in every environment, and the fixed-budget algorithm
+with budget `T` and the deterministic output `rec μ̂_T` completes it. -/
+lemma exists_isStaticProportions [MeasurableSingletonClass α] [Nonempty ℐ] {rec : (α → ℝ) → ℐ}
+    (hrec : Measurable rec) {w : α → ℝ} (hw0 : ∀ a, 0 < w a) (hw1 : ∑ a, w a = 1) :
+    ∃ 𝒜, task.IsStaticProportions rec 𝒜 w := by
+  have : Nonempty α := nonempty_of_mem_simplex (mem_simplex_iff.2 ⟨fun a ↦ (hw0 a).le, hw1⟩)
+  set alg := cumulativeTracking (fun _ _ ↦ w) (𝓨 := ℝ) fun _ ↦ measurable_const
+  have hmeas (T : ℕ) : Measurable fun h : Hist Unit α ℝ T ↦ rec (empMean' T h) :=
+    hrec.comp (Measurable.of_eval fun a ↦ measurable_empMean' T a)
+  refine ⟨fun T ↦ fixedBudget alg T (ProbabilityTheory.Kernel.deterministic _ (hmeas T)), hw0,
+    hw1, fun T ↦ ⟨isFixedBudget_fixedBudget _ _ _, fun μ _ ↦ ?_, fun h ↦ ?_⟩⟩
+  · rw [alg_fixedBudget]
+    filter_upwards [CumulativeTracking.abs_pullCount_sub_sum_le (fun _ _ a ↦ (hw0 a).le)
+      (fun _ _ ↦ hw1) (IT.isAlgEnvSeq_trajMeasure alg (Environment.bandit (task.ν μ)))]
+      with h hh a
+    have := hh T a
+    rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul] at this
+    linarith
+  · rw [outputAt_fixedBudget, ProbabilityTheory.Kernel.deterministic_apply]
 
 variable {task}
 

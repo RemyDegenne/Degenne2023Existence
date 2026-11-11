@@ -104,7 +104,7 @@ set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficu
   \lean{Degenne2023Existence.tendsto_errorRate_of_isStaticProportions_of_measurableSet}
   \leanok
   \uses{asm:answer_nhds, thm:ldp, lem:error_set_subset, lem:error_event, lem:errorProb_static,
-    lem:rate_continuousOn, lem:tendsto_errorRate_iff}
+    lem:static_error_lower, lem:exists_rec, lem:rate_continuousOn, lem:tendsto_errorRate_iff}
   Theorem~\ref{thm:oracle_difficulty_sp} holds at every model $\mu \in \cD$ whose set of correct
   answers is measurable, without the finiteness of the answers.
 \end{lemma}
@@ -112,11 +112,11 @@ set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficu
 \begin{proof}
   \leanok
   \uses{thm:ldp, lem:error_set_subset, lem:error_event, lem:errorProb_static,
-    lem:rate_continuousOn, lem:tendsto_errorRate_iff}
+    lem:static_error_lower, lem:exists_rec, lem:rate_continuousOn, lem:tendsto_errorRate_iff}
   The paper's proof of Theorem~\ref{thm:oracle_difficulty_sp}, with the probability of error as the
   probability that the recommendation of $\hat\mu_T$ is wrong (Lemma~\ref{lem:errorProb_static}).
-  Lower bound: $\Alt(\mu)$ is the union of the open sets $\cD_j$, $j \ne i$, and at a point of
-  $\cD_j$, which is not in the closure of $\Alt_j$, the rule answers $j$. Upper bound: for $T$
+  Lower bound: the rule is correct on $\cD$ (Lemma~\ref{lem:exists_rec}), and
+  Lemma~\ref{lem:static_error_lower} applies. Upper bound: for $T$
   large, the probability of error is at most $\Prob(\hat\mu_T \in F)$
   (Lemma~\ref{lem:error_event}), and the rate function is at least
   $\inf_{\Alt(\mu)} \sum_k \omega_k \KL(\lambda_k, \mu_k)$ on $F$ by its continuity on
@@ -149,8 +149,8 @@ set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficu
   \label{thm:oracle_difficulty_class}
   \lean{Degenne2023Existence.oracleDifficulty_staticClass}
   \leanok
-  \uses{thm:oracle_difficulty_sp, def:static_class, def:static_difficulty, lem:exists_static,
-    lem:exists_rec, lem:iSup_open_simplex}
+  \uses{thm:oracle_difficulty_sp, def:static_class, def:static_difficulty,
+    lem:oracleDifficulty_staticClass_le, lem:staticClass_le_oracleDifficulty}
   Under the hypotheses of Theorem~\ref{thm:oracle_difficulty_sp} on the families and the task,
   for every $\mu \in \cD$,
   \[ H_{\Csp}(\mu) = \inf_{\omega \in \Simplex^0} \lim_{T \to \infty} h_{\mu, T}(\cA^{sp}_{\omega})
@@ -159,26 +159,71 @@ set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficu
 \end{theorem}
 
 \begin{proof}
-  \uses{thm:ldp, thm:oracle_difficulty_sp, lem:exists_static, lem:exists_rec, lem:iSup_open_simplex}
-  Every member of $\Csp$ errs when $\hat\mu_T \in \Alt(\mu)$, so the lower bound of
-  Theorem~\ref{thm:ldp} on that open set bounds its rate from below. For every
-  $\omega \in \Simplex^0$ there is a static proportions family with a recommendation rule as in
-  Theorem~\ref{thm:oracle_difficulty_sp} (Lemmas~\ref{lem:exists_static} and~\ref{lem:exists_rec}),
-  whose rate is given by that theorem. The supremum over $\Simplex^0$ equals the maximum over
-  $\Simplex$ (Lemma~\ref{lem:iSup_open_simplex}).
+  \leanok
+  \uses{lem:oracleDifficulty_staticClass_le, lem:staticClass_le_oracleDifficulty}
+  The set of correct answers of $\mu$ is a singleton, measurable; combine
+  Lemmas~\ref{lem:oracleDifficulty_staticClass_le} and~\ref{lem:staticClass_le_oracleDifficulty}.
+  The condition of Assumption 1 that each $\cD_i$ is the interior of its closure is not used.
 \end{proof}
 
-\begin{lemma}
-  \label{lem:oracleDifficulty_staticClass_le}
-  \uses{thm:oracle_difficulty_sp, lem:exists_static, lem:exists_rec, lem:iSup_open_simplex}
-  Under the hypotheses of Theorem~\ref{thm:oracle_difficulty_sp} on the families and the task,
-  $H_{\Csp}(\mu) \le \Hsp(\mu)$ for every $\mu \in \cD$.
+\begin{lemma}[{\cite[proof of Theorem 1]{D23}}]
+  \label{lem:static_error_lower}
+  \lean{Degenne2023Existence.neg_le_liminf_log_errorProb_of_isStaticProportions}
+  \leanok
+  \uses{asm:answer_nhds, thm:ldp, lem:errorProb_static}
+  Suppose that the task has open answer sets and a single correct answer on $\cD \subseteq
+  \prod_k \cM_k$. Let $\cA$ be a static proportions family with proportions $\omega \in
+  \Simplex^0$ whose recommendation rule is correct on $\cD$. At every $\mu \in \cD$ whose set of
+  correct answers is measurable,
+  \[ -\inf_{\lambda \in \Alt(\mu)} \sum_k \omega_k \KL(\lambda_k, \mu_k) \le \liminf_{T \to \infty}
+    \frac1T \log p_{\mu, T}(\cA). \]
 \end{lemma}
 
 \begin{proof}
-  \uses{thm:oracle_difficulty_sp, lem:exists_static, lem:exists_rec, lem:iSup_open_simplex}
-  The upper half of the proof of Theorem~\ref{thm:oracle_difficulty_class}, which uses only the
-  upper bound of the large deviation principle.
+  \leanok
+  \uses{thm:ldp, lem:errorProb_static}
+  $\Alt(\mu)$ is the union of the open sets $\cD_j$, $j \ne i^{\star}(\mu)$, and at a point of
+  $\cD_j$ the rule answers $j$, which is not correct for $\mu$. The lower bound of
+  Theorem~\ref{thm:ldp} on this open set, on which the rate function is the cost, gives the claim.
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 1]{D23}}]
+  \label{lem:staticClass_le_oracleDifficulty}
+  \lean{Degenne2023Existence.staticDifficulty_le_oracleDifficulty_staticClass}
+  \leanok
+  \uses{lem:static_error_lower, lem:le_liminf_errorRate, def:static_class, def:static_difficulty}
+  Under the hypotheses of Lemma~\ref{lem:static_error_lower} on the families and the task,
+  $\Hsp(\mu) \le H_{\Csp}(\mu)$ at every $\mu \in \cD$ whose set of correct answers is measurable.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:static_error_lower, lem:le_liminf_errorRate}
+  A family of $\Csp$ has proportions $\omega \in \Simplex$ and a rule correct on $\cD$, so
+  Lemmas~\ref{lem:static_error_lower} and~\ref{lem:le_liminf_errorRate} bound its rate from below by
+  $(\inf_{\lambda \in \Alt(\mu)} \sum_k \omega_k \KL(\lambda_k, \mu_k))^{-1} \ge \Hsp(\mu)$.
+\end{proof}
+
+\begin{lemma}[{\cite[proof of Theorem 1]{D23}}]
+  \label{lem:oracleDifficulty_staticClass_le}
+  \lean{Degenne2023Existence.oracleDifficulty_staticClass_le}
+  \leanok
+  \uses{lem:oracle_difficulty_sp_measurable, lem:exists_static, lem:exists_rec,
+    lem:iSup_open_simplex}
+  Under the hypotheses of Theorem~\ref{thm:oracle_difficulty_sp} on the families and the task,
+  with finitely many answers, $H_{\Csp}(\mu) \le \Hsp(\mu)$ at every $\mu \in \cD$ whose set of
+  correct answers is measurable.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:oracle_difficulty_sp_measurable, lem:exists_static, lem:exists_rec,
+    lem:iSup_open_simplex}
+  For every $\omega \in \Simplex^0$, the static proportions family of
+  Lemma~\ref{lem:exists_static} with the rule of Lemma~\ref{lem:exists_rec} is in $\Csp$, and its
+  rate tends to $(\inf_{\lambda \in \Alt(\mu)} \sum_k \omega_k \KL(\lambda_k, \mu_k))^{-1}$
+  (Lemma~\ref{lem:oracle_difficulty_sp_measurable}). The supremum over $\Simplex^0$ equals the
+  maximum over $\Simplex$ (Lemma~\ref{lem:iSup_open_simplex}).
 \end{proof}
 
 \begin{lemma}
@@ -194,17 +239,24 @@ set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficu
   The contrapositive of the hypothesis.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}[{\cite[proof of Theorem 1]{D23}}]
   \label{lem:exists_rec}
+  \lean{Degenne2023Existence.exists_measurable_rec,
+    Degenne2023Existence.eq_of_notMem_closure_alt, Degenne2023Existence.rec_mem_correct}
+  \leanok
   \uses{asm:answer_nhds}
   Under Assumption 1 with finitely many answers and a single correct answer on $\cD$, there is a
   measurable recommendation rule that answers $i$ at every vector of $\cl(\prod_k \cM_k)$ outside
-  $\cl(\Alt_i)$, and the correct answer on $\cD$.
+  $\cl(\Alt_i)$. Every such rule gives the correct answer on $\cD$.
 \end{lemma}
 
 \begin{proof}
-  Enumerate the answers and answer the first $i$ with $x \in \cl(\cD_i)$ (some exists on
-  $\cl(\prod_k \cM_k) \subseteq \bigcup_i \cl(\cD_i)$, and on $\cD_i$ it is $i$ since $\cD_i$ is
-  open and disjoint from the other $\cD_j$). A vector outside $\cl(\Alt_i)$ is outside every
-  $\cl(\cD_j)$, $j \ne i$. The rule is measurable since the sets $\cl(\cD_i)$ are closed.
+  \leanok
+  A vector $x$ of $\cl(\prod_k \cM_k) \subseteq \bigcup_k \cl(\cD_k)$ (a finite union of closed
+  sets) lies in some $\cl(\cD_k)$, and $\cD_k \subseteq \Alt_i$ for every $i \ne k$, so $x$ is
+  outside $\cl(\Alt_i)$ for at most one answer $i$. Answer that $i$ when there is one, and a fixed
+  answer otherwise: the set of the vectors with answer $i$ is a Boolean combination of the closed
+  sets $\cl(\prod_k \cM_k)$ and $\cl(\Alt_j)$, so the rule is measurable. A model of $\cD$ with
+  answer $i$ lies in the open set $\cD_i$, which is disjoint from $\Alt_i$, hence from its
+  closure.
 \end{proof}

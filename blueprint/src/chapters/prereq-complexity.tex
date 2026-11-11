@@ -20,7 +20,8 @@ Library-shaped material on fixed-budget algorithm families and static proportion
 
 \begin{lemma}
   \label{lem:tendsto_errorRate_iff}
-  \lean{LMLExplore.Identification.IdentTask.tendsto_errorRate_of_tendsto_log_div}
+  \lean{LMLExplore.Identification.IdentTask.tendsto_errorRate_of_tendsto_log_div,
+    LMLExplore.Identification.IdentTask.errorRate_eq_inv}
   \leanok
   \uses{def:error_rate}
   For $c \in [0, \infty]$, if $\frac1T \log p_{\theta, T}(\cA) \to -c$, then
@@ -34,6 +35,22 @@ direction.
   \leanok
   $h_{\theta, T} = ((-\frac1T \log p_{\theta, T})^{+})^{-1}$ for $T > 0$, and the positive part
   $[-\infty, \infty] \to [0, \infty]$ and inversion are continuous.
+\end{proof}
+
+\begin{lemma}
+  \label{lem:le_liminf_errorRate}
+  \lean{LMLExplore.Identification.IdentTask.inv_le_liminf_errorRate_of_neg_le_liminf}
+  \leanok
+  \uses{def:error_rate, lem:tendsto_errorRate_iff}
+  For $c \in [0, \infty]$, if $-c \le \liminf_T \frac1T \log p_{\theta, T}(\cA)$, then
+  $c^{-1} \le \liminf_T h_{\theta, T}(\cA)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{lem:tendsto_errorRate_iff}
+  For $T > 0$, $h_{\theta, T}$ is $g(\frac1T \log p_{\theta, T})$ with $g(x) = ((-x)^{+})^{-1}$,
+  a nondecreasing continuous function, which commutes with the $\liminf$.
 \end{proof}
 
 \begin{lemma}
@@ -71,25 +88,37 @@ is an outer measure, which is $1$ for every algorithm under the trivial $\sigma$
 
 \begin{lemma}
   \label{lem:oracleDifficulty_mono}
+  \lean{LMLExplore.Identification.IdentTask.oracleDifficulty_anti,
+    LMLExplore.Identification.IdentTask.difficultyRatio_anti,
+    LMLExplore.Identification.IdentTask.asymptoticRatio_anti,
+    LMLExplore.Identification.IdentTask.maxRatio_anti}
+  \leanok
   \uses{def:oracle_difficulty}
   If $\cC \subseteq \cC'$, then $H_{\cC'} \le H_{\cC}$, and $R_{H_{\cC}, T} \le R_{H_{\cC'}, T}$.
+  More generally, the difficulty ratios, their asymptotic forms and the maximal difficulty ratio
+  are antitone in the difficulty function.
 \end{lemma}
 
 \begin{proof}
-  An infimum over a larger set is smaller.
+  \leanok
+  An infimum over a larger set is smaller, and $x / H$ is antitone in $H$.
 \end{proof}
 
 \begin{lemma}
   \label{lem:iSup_open_simplex}
+  \lean{LMLExplore.Identification.IdentTask.iSup_pos_iInf_cost_eq}
+  \leanok
   \uses{def:static_difficulty}
-  The supremum of $\omega \mapsto \inf_{\lambda \in \Alt(\theta)} \sum_k \omega_k
-  \KL(\nu_k(\lambda), \nu_k(\theta))$ over the positive proportions $\Simplex^0$ is its supremum
-  over $\Simplex$.
+  For every set $S$ of models, the supremum of $\omega \mapsto \inf_{\lambda \in S} \sum_k
+  \omega_k \KL(\nu_k(\lambda), \nu_k(\theta))$ over the positive proportions $\Simplex^0$ is its
+  supremum over $\Simplex$. In particular for $S = \Alt(\theta)$.
 \end{lemma}
 
 \begin{proof}
-  The function is concave and nonnegative: along the segment from $\omega \in \Simplex$ to the
-  uniform allocation, its values are at least $(1 - t)$ times its value at $\omega$.
+  \leanok
+  The cost is additive and positively homogeneous in the allocation: at $(1 - t) \omega + t u$, $u$
+  the uniform allocation and $t \in (0, 1]$, it is at least $(1 - t)$ times its value at $\omega$.
+  Let $t \to 0$.
 \end{proof}
 
 \begin{lemma}
@@ -112,29 +141,36 @@ and put no weight outside $s$. Corollary~\ref{cor:corner_lb} uses only the inequ
 
 \begin{lemma}
   \label{lem:staticDifficulty_eq_charTime}
+  \lean{LMLExplore.Identification.IdentTask.staticDifficulty_eq_charTime}
+  \leanok
   \uses{def:static_difficulty}
-  If $\KL(\nu_k(\lambda), \nu_k(\theta)) = \KL(\nu_k(\theta), \nu_k(\lambda))$ for all models and
-  arms (Gaussian arms with known variances), then for a single-answer task $\Hsp(\theta)$ is the
-  characteristic time $T^{\star}(\theta)$ of LMLExplore at every admissible model.
+  Let $\theta$ be a model with the single correct answer $i$. If $\KL(\nu_k(\lambda),
+  \nu_k(\theta)) = \KL(\nu_k(\theta), \nu_k(\lambda))$ for all the alternatives $\lambda$ to
+  $\theta$ and all arms (Gaussian arms with known variances), then $\Hsp(\theta)$ is the
+  characteristic time $T^{\star}(\theta)$ of LMLExplore.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Both are the inverse of the same maximin, the alternatives to $\theta$ being the alternatives to
   its answer.
 \end{proof}
 
 \begin{lemma}
   \label{lem:exists_static}
+  \lean{LMLExplore.Identification.IdentTask.exists_isStaticProportions}
+  \leanok
   \uses{def:static_proportions}
   For every $\omega \in \Simplex^0$ and every measurable recommendation rule, there is a static
   proportions family with proportions $\omega$ and that rule.
 \end{lemma}
 
 \begin{proof}
+  \leanok
   Cumulative tracking with the constant targets $\omega$ (LMLExplore,
   \texttt{Identification/CumulativeTracking.lean}) has $\abs{N_{T,k} - T \omega_k} \le K - 1$
-  almost surely; the fixed-budget algorithm with budget $T$ and the deterministic output rule
-  $\mathrm{rec}(\hat\mu_T)$ (\texttt{fixedBudget}) completes it.
+  almost surely in every environment; the fixed-budget algorithm with budget $T$ and the
+  deterministic output rule $\mathrm{rec}(\hat\mu_T)$ (\texttt{fixedBudget}) completes it.
 \end{proof}
 
 \begin{lemma}

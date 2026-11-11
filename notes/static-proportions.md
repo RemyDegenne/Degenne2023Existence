@@ -68,6 +68,35 @@ The plan that the proof followed:
 
 `oracleDifficulty_staticClass` then needs `lem:exists_static` (a static proportions family for
 every `w ∈ Δ_K^0`, from LMLExplore's cumulative tracking), `lem:exists_rec` and
-`lem:iSup_open_simplex`; its lower bound uses only step 1, for every rule correct on `𝒟`. These
-remain, and Theorems 6, 8 and 10 need the upper half (`lem:oracleDifficulty_staticClass_le`).
+`lem:iSup_open_simplex`; its lower bound uses only step 1, for every rule correct on `𝒟`.
 Theorem 5 followed from Theorem 1 alone.
+
+## The oracle difficulty of the class (done, round of 2026-11-11)
+
+- **Two halves.** `staticDifficulty_le_oracleDifficulty_staticClass` and
+  `oracleDifficulty_staticClass_le` take `MeasurableSet (task.correct μ)`, as the rate does; the
+  headline statement gets it from the measurable singletons. Theorems 6, 8 and 10 can use the
+  second half (`lem:oracleDifficulty_staticClass_le`) with `oracleDifficulty_anti` and
+  `maxRatio_anti`, once their tasks are shown to satisfy Assumption 1.
+- **Lower bound for every rule.** Step 1 of the plan above is its own lemma,
+  `neg_le_liminf_log_errorProb_of_isStaticProportions`, for any rule correct on `𝒟`: at a point
+  of `𝒟_j` such a rule answers `j`. Theorem 1 now uses it, through `rec_mem_correct` (a rule as in
+  Theorem 1 is correct on `𝒟`). `inv_le_liminf_errorRate_of_neg_le_liminf` turns it into a lower
+  bound on the `liminf` of the rate: the rate is `g((1 / T) log p_T)` with
+  `g(x) = ((-x)⁺)⁻¹` nondecreasing and continuous on `EReal`, and
+  `Monotone.map_liminf_of_continuousAt` applies.
+- **The recommendation rule** (`exists_measurable_rec`). At a vector of `cl(S)` at most one answer
+  `i` has the vector outside `cl(Alt_i)` (`eq_of_notMem_closure_alt`: the vector is in some
+  `cl(𝒟_k)`, by the covering condition of Assumption 1 and finitely many answers, and
+  `𝒟_k ⊆ Alt_i` for `i ≠ k`). The rule answers that `i` when there is one (by `Classical.choose`)
+  and a fixed answer otherwise; the preimage of `{i}` is a Boolean combination of closed sets,
+  which gives measurability through `measurable_to_countable'`. It needs only countably many arms,
+  for the Borel sets of `α → ℝ`. The blueprint's construction (the first `i` with `x ∈ cl(𝒟_i)`
+  in an enumeration) was not needed.
+- **Existence of the families** (`IdentTask.exists_isStaticProportions`): `fixedBudget` of
+  `cumulativeTracking (fun _ _ ↦ w)` with the output kernel
+  `Kernel.deterministic (rec ∘ empMean' T)`; the bound `|N_{T,a} - T w a| ≤ K - 1` of
+  `CumulativeTracking.abs_pullCount_sub_sum_le` holds in every environment, so on every model.
+- **Positive proportions** (`IdentTask.iSup_pos_iInf_cost_eq`): for `c < 1`, the allocation
+  `c w + (1 - c) u`, `u` uniform, is positive and its cost is at least `c` times that of `w`
+  (`cost_add`, `cost_smul`); `ENNReal.le_of_forall_lt_one_mul_le` concludes.

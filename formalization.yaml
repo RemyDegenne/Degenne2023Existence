@@ -121,7 +121,19 @@ status:
     At the user's request (2026-11-11), Lemma 15 drops the hypothesis MeasurableSingletonClass on
     the arms, which its proof does not use, instead of silencing the linter; its challenge is
     regenerated.
-  sorry_count: 4
+    Phase 2, round of 2026-11-11: the oracle difficulty of the class of static proportions
+    algorithms (Theorem 1, displayed consequence, oracleDifficulty_staticClass) is proved, from its
+    two halves at the models with a measurable set of correct answers: the lower bound on the
+    probability of error of every static proportions family with a rule correct on the admissible
+    models, and the rate of the static proportions families of cumulative tracking with a
+    measurable recommendation rule built from Assumption 1 (D2023/Theorem1.lean). Over them, in
+    ForLMLExplore/Identification/FixedBudgetComplexity.lean: the existence of static proportions
+    families for positive proportions and any measurable rule, the supremum over the positive
+    proportions, the one-sided bound on the rate from the exponent of the probability of error, the
+    antitonicity of the oracle difficulty and of the difficulty ratios, and the static-proportions
+    difficulty as the characteristic time for symmetric divergences. The proof does not use the
+    condition of Assumption 1 that each answer set is the interior of its closure.
+  sorry_count: 3
   sorry_in_definitions: 0
 
 automation:
@@ -168,7 +180,7 @@ alignment:
     - source: "thm:oracle_difficulty_class — Theorem 1 (displayed consequence)"
       lean: "Degenne2023Existence.oracleDifficulty_staticClass"
       module: "Degenne2023Existence.D2023.Theorem1"
-      status: "stated"
+      status: "proved"
       relation: "narrowMatch"
       erratum: "E1"
       note: "Assumes samples in the closure of the means (E2). The class of static proportions algorithms takes every recommendation rule correct on the models (E1); the maximum is over the closed simplex. The hypothesis MeasurableSingletonClass on the answers, implicit in the paper (its answers are a finite set of indices), was added on 2026-11-11 (notes/statement-corrections.md, Theorems 1 and 5)."

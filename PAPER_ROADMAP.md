@@ -14,10 +14,10 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
 | R6 | Cumulative tracking with fixed targets | exists | `LMLExplore.Identification.cumulativeTracking` | – | |
 | R7 | Characteristic time of Gaussian best arm identification, `H ≤ T* ≤ 2H` | exists | `LMLExplore.Identification.charTime_baiTask_gaussianBandit_le` | – | |
 | R8 | Sub-Gaussian lower bound on the Cramér rate function | exists | `ProbabilityTheory.HasSubgaussianMGF.ofReal_sq_div_le_rateFunction` | – | |
-| R9 | Fixed-budget algorithm families, probability of error, rate, oracle difficulty, difficulty ratios, consistency | target | Identification 8.4 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
+| R9 | Fixed-budget algorithm families, probability of error, rate, oracle difficulty, difficulty ratios, consistency | target | Identification 8.4 | proved | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
 | R10 | Large deviation principles and Cramér's theorem on `ℝ` | target | Identification 8.3 | PR #261 | `ForLMLExplore/Probability/LargeDeviations/Basic.lean`, `ForLMLExplore/Probability/LargeDeviations/Cramer.lean`, `D2023/Lemma11.lean` |
-| R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | todo | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
-| R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | todo | `ForLMLExplore/Bandits/StaticAllocation.lean`, `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
+| R11 | Static proportions families, their existence, and the static-proportions difficulty | target | Identification 8.3 | proved | `ForLMLExplore/Identification/FixedBudgetComplexity.lean` |
+| R12 | Large deviations of the empirical means under static allocations, and the error exponent of static proportions | target | Identification 8.3 | proved | `ForLMLExplore/Bandits/StaticAllocation.lean`, `D2023/Setting.lean`, `D2023/Theorem12.lean`, `D2023/Theorem1.lean` |
 | R13 | Lower bounds on the difficulty ratio | target | Identification 8.4 | merged #258 | `D2023/Theorem2.lean`, `D2023/Theorem3.lean`, `D2023/Corollary4.lean`, `D2023/Theorem13.lean`, `D2023/Corollary14.lean`, `ForLMLExplore/Identification/ErrorLowerBound.lean`, `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`, `ForLMLExplore/Analysis/Convex/Simplex.lean` |
 | R14 | Two-armed best arm identification: the best static exponent is the Chernoff information | target | Identification 8.3 | merged #260 | `ForLMLExplore/Identification/Task/BestArmTwo.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/Mean.lean`, `ForLMLExplore/Probability/Distributions/ExponentialFamily/RateFunction.lean`, `D2023/Lemma19.lean`, `D2023/Lemma20.lean`, `D2023/Lemma9.lean` |
 | R15 | The ratio of static proportions is at most `K`, attained by positivity | target | Identification 8.4 | todo | `D2023/Theorem5.lean`, `D2023/Theorem6.lean` |
@@ -40,9 +40,13 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   observation, action and output spaces, and `errorRate` renamed `errorComplexity`, as
   `T / log (1 / p)`. The port of R9 then adds the rest: `oracleDifficulty`,
   `AdmitsComplexity`, `lem:tendsto_errorRate_iff`, `lem:oracleDifficulty_mono` and
-  `lem:asymptoticRatio_eq_top`. Proved so far: `asymptoticRatio_eq_top`,
+  `lem:asymptoticRatio_eq_top`. Proved, without `sorry`: `asymptoticRatio_eq_top`,
   `tendsto_errorRate_of_tendsto_log_div` (`lem:tendsto_errorRate_iff`, the direction the proofs
-  use), `alternatives_eq_alt` and, for R11, `IsStaticProportions.errorProb_eq` (the probability of
+  use) with the rate as an inverse (`errorRate_eq_inv`) and the one-sided form
+  `inv_le_liminf_errorRate_of_neg_le_liminf`, `lem:oracleDifficulty_mono` as the antitonicity of
+  the oracle difficulty in the class and of the difficulty ratios in the difficulty function
+  (`oracleDifficulty_anti`, `difficultyRatio_anti`, `asymptoticRatio_anti`, `maxRatio_anti`),
+  `alternatives_eq_alt` and, for R11, `IsStaticProportions.errorProb_eq` (the probability of
   error of a static proportions family as a probability of the trajectory, for a measurable set of
   correct answers; the recommendation rule need not be measurable).
 - R10: Identification 8.3 asks for Cramér's theorem for every law on `ℝ` whose cumulant generating
@@ -77,7 +81,15 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `lem:exists_rec`, `lem:iSup_open_simplex` and `lem:staticDifficulty_eq_charTime`. PR #260
   (item R14) ports `staticDifficulty`, with `staticDifficulty_def`, `inv_staticDifficulty` and
   `staticDifficulty_restrict_le`, to `LMLExplore/Identification/StaticProportions.lean`; the port
-  of R11 then adds the rest.
+  of R11 then adds the rest. Proved, without `sorry`: `lem:exists_static`
+  (`IdentTask.exists_isStaticProportions`: cumulative tracking with the constant targets `w` and
+  the deterministic output `rec μ̂_T`, for any measurable rule and any task),
+  `lem:iSup_open_simplex` (`IdentTask.iSup_pos_iInf_cost_eq`, for the cost of any set of models)
+  and `lem:staticDifficulty_eq_charTime` (`IdentTask.staticDifficulty_eq_charTime`, with the
+  symmetry of the divergences only between the model and its alternatives). `lem:exists_rec`
+  depends on Assumption 1 and is in `D2023/Theorem1.lean` (`exists_measurable_rec`,
+  `rec_mem_correct`); the port's statement for any mean functional can take as hypotheses finitely
+  many answers, open answer sets, and the covering of the vectors of means by their closures.
 - R12: Identification 8.3 asks for the large deviations of the empirical means of independent
   samples with fixed proportions of arms with any laws whose cgf is finite near `0`, with the
   rate functions of Layer 1.2, and for the error exponent of the static-proportions algorithm
@@ -102,9 +114,14 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   convex supports of the arms (`LMLExplore.Bandits.ae_empMean_mem`, `StaticAllocation.lean`). Its
   headline statements take `[MeasurableSingletonClass ℐ]`, which the paper leaves implicit
   (`notes/statement-corrections.md`, Theorems 1 and 5); `tendsto_errorRate_of_isStaticProportions`
-  is proved, and `oracleDifficulty_staticClass` remains. The proof uses only the openness of the
-  answer sets from Assumption 1, which the port's statement for any mean functional can take as its
-  hypothesis.
+  and `oracleDifficulty_staticClass` are proved, the latter from its two halves at the models
+  with a measurable set of correct answers: `staticDifficulty_le_oracleDifficulty_staticClass`, by
+  the lower bound on the probability of error for every rule correct on the admissible models
+  (`neg_le_liminf_log_errorProb_of_isStaticProportions`), and `oracleDifficulty_staticClass_le`,
+  by the rate of the families of R11 with the rule of `exists_measurable_rec`. The rate uses only
+  the openness of the answer sets from Assumption 1, and the oracle difficulty also the covering of
+  the vectors of means by the closures of the answer sets (for the recommendation rule), which the
+  port's statement for any mean functional can take as its hypotheses.
 - R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5, the definitions
   of R9 and the bound `kl(a, b) ≥ a log (1/b) - log 2`, absent from LMLExplore (`lem:klBer_ge`, in
   `ForLMLExplore/InformationTheory/KullbackLeibler/Bernoulli.lean`), with the change of measure
