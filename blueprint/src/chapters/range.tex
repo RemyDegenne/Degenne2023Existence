@@ -19,10 +19,13 @@ Theorem~\ref{thm:oracle_difficulty_class}.
 \end{theorem}
 
 \begin{proof}
-  \uses{thm:oracle_difficulty_sp}
+  \leanok
+  \uses{thm:oracle_difficulty_sp, lem:uniform_upper_bound_measurable}
   For every $\omega' \in \Simplex$, $\omega_k \ge \omega'_k \min_j \omega_j$, so
   $\inf_{\Alt(\mu)} \sum_k \omega_k \KL \ge \min_j \omega_j \inf_{\Alt(\mu)} \sum_k \omega'_k \KL$;
-  take the supremum over $\omega'$ and apply Theorem~\ref{thm:oracle_difficulty_sp}.
+  take the supremum over $\omega'$ and apply Theorem~\ref{thm:oracle_difficulty_sp}. In Lean, the
+  sets of correct answers are singletons, measurable, and the theorem is
+  Lemma~\ref{lem:uniform_upper_bound_measurable}.
 \end{proof}
 
 \begin{corollary}[{\cite[Theorem 5]{D23}}]
@@ -35,16 +38,18 @@ Theorem~\ref{thm:oracle_difficulty_class}.
 \end{corollary}
 
 \begin{proof}
-  \uses{thm:uniform_upper_bound}
-  Theorem~\ref{thm:uniform_upper_bound} with $\omega_j = 1/K$.
+  \leanok
+  \uses{thm:uniform_upper_bound, lem:uniform_upper_bound_measurable}
+  Theorem~\ref{thm:uniform_upper_bound} with $\omega_j = 1/K$ (in Lean,
+  Lemma~\ref{lem:uniform_upper_bound_measurable}).
 \end{proof}
 
 The Lean statements of Theorem~\ref{thm:uniform_upper_bound} and
-Corollary~\ref{thm:uniform_upper_bound_uniform}, as frozen at the end of phase 1, are false for a
-$\sigma$-algebra on the answers that does not make the sets of correct answers measurable, as those of
-Theorem~\ref{thm:oracle_difficulty_sp} (\texttt{notes/statement-corrections.md}, Theorems 1 and 5).
-They are blocked; Lemma~\ref{lem:uniform_upper_bound_measurable} proves them for measurable sets
-of correct answers.
+Corollary~\ref{thm:uniform_upper_bound_uniform} assume, as those of
+Theorem~\ref{thm:oracle_difficulty_sp}, that the answers have measurable singletons; without it they
+are false (\texttt{notes/statement-corrections.md}, Theorems 1 and 5).
+Lemma~\ref{lem:uniform_upper_bound_measurable} assumes only that the sets of correct answers are
+measurable.
 
 \begin{lemma}[{\cite[Theorem 5]{D23}}]
   \label{lem:uniform_upper_bound_measurable}

@@ -72,15 +72,32 @@ is the zero measure (\texttt{notes/statement-corrections.md}, Lemma 11).
     \omega_k \KL(\lambda_k, \mu_k) \Bigr)^{-1}. \]
 \end{theorem}
 
+\begin{proof}
+  \leanok
+  \uses{lem:oracle_difficulty_sp_measurable, thm:ldp, lem:error_set_subset, lem:rate_continuousOn,
+    lem:tendsto_errorRate_iff}
+  The set of correct answers of $\mu$ is a singleton, measurable, so
+  Lemma~\ref{lem:oracle_difficulty_sp_measurable} applies. Its proof is the paper's. Let
+  $i = i^{\star}(\mu)$. The algorithm errs when $\hat\mu_T \in \Alt(\mu)$, an open set by
+  Assumption 1, and only when $\hat\mu_T$ is in the closed set $F$ of the vectors of
+  $\cl(\prod_k \cM_k)$ at which the recommendation is not $i$; $F \subseteq \cl(\Alt(\mu))$
+  (Lemma~\ref{lem:error_set_subset}). The rate function is continuous on $\cl(\prod_k \cM_k)$
+  (Lemma~\ref{lem:rate_continuousOn}), so its infima over $\Alt(\mu)$, $\cl(\Alt(\mu))$ and $F
+  \cup \Alt(\mu)$ agree. Theorem~\ref{thm:ldp} gives $\frac1T \log p_{\mu, T}(\cA) \to -\inf_{\Alt(\mu)}
+  \sum_k \omega_k \KL(\lambda_k, \mu_k)$, which is the claim
+  (Lemma~\ref{lem:tendsto_errorRate_iff}).
+\end{proof}
+
 The paper allows any extension of $i^{\star}$ (E1 of \texttt{notes/paper-errata.md}) and uses that
 the empirical means lie in the closure of the means (E2).
 
-The Lean statements of Theorems~\ref{thm:oracle_difficulty_sp} and~\ref{thm:oracle_difficulty_class},
-as frozen at the end of phase 1, are false: they take any $\sigma$-algebra on the answers, and for the
-trivial one the probability of error, an outer measure, is $1$ for every algorithm
-(\texttt{notes/statement-corrections.md}, Theorems 1 and 5). They are blocked until the user decides.
-Lemma~\ref{lem:oracle_difficulty_sp_measurable} proves Theorem~\ref{thm:oracle_difficulty_sp} when
-the set of correct answers of the model is measurable.
+The Lean statements of Theorems~\ref{thm:oracle_difficulty_sp} and~\ref{thm:oracle_difficulty_class}
+assume that the answers have measurable singletons, as the paper's answers, a finite set of indices
+every subset of which is an event. Without it they are false: for the trivial $\sigma$-algebra on
+the answers, the probability of error, an outer measure, is $1$ for every algorithm
+(\texttt{notes/statement-corrections.md}, Theorems 1 and 5). The proof of
+Theorem~\ref{thm:oracle_difficulty_sp} needs neither this nor finitely many answers, only that the
+set of correct answers of the model is measurable (Lemma~\ref{lem:oracle_difficulty_sp_measurable}).
 
 \begin{lemma}[{\cite[Theorem 1]{D23}}]
   \label{lem:oracle_difficulty_sp_measurable}
@@ -96,7 +113,7 @@ the set of correct answers of the model is measurable.
   \leanok
   \uses{thm:ldp, lem:error_set_subset, lem:error_event, lem:errorProb_static,
     lem:rate_continuousOn, lem:tendsto_errorRate_iff}
-  The proof of Theorem~\ref{thm:oracle_difficulty_sp}, with the probability of error as the
+  The paper's proof of Theorem~\ref{thm:oracle_difficulty_sp}, with the probability of error as the
   probability that the recommendation of $\hat\mu_T$ is wrong (Lemma~\ref{lem:errorProb_static}).
   Lower bound: $\Alt(\mu)$ is the union of the open sets $\cD_j$, $j \ne i$, and at a point of
   $\cD_j$, which is not in the closure of $\Alt_j$, the rule answers $j$. Upper bound: for $T$
@@ -126,18 +143,6 @@ the set of correct answers of the model is measurable.
   empirical means lie in $\cl(\prod_k \cM_k)$ almost surely (Lemma~\ref{lem:empMean_mem}: the
   members of the families are absolutely continuous with respect to $\rho_k$). There, the rule
   errs only on $F$ (Lemma~\ref{lem:error_set_subset}).
-\end{proof}
-
-\begin{proof}
-  \uses{thm:ldp, lem:error_set_subset, lem:rate_continuousOn, lem:tendsto_errorRate_iff}
-  Let $i = i^{\star}(\mu)$. The algorithm errs when $\hat\mu_T \in \Alt(\mu)$, an open set by
-  Assumption 1, and only when $\hat\mu_T$ is in the closed set $F$ of the vectors of
-  $\cl(\prod_k \cM_k)$ at which the recommendation is not $i$; $F \subseteq \cl(\Alt(\mu))$
-  (Lemma~\ref{lem:error_set_subset}). The rate function is continuous on $\cl(\prod_k \cM_k)$
-  (Lemma~\ref{lem:rate_continuousOn}), so its infima over $\Alt(\mu)$, $\cl(\Alt(\mu))$ and $F
-  \cup \Alt(\mu)$ agree. Theorem~\ref{thm:ldp} gives $\frac1T \log p_{\mu, T}(\cA) \to -\inf_{\Alt(\mu)}
-  \sum_k \omega_k \KL(\lambda_k, \mu_k)$, which is the claim
-  (Lemma~\ref{lem:tendsto_errorRate_iff}).
 \end{proof}
 
 \begin{theorem}[{\cite[Theorem 1]{D23}}]

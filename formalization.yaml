@@ -113,7 +113,12 @@ status:
     static proportions family as a probability of the trajectory, the rate from the exponent of the
     probability of error (ForLMLExplore/Identification/FixedBudgetComplexity.lean), and the empirical
     means in the convex supports of the arms (ForLMLExplore/Bandits/StaticAllocation.lean).
-  sorry_count: 7
+    Decision of 2026-11-11 (/lml:formalize-paper decide): the four statements take the hypothesis
+    MeasurableSingletonClass on the answers, which the paper leaves implicit (its answers are a
+    finite set of indices), and those of Theorem 1 (rate) and Theorem 5 drop the finiteness of the
+    answers, which their proofs do not use; their challenges are regenerated. The three are proved
+    from the _of_measurableSet lemmas; oracleDifficulty_staticClass remains.
+  sorry_count: 4
   sorry_in_definitions: 0
 
 automation:
@@ -153,19 +158,17 @@ alignment:
     - source: "thm:oracle_difficulty_sp — Theorem 1"
       lean: "Degenne2023Existence.tendsto_errorRate_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem1"
-      status: "blocked"
-      blocked: "statement-corrections: Theorems 1 and 5"
+      status: "proved"
       relation: "narrowMatch"
       erratum: "E1"
-      note: "Assumes a recommendation rule that answers i off the closure of the alternatives to i (E1) and samples in the closure of the means (E2)."
+      note: "Assumes a recommendation rule that answers i off the closure of the alternatives to i (E1) and samples in the closure of the means (E2). The hypothesis MeasurableSingletonClass on the answers, implicit in the paper (its answers are a finite set of indices), was added on 2026-11-11, and the finiteness of the answers dropped (notes/statement-corrections.md, Theorems 1 and 5)."
     - source: "thm:oracle_difficulty_class — Theorem 1 (displayed consequence)"
       lean: "Degenne2023Existence.oracleDifficulty_staticClass"
       module: "Degenne2023Existence.D2023.Theorem1"
-      status: "blocked"
-      blocked: "statement-corrections: Theorems 1 and 5"
+      status: "stated"
       relation: "narrowMatch"
       erratum: "E1"
-      note: "Assumes samples in the closure of the means (E2). The class of static proportions algorithms takes every recommendation rule correct on the models (E1); the maximum is over the closed simplex."
+      note: "Assumes samples in the closure of the means (E2). The class of static proportions algorithms takes every recommendation rule correct on the models (E1); the maximum is over the closed simplex. The hypothesis MeasurableSingletonClass on the answers, implicit in the paper (its answers are a finite set of indices), was added on 2026-11-11 (notes/statement-corrections.md, Theorems 1 and 5)."
     - source: "thm:R_LB — Theorem 2"
       lean: "Degenne2023Existence.inv_difficultyRatio_mul_le"
       module: "Degenne2023Existence.D2023.Theorem2"
@@ -192,18 +195,17 @@ alignment:
     - source: "thm:uniform_upper_bound — Theorem 5"
       lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions"
       module: "Degenne2023Existence.D2023.Theorem5"
-      status: "blocked"
-      blocked: "statement-corrections: Theorems 1 and 5"
+      status: "proved"
       relation: "narrowMatch"
       erratum: "E1"
-      note: "H_{C^sp} is the static-proportions difficulty, equal to it by Theorem 1."
+      note: "H_{C^sp} is the static-proportions difficulty, equal to it by Theorem 1. The hypothesis MeasurableSingletonClass on the answers, implicit in the paper (its answers are a finite set of indices), was added on 2026-11-11, and the finiteness of the answers dropped (notes/statement-corrections.md, Theorems 1 and 5)."
     - source: "thm:uniform_upper_bound_uniform — Theorem 5 (uniform allocation)"
       lean: "Degenne2023Existence.maxRatio_staticDifficulty_le_card"
       module: "Degenne2023Existence.D2023.Theorem5"
-      status: "blocked"
-      blocked: "statement-corrections: Theorems 1 and 5"
+      status: "proved"
       relation: "narrowMatch"
       erratum: "E1"
+      note: "The hypothesis MeasurableSingletonClass on the answers, implicit in the paper (its answers are a finite set of indices), was added on 2026-11-11, and the finiteness of the answers dropped (notes/statement-corrections.md, Theorems 1 and 5)."
     - source: "thm:positivity_LB — Theorem 6"
       lean: "Degenne2023Existence.iInf_maxRatio_minThresholdTask_eq_card"
       module: "Degenne2023Existence.D2023.Theorem6"

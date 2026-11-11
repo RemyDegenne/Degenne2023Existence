@@ -272,3 +272,12 @@ user's decision (`/lml:formalize-paper decide`). The errors of the paper itself 
   not proved yet. Recommended decision: add `[MeasurableSingletonClass ℐ]` to the four statements;
   the relations and errata entries stay as they are.
 - **Found:** round of 2026-11-09, on top of commit 5afa577.
+- **Decision:** 2026-11-11, by the user (`/lml:formalize-paper decide`): add the hypothesis
+  `[MeasurableSingletonClass ℐ]` to the four statements, which the paper leaves implicit (its
+  answers are a finite set of indices, every subset of which is an event). At the user's request,
+  the three statements whose proofs do not use the finiteness of the answers drop `[Finite ℐ]`:
+  `tendsto_errorRate_of_isStaticProportions` and the two statements of Theorem 5;
+  `oracleDifficulty_staticClass` keeps it, for the existence of a recommendation rule
+  (`lem:exists_rec`). The relations (`narrowMatch`) and the errata entries (E1) stay. The three are
+  proved from the `_of_measurableSet` lemmas, and the four challenges are regenerated, in the
+  commit "Decide: Theorems 1 and 5 take measurable singletons of answers".

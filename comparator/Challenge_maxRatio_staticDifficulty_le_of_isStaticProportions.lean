@@ -8,10 +8,15 @@ public import LMLExplore.Bandits.Instances
 public import LMLExplore.Identification.Task.Classical
 public import LMLExplore.InformationTheory.KullbackLeibler.Bernoulli
 public import LMLExplore.Probability.Distributions.ExponentialFamily.RateFunction
+public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Instances.EReal.Lemmas
 public import Mathlib.Topology.Semicontinuity.Defs
+public import LeanMachineLearning.Online.Bandit.ArrayProbSpace
+public import LMLExplore.Probability.Distributions.ExponentialFamily.Cramer
+public import LMLExplore.Probability.LargeDeviations.Chernoff
 
 /-! # Standalone extraction for `Degenne2023Existence.maxRatio_staticDifficulty_le_of_isStaticProportions`
 Definitions are copied verbatim; theorem proofs are replaced by `sorry`.
@@ -24,6 +29,8 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
+namespace MeasureTheory
+end MeasureTheory
 namespace LMLExplore.Identification
 end LMLExplore.Identification
 namespace LMLExplore.Identification.IdentTask
@@ -99,6 +106,7 @@ def IsStaticProportions (rec : (α → ℝ) → ℐ) (𝒜 : ℕ → IdentAlg Un
       ∀ a, |(pullCount IT.action a T h : ℝ) - T * w a| ≤ Fintype.card α) ∧
     ∀ h : Hist Unit α ℝ T, outputAt (𝒜 T) T h = Measure.dirac (rec (empMean' T h))
 
+variable {task}
 end StaticProportions
 end IdentTask
 end LMLExplore.Identification
@@ -132,18 +140,22 @@ end
 
 -- ═══ Degenne2023Existence.D2023.Theorem5 ═══
 @[expose] public section
-open MeasureTheory Learning LMLExplore LMLExplore.Identification
+open MeasureTheory Filter Topology InformationTheory Learning LMLExplore LMLExplore.Identification
 open scoped ENNReal
 namespace Degenne2023Existence
 variable {α ℐ : Type*} [Fintype α] [DecidableEq α] {mα : MeasurableSpace α} [MeasurableSingletonClass α] [MeasurableSpace ℐ] [Finite ℐ] {task : IdentTask α (α → ℝ) ℐ ℝ} {ρ : α → Measure ℝ}
 
-/-- **The difficulty ratio of static proportions** [D23, Theorem 5]. With arms in exponential
-families, a task satisfying Assumption 1 with a single correct answer on every admissible model,
-and a static proportions algorithm `𝒜` with proportions `w` whose recommendation rule satisfies
-the condition of `tendsto_errorRate_of_isStaticProportions`, the maximal difficulty ratio of `𝒜` to
-the static-proportions difficulty is finite (`𝒜` belongs to the class `\overline{𝒞^{sp}}`) and at
-most `(min_j w_j)⁻¹`. -/
-theorem maxRatio_staticDifficulty_le_of_isStaticProportions
+omit [Finite ℐ] in
+/-- **The difficulty ratio of static proportions** [D23, Theorem 5]. With answers with measurable
+singletons, arms in exponential families, a task satisfying Assumption 1 with a single correct
+answer on every admissible model, and a static proportions algorithm `𝒜` with proportions `w`
+whose recommendation rule satisfies the condition of `tendsto_errorRate_of_isStaticProportions`,
+the maximal difficulty ratio of `𝒜` to the static-proportions difficulty is finite (`𝒜` belongs to
+the class `\overline{𝒞^{sp}}`) and at most `(min_j w_j)⁻¹`.
+
+The statement as frozen at the end of phase 1 assumed finitely many answers, which the proof does
+not use. -/
+theorem maxRatio_staticDifficulty_le_of_isStaticProportions [MeasurableSingletonClass ℐ]
     (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
     (hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id))
     (hν : ∀ μ a, μ a ∈ (ρ a).expFamilyMeans id →

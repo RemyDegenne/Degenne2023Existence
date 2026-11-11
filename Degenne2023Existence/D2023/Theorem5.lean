@@ -19,11 +19,10 @@ algorithms, equal to `H^{sp}` by Theorem 1 (`oracleDifficulty_staticClass`). The
 rule is assumed to satisfy the condition of `tendsto_errorRate_of_isStaticProportions` (erratum E1
 of `notes/paper-errata.md`).
 
-The two statements below, as frozen at the end of phase 1, are false for the same reason as those
-of Theorem 1: they do not assume that the singletons of the answer type `ℐ` are measurable
-(`notes/statement-corrections.md`, Theorems 1 and 5). They are blocked until the user decides. The
-`_of_measurableSet` lemmas prove them when the sets of correct answers of the admissible models are
-measurable.
+The two headline statements assume, as those of Theorem 1, that the singletons of the answer type
+`ℐ` are measurable; without it they are false (`notes/statement-corrections.md`, Theorems 1 and 5;
+the hypothesis was added by the decision of 2026-11-11). The `_of_measurableSet` lemmas assume only
+that the sets of correct answers of the admissible models are measurable.
 
 ## Main statements
 
@@ -177,13 +176,17 @@ lemma maxRatio_staticDifficulty_le_card_of_measurableSet (hρ : ∀ a c, ¬ id =
     ENNReal.inv_div (Or.inl (ENNReal.natCast_ne_top _)) (Or.inl (by simp)),
     div_one]
 
-/-- **The difficulty ratio of static proportions** [D23, Theorem 5]. With arms in exponential
-families, a task satisfying Assumption 1 with a single correct answer on every admissible model,
-and a static proportions algorithm `𝒜` with proportions `w` whose recommendation rule satisfies
-the condition of `tendsto_errorRate_of_isStaticProportions`, the maximal difficulty ratio of `𝒜` to
-the static-proportions difficulty is finite (`𝒜` belongs to the class `\overline{𝒞^{sp}}`) and at
-most `(min_j w_j)⁻¹`. -/
-theorem maxRatio_staticDifficulty_le_of_isStaticProportions
+omit [Finite ℐ] in
+/-- **The difficulty ratio of static proportions** [D23, Theorem 5]. With answers with measurable
+singletons, arms in exponential families, a task satisfying Assumption 1 with a single correct
+answer on every admissible model, and a static proportions algorithm `𝒜` with proportions `w`
+whose recommendation rule satisfies the condition of `tendsto_errorRate_of_isStaticProportions`,
+the maximal difficulty ratio of `𝒜` to the static-proportions difficulty is finite (`𝒜` belongs to
+the class `\overline{𝒞^{sp}}`) and at most `(min_j w_j)⁻¹`.
+
+The statement as frozen at the end of phase 1 assumed finitely many answers, which the proof does
+not use. -/
+theorem maxRatio_staticDifficulty_le_of_isStaticProportions [MeasurableSingletonClass ℐ]
     (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
     (hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id))
     (hν : ∀ μ a, μ a ∈ (ρ a).expFamilyMeans id →
@@ -194,14 +197,21 @@ theorem maxRatio_staticDifficulty_le_of_isStaticProportions
       x ∉ closure (task.alt i) → rec x = i)
     {𝒜 : ℕ → IdentAlg Unit α ℝ ℐ} {w : α → ℝ} (h𝒜 : task.IsStaticProportions rec 𝒜 w) :
     task.maxRatio task.staticDifficulty 𝒜 < ∞ ∧
-      task.maxRatio task.staticDifficulty 𝒜 ≤ (⨅ a, ENNReal.ofReal (w a))⁻¹ := by
-  sorry
+      task.maxRatio task.staticDifficulty 𝒜 ≤ (⨅ a, ENNReal.ofReal (w a))⁻¹ :=
+  maxRatio_staticDifficulty_le_of_isStaticProportions_of_measurableSet hρ hρ_closure hν hreg
+    hsingle hrec h𝒜 fun μ hμ ↦ (task.isSingleAnswer_iff.1 hsingle μ hμ).elim fun i hi ↦
+      hi ▸ measurableSet_singleton i
 
+omit [Finite ℐ] in
 /-- **The difficulty ratio of uniform sampling** [D23, Theorem 5]. In the setting of
 `maxRatio_staticDifficulty_le_of_isStaticProportions`, the static proportions algorithm with the
 uniform proportions `1 / K` has maximal difficulty ratio at most `K` to the static-proportions
-difficulty. -/
-theorem maxRatio_staticDifficulty_le_card (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
+difficulty.
+
+The statement as frozen at the end of phase 1 assumed finitely many answers, which the proof does
+not use. -/
+theorem maxRatio_staticDifficulty_le_card [MeasurableSingletonClass ℐ]
+    (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
     (hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id))
     (hν : ∀ μ a, μ a ∈ (ρ a).expFamilyMeans id →
       task.ν μ a = (ρ a).expFamily id ((ρ a).natParam id (μ a)))
@@ -211,7 +221,9 @@ theorem maxRatio_staticDifficulty_le_card (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _
       x ∉ closure (task.alt i) → rec x = i)
     {𝒜 : ℕ → IdentAlg Unit α ℝ ℐ}
     (h𝒜 : task.IsStaticProportions rec 𝒜 fun _ ↦ 1 / (Fintype.card α : ℝ)) :
-    task.maxRatio task.staticDifficulty 𝒜 ≤ Fintype.card α := by
-  sorry
+    task.maxRatio task.staticDifficulty 𝒜 ≤ Fintype.card α :=
+  maxRatio_staticDifficulty_le_card_of_measurableSet hρ hρ_closure hν hreg hsingle hrec h𝒜
+    fun μ hμ ↦ (task.isSingleAnswer_iff.1 hsingle μ hμ).elim fun i hi ↦
+      hi ▸ measurableSet_singleton i
 
 end Degenne2023Existence

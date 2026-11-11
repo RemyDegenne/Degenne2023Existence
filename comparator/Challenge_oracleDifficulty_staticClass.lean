@@ -8,10 +8,15 @@ public import LMLExplore.Bandits.Instances
 public import LMLExplore.Identification.Task.Classical
 public import LMLExplore.InformationTheory.KullbackLeibler.Bernoulli
 public import LMLExplore.Probability.Distributions.ExponentialFamily.RateFunction
+public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Instances.EReal.Lemmas
 public import Mathlib.Topology.Semicontinuity.Defs
+public import LeanMachineLearning.Online.Bandit.ArrayProbSpace
+public import LMLExplore.Probability.Distributions.ExponentialFamily.Cramer
+public import LMLExplore.Probability.LargeDeviations.Chernoff
 
 /-! # Standalone extraction for `Degenne2023Existence.oracleDifficulty_staticClass`
 Definitions are copied verbatim; theorem proofs are replaced by `sorry`.
@@ -24,6 +29,8 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
+namespace MeasureTheory
+end MeasureTheory
 namespace LMLExplore.Identification
 end LMLExplore.Identification
 namespace LMLExplore.Identification.IdentTask
@@ -94,6 +101,7 @@ def staticClass : Set (ℕ → IdentAlg Unit α ℝ ℐ) :=
   {𝒜 | ∃ rec : (α → ℝ) → ℐ, (∀ μ ∈ task.M, rec μ ∈ task.correct μ) ∧
     ∃ w, task.IsStaticProportions rec 𝒜 w}
 
+variable {task}
 end StaticProportions
 end IdentTask
 end LMLExplore.Identification
@@ -132,15 +140,17 @@ open scoped ENNReal
 namespace Degenne2023Existence
 variable {α ℐ : Type*} [Fintype α] [DecidableEq α] {mα : MeasurableSpace α} [MeasurableSingletonClass α] [MeasurableSpace ℐ] [Finite ℐ] {task : IdentTask α (α → ℝ) ℐ ℝ} {ρ : α → Measure ℝ}
 
-/-- **The oracle difficulty of static proportions algorithms** [D23, Theorem 1]. With arms in
-exponential families as in `tendsto_errorRate_of_isStaticProportions` and a task satisfying
-Assumption 1 with a single correct answer on every admissible model, the oracle difficulty of the
-class of static proportions algorithms at every admissible model `μ` is the static-proportions
-difficulty `H^{sp}(μ) = (max_{w ∈ Δ_K} inf_{λ ∈ Alt(μ)} ∑ a, w a KL(ν_a(λ), ν_a(μ)))⁻¹`.
+/-- **The oracle difficulty of static proportions algorithms** [D23, Theorem 1]. With answers with
+measurable singletons, arms in exponential families as in
+`tendsto_errorRate_of_isStaticProportions` and a task satisfying Assumption 1 with a single correct
+answer on every admissible model, the oracle difficulty of the class of static proportions
+algorithms at every admissible model `μ` is the static-proportions difficulty
+`H^{sp}(μ) = (max_{w ∈ Δ_K} inf_{λ ∈ Alt(μ)} ∑ a, w a KL(ν_a(λ), ν_a(μ)))⁻¹`.
 
 The paper writes the maximum over the positive proportions `Δ_K^0`; the maximum over the simplex
 `Δ_K` has the same value. -/
-theorem oracleDifficulty_staticClass (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
+theorem oracleDifficulty_staticClass [MeasurableSingletonClass ℐ]
+    (hρ : ∀ a c, ¬ id =ᵐ[ρ a] fun _ ↦ c)
     (hρ_closure : ∀ a, ∀ᵐ x ∂(ρ a), x ∈ closure ((ρ a).expFamilyMeans id))
     (hν : ∀ μ a, μ a ∈ (ρ a).expFamilyMeans id →
       task.ν μ a = (ρ a).expFamily id ((ρ a).natParam id (μ a)))

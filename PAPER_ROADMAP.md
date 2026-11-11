@@ -93,8 +93,9 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `D2023/Theorem1.lean`) is proved for a measurable set of correct answers
   (`tendsto_errorRate_of_isStaticProportions_of_measurableSet`), over the empirical means in the
   convex supports of the arms (`LMLExplore.Bandits.ae_empMean_mem`, `StaticAllocation.lean`). Its
-  frozen headline statements are blocked: they miss `[MeasurableSingletonClass ℐ]`
-  (`notes/statement-corrections.md`, Theorems 1 and 5). The proof uses only the openness of the
+  headline statements take `[MeasurableSingletonClass ℐ]`, which the paper leaves implicit
+  (`notes/statement-corrections.md`, Theorems 1 and 5); `tendsto_errorRate_of_isStaticProportions`
+  is proved, and `oracleDifficulty_staticClass` remains. The proof uses only the openness of the
   answer sets from Assumption 1, which the port's statement for any mean functional can take as its
   hypothesis.
 - R13: [D23, Theorems 2, 3, 13, Corollaries 4, 14], for every task; they use R5, the definitions
@@ -133,8 +134,8 @@ Paper: RemyDegenne/Degenne2023Existence · LMLExplore afd365492580 · LMLRoadmap
   `LMLExplore.Identification.Task.BestArm` to `LMLExplore.Identification.Task.BestArm.Basic`, and
   removes or renames no public declaration.
 - R15: Theorem 5 is proved for measurable sets of correct answers (the `_of_measurableSet` lemmas
-  of `D2023/Theorem5.lean`); its frozen statements are blocked with those of Theorem 1. Theorem 6
-  remains.
+  of `D2023/Theorem5.lean`), and its headline statements, which take `[MeasurableSingletonClass ℐ]`
+  as those of Theorem 1, follow from them. Theorem 6 remains.
 - R15–R17: Identification 8.4, the results of [D23] on the existence of a complexity
   (Theorems 5–8 and 10, Lemmas 15–18). The proofs of Theorems 6 and 7 follow the corrections E3–E5
   of `notes/paper-errata.md`, and the one of Theorem 8 the correction E6.
