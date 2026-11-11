@@ -118,6 +118,9 @@ status:
     finite set of indices), and those of Theorem 1 (rate) and Theorem 5 drop the finiteness of the
     answers, which their proofs do not use; their challenges are regenerated. The three are proved
     from the _of_measurableSet lemmas; oracleDifficulty_staticClass remains.
+    At the user's request (2026-11-11), Lemma 15 drops the hypothesis MeasurableSingletonClass on
+    the arms, which its proof does not use, instead of silencing the linter; its challenge is
+    regenerated.
   sorry_count: 4
   sorry_in_definitions: 0
 
@@ -261,7 +264,7 @@ alignment:
       module: "Degenne2023Existence.D2023.Lemma15"
       status: "proved"
       relation: "broadMatch"
-      note: "Without the normalization sum_a |u_a| sigma_a = 1."
+      note: "Without the normalization sum_a |u_a| sigma_a = 1. The hypothesis MeasurableSingletonClass on the arms, unused by the proof, was dropped on 2026-11-11 at the user's request."
     - source: "lem:half_space — Lemma 16"
       lean: "Degenne2023Existence.one_le_iInf_maxRatio_halfSpaceTask_gaussian"
       module: "Degenne2023Existence.D2023.Lemma16"

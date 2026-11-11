@@ -42,12 +42,9 @@ variable {α : Type*} [Fintype α] {mα : MeasurableSpace α}
 vector `u ≠ 0`, every admissible model `μ` (with `u ⬝ μ ≠ 0`) has
 `H^{sp}(μ)⁻¹ = (u ⬝ μ)² / (2 (∑ a, |u a| √(v a))²)`.
 
-The paper normalizes `∑ a, |u a| √(v a) = 1`. The proof does not use the hypothesis
-`[MeasurableSingletonClass α]`, which the statement keeps as it was frozen at the end of phase 1;
-`LMLExplore.Identification.inv_staticDifficulty_halfSpaceTask_gaussianReal` drops it. -/
-@[nolint unusedArguments]
-theorem inv_staticDifficulty_halfSpaceTask_gaussian [MeasurableSingletonClass α]
-    (ν : (α → ℝ) → Kernel α ℝ)
+The paper normalizes `∑ a, |u a| √(v a) = 1`. The statement as frozen at the end of phase 1
+assumed `[MeasurableSingletonClass α]`, which the proof does not use. -/
+theorem inv_staticDifficulty_halfSpaceTask_gaussian (ν : (α → ℝ) → Kernel α ℝ)
     [∀ μ, IsMarkovKernel (ν μ)] {v : α → ℝ≥0} (hv : ∀ a, v a ≠ 0)
     (hν : ∀ μ a, ν μ a = gaussianReal (μ a) (v a)) {u : α → ℝ} (hu : u ≠ 0) {μ : α → ℝ}
     (hμ : u ⬝ᵥ μ ≠ 0) :

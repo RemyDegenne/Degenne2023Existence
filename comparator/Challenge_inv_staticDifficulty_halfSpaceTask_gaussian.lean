@@ -4,13 +4,16 @@ public import LMLExplore.Identification.FixedBudget
 public import LMLExplore.Identification.Task.TransportationCost
 public import LeanMachineLearning.SequentialLearning.SumRewards
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-public import LMLExplore.Bandits.Instances
 public import LMLExplore.Identification.Task.Classical
+public import LMLExplore.InformationTheory.KullbackLeibler.Gaussian
+public import LMLExplore.Bandits.Instances
 public import LMLExplore.InformationTheory.KullbackLeibler.Bernoulli
 public import LMLExplore.Probability.Distributions.ExponentialFamily.RateFunction
+public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Instances.EReal.Lemmas
 public import Mathlib.Topology.Semicontinuity.Defs
 
 /-! # Standalone extraction for `Degenne2023Existence.inv_staticDifficulty_halfSpaceTask_gaussian`
@@ -24,6 +27,8 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
+namespace MeasureTheory
+end MeasureTheory
 namespace LMLExplore.Identification
 end LMLExplore.Identification
 namespace LMLExplore.Identification.IdentTask
@@ -57,6 +62,7 @@ noncomputable def staticDifficulty (θ : Θ) : ℝ≥0∞ :=
   (⨆ w ∈ simplex α, ⨅ θ' ∈ task.alternatives θ, task.cost w θ' θ)⁻¹
 
 variable [DecidableEq α] (task : IdentTask α (α → ℝ) ℐ ℝ)
+variable {task}
 end StaticProportions
 end IdentTask
 end LMLExplore.Identification
@@ -67,14 +73,15 @@ end
 open MeasureTheory ProbabilityTheory LMLExplore.Identification
 open scoped ENNReal NNReal
 namespace Degenne2023Existence
-variable {α : Type*} [Fintype α] {mα : MeasurableSpace α} [MeasurableSingletonClass α]
+variable {α : Type*} [Fintype α] {mα : MeasurableSpace α}
 
 /-- **The static-proportions difficulty of Gaussian half-space identification**
 [D23, Lemma 15]. For Gaussian arms with variances `v a ≠ 0` and the half-space task with normal
 vector `u ≠ 0`, every admissible model `μ` (with `u ⬝ μ ≠ 0`) has
 `H^{sp}(μ)⁻¹ = (u ⬝ μ)² / (2 (∑ a, |u a| √(v a))²)`.
 
-The paper normalizes `∑ a, |u a| √(v a) = 1`. -/
+The paper normalizes `∑ a, |u a| √(v a) = 1`. The statement as frozen at the end of phase 1
+assumed `[MeasurableSingletonClass α]`, which the proof does not use. -/
 theorem inv_staticDifficulty_halfSpaceTask_gaussian (ν : (α → ℝ) → Kernel α ℝ)
     [∀ μ, IsMarkovKernel (ν μ)] {v : α → ℝ≥0} (hv : ∀ a, v a ≠ 0)
     (hν : ∀ μ a, ν μ a = gaussianReal (μ a) (v a)) {u : α → ℝ} (hu : u ≠ 0) {μ : α → ℝ}
